@@ -2241,7 +2241,7 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
         </div>
 
         <span>
-          MINI MEOW
+         MINI MEOW
         </span>
 
       </div>
@@ -6077,4 +6077,143 @@ button,a,[role="button"]{touch-action:manipulation}
   .meowShelfRecentText span{font-size:12px}
 }
 
+
+/* 🐱 MEOW LARGE — giảm 20% so với bản XXL */
+#meowReaderApp{font-size:clamp(19px,2.3vw,27px)!important;line-height:1.7}
+#meowReaderApp .meowPage{max-width:1520px!important;width:calc(100% - 29px)!important}
+.meowTopbar{padding:19px 26px!important;gap:13px;flex-wrap:wrap}
+.meowLogo{font-size:clamp(21px,3vw,37px)!important}.meowLogoCat{width:61px!important;height:61px!important;font-size:34px!important}
+.meowTopActions{flex-wrap:wrap;gap:10px}
+.meowTopBtn,.meowBackBtn,.meowOpenStory,.meowReadAction,.meowShelfTab,.meowGenreToggle,.meowGenreChip,.meowChapterItem,.meowReaderNav,.meowFollowBtn,.meowLoginBtn{font-size:clamp(16px,2vw,24px)!important;min-height:56px!important;padding:14px 19px!important;line-height:1.4}
+.meowHero{padding:clamp(30px,5vw,60px)!important;border-radius:30px}
+.meowHero h1{font-size:clamp(34px,5vw,58px)!important}
+.meowHero p,.meowLoginSub,.meowDetailLine,.meowSummary,#detailSummary{font-size:clamp(18px,2.4vw,27px)!important;line-height:1.85}
+.meowShelfSection{padding:clamp(18px,3vw,38px)!important;border-radius:26px}
+.meowShelfSectionTitle,.meowChapterHeader h2{font-size:clamp(24px,3vw,38px)!important}
+.meowStoryGrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,312px),1fr))!important;gap:24px!important}
+.meowShelfCards{grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))!important;gap:21px!important}
+.meowShelfSlider>.meowStoryCard{flex:0 0 clamp(232px,28vw,344px)!important}
+.meowStoryInfo{padding:20px!important}.meowStoryName{font-size:clamp(20px,2.4vw,29px)!important}
+.meowStoryAuthor,.meowStoryMeta,.meowShelfNote,.meowShelfRecentText span{font-size:clamp(16px,1.8vw,22px)!important}
+.meowShelfRecentText strong{font-size:clamp(19px,2.2vw,27px)!important}
+.meowShelfRecentItem{padding:19px!important;gap:19px!important}.meowShelfRecentCover{width:84px!important;height:112px!important}
+.meowDetailTitle{font-size:clamp(29px,4vw,48px)!important}
+.meowDetailMetaPanel .meowDetailLine{font-size:clamp(17px,2vw,24px)!important;min-height:52px!important}
+.meowTag,.meowStatusBadge,.meowFree,.meowVip{font-size:clamp(14px,1.6vw,18px)!important;padding:9px 13px!important}
+.meowChapterItem{padding:19px 21px!important}
+.meowInput,.meowChapterTools input{font-size:clamp(18px,2vw,24px)!important;padding:18px 19px!important;min-height:56px}
+.meowLoginBox{width:min(608px,100%)!important;padding:44px 36px!important}
+.meowLoginTitle{font-size:clamp(30px,4vw,45px)!important}
+.meowReaderBody{width:min(1080px,calc(100% - 29px))!important}
+.meowReaderBtn{width:54px!important;height:54px!important;font-size:24px!important}
+.meowReaderChapter{font-size:clamp(16px,2vw,24px)!important}
+.meowReaderStory,.meowReaderMetaBar{font-size:clamp(13px,1.5vw,18px)!important}
+.meowReaderChapterTitle{font-size:clamp(29px,4vw,46px)!important}
+#readerContent{font-size:clamp(22px,2.6vw,32px)!important;line-height:2!important}
+.meowReaderBottom{max-width:calc(100% - 10px);flex-wrap:wrap;justify-content:center}
+.readerSettingsPanel{width:min(100%,624px)!important;padding:24px!important}
+.readerSettingField{font-size:19px!important}
+.meowTTSHeading strong{font-size:21px!important}.meowTTSHeading small,.meowTTSNote{font-size:16px!important}
+.meowTTSButtons button{font-size:18px!important;padding:14px 18px!important}
+@media(max-width:560px){
+ #meowReaderApp{font-size:18px!important}
+ #meowReaderApp .meowPage{width:calc(100% - 13px)!important}
+ .meowTopbar{padding:11px 8px!important}
+ .meowLogo{font-size:18px!important}.meowLogoCat{width:43px!important;height:43px!important;font-size:24px!important}
+ .meowTopBtn{font-size:14px!important;min-height:38px!important;padding:8px 10px!important}
+ .meowHero{padding:21px 14px!important}.meowHero h1{font-size:29px!important}
+ .meowHero p,.meowSummary,#detailSummary{font-size:18px!important}
+ .meowShelfSection{padding:14px!important}.meowShelfSectionTitle{font-size:23px!important}
+ .meowShelfCards,.meowStoryGrid{grid-template-columns:1fr!important;gap:14px!important}
+ .meowShelfSlider>.meowStoryCard{flex-basis:min(78vw,272px)!important}
+ .meowStoryName{font-size:22px!important}.meowStoryAuthor,.meowStoryMeta{font-size:16px!important}
+ .meowOpenStory,.meowReadAction,.meowShelfTab,.meowGenreChip{font-size:14px!important;min-height:43px!important;padding:10px!important}
+ .meowShelfTabs{grid-template-columns:1fr 1fr!important}.meowGenreToggle{grid-column:1/-1}
+ .meowDetailTitle{font-size:26px!important}
+ .meowStoryHead{grid-template-columns:88px minmax(0,1fr)!important}
+ .meowDetailMetaPanel .meowDetailLine{font-size:16px!important}
+ .meowChapterItem{font-size:17px!important;padding:15px 11px!important}
+ .meowReaderTop{padding:8px 8px!important;flex-wrap:wrap}
+ .meowReaderBtn{width:38px!important;height:38px!important;font-size:18px!important}
+ .meowReaderChapterTitle{font-size:27px!important}
+ #readerContent{font-size:22px!important}
+ .meowReaderNav{font-size:13px!important;min-height:37px!important;padding:8px!important}
+ .meowReaderBottom{width:calc(100% - 10px)}
+ .meowShelfRecentCover{width:62px!important;height:84px!important}
+ .meowShelfRecentText strong{font-size:18px!important}.meowShelfRecentText span{font-size:14px!important}
+ .meowLoginBox{padding:24px 16px!important}.meowLoginTitle{font-size:29px!important}
+}
+
+
+/* MEOW RESPONSIVE — cân đối trên máy tính, tablet và điện thoại */
+#meowReaderApp{font-size:16px!important}
+#meowReaderApp .meowPage{width:min(94%,1320px)!important;max-width:1320px!important}
+.meowTopbar{padding:13px clamp(12px,2vw,24px)!important;flex-wrap:nowrap}
+.meowLogo{font-size:clamp(18px,1.8vw,25px)!important}
+.meowLogoCat{width:48px!important;height:48px!important;font-size:26px!important}
+.meowTopBtn,.meowBackBtn,.meowOpenStory,.meowReadAction,.meowShelfTab,.meowGenreToggle,.meowGenreChip,.meowChapterItem,.meowReaderNav,.meowFollowBtn,.meowLoginBtn{font-size:clamp(14px,1.2vw,17px)!important;min-height:44px!important;padding:11px 14px!important}
+.meowHero{padding:clamp(22px,3vw,40px)!important}
+.meowHero h1{font-size:clamp(27px,3.3vw,42px)!important}
+.meowHero p,.meowLoginSub,.meowDetailLine,.meowSummary,#detailSummary{font-size:clamp(15px,1.4vw,19px)!important}
+.meowShelfSection{padding:clamp(14px,2vw,24px)!important}
+.meowShelfSectionTitle,.meowChapterHeader h2{font-size:clamp(20px,2vw,27px)!important}
+.meowStoryGrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,215px),1fr))!important;gap:17px!important}
+.meowShelfCards{grid-template-columns:repeat(auto-fill,minmax(min(100%,185px),1fr))!important;gap:14px!important}
+.meowShelfSlider>.meowStoryCard{flex:0 0 clamp(175px,20vw,230px)!important}
+.meowStoryInfo{padding:14px!important}.meowStoryName{font-size:clamp(16px,1.5vw,20px)!important}
+.meowStoryAuthor,.meowStoryMeta,.meowShelfNote,.meowShelfRecentText span{font-size:clamp(12px,1.1vw,15px)!important}
+.meowShelfRecentText strong{font-size:clamp(15px,1.3vw,19px)!important}
+.meowShelfRecentItem{padding:12px!important;gap:12px!important}.meowShelfRecentCover{width:60px!important;height:80px!important}
+.meowDetailTitle{font-size:clamp(24px,2.6vw,34px)!important}
+.meowDetailMetaPanel .meowDetailLine{font-size:clamp(13px,1.3vw,17px)!important;min-height:42px!important}
+.meowTag,.meowStatusBadge,.meowFree,.meowVip{font-size:12px!important;padding:6px 9px!important}
+.meowChapterItem{padding:13px 15px!important}
+.meowInput,.meowChapterTools input{font-size:16px!important;padding:13px 15px!important;min-height:44px}
+.meowLoginBox{width:min(480px,100%)!important;padding:32px 25px!important}
+.meowLoginTitle{font-size:29px!important}
+.meowReaderBody{width:min(900px,calc(100% - 32px))!important}
+.meowReaderBtn{width:44px!important;height:44px!important;font-size:20px!important}
+.meowReaderChapter{font-size:16px!important}
+.meowReaderStory,.meowReaderMetaBar{font-size:12px!important}
+.meowReaderChapterTitle{font-size:clamp(24px,3vw,34px)!important}
+#readerContent{font-size:clamp(19px,1.8vw,23px)!important;line-height:1.95!important}
+.readerSettingsPanel{width:min(100%,520px)!important;padding:20px!important}
+.readerSettingField{font-size:15px!important}
+.meowTTSHeading strong{font-size:16px!important}.meowTTSHeading small,.meowTTSNote{font-size:12px!important}
+.meowTTSButtons button{font-size:14px!important;padding:11px 13px!important}
+@media (min-width:561px) and (max-width:900px){
+ #meowReaderApp .meowPage{width:calc(100% - 28px)!important}
+ .meowShelfCards{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .meowStoryGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:560px){
+ #meowReaderApp{font-size:15px!important}
+ #meowReaderApp .meowPage{width:calc(100% - 20px)!important}
+ .meowTopbar{padding:10px!important;gap:7px;flex-wrap:wrap}
+ .meowLogo{font-size:17px!important}.meowLogoCat{width:39px!important;height:39px!important;font-size:22px!important}
+ .meowTopBtn{font-size:12px!important;min-height:36px!important;padding:8px!important}
+ .meowHero{padding:19px 15px!important}.meowHero h1{font-size:26px!important}
+ .meowHero p,.meowSummary,#detailSummary{font-size:15px!important}
+ .meowShelfSection{padding:12px!important}.meowShelfSectionTitle{font-size:19px!important}
+ .meowShelfCards,.meowStoryGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ .meowShelfSlider>.meowStoryCard{flex:0 0 min(48vw,185px)!important}
+ .meowStoryInfo{padding:10px!important}.meowStoryName{font-size:15px!important}
+ .meowStoryAuthor,.meowStoryMeta{font-size:11px!important}
+ .meowOpenStory,.meowReadAction,.meowShelfTab,.meowGenreChip{font-size:12px!important;min-height:38px!important;padding:8px!important}
+ .meowShelfTabs{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;gap:5px}
+ .meowGenreToggle{grid-column:auto;white-space:normal}
+ .meowDetailTitle{font-size:23px!important}
+ .meowStoryHead{grid-template-columns:95px minmax(0,1fr)!important}
+ .meowDetailMetaPanel .meowDetailLine{font-size:12px!important}
+ .meowChapterItem{font-size:14px!important;padding:12px 10px!important}
+ .meowReaderTop{padding:8px!important;gap:5px}
+ .meowReaderBtn{width:38px!important;height:38px!important;font-size:18px!important}
+ .meowReaderChapterTitle{font-size:24px!important}
+ #readerContent{font-size:19px!important}
+ .meowReaderNav{font-size:12px!important;min-height:36px!important;padding:8px!important}
+ .meowReaderBottom{max-width:calc(100% - 12px)}
+ .meowShelfRecentCover{width:54px!important;height:72px!important}
+ .meowShelfRecentText strong{font-size:14px!important}.meowShelfRecentText span{font-size:12px!important}
+ .meowLoginBox{padding:25px 17px!important}.meowLoginTitle{font-size:25px!important}
+}
 </style>
