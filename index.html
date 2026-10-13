@@ -1882,7 +1882,7 @@ body.meowDarkReader .meowReaderNav{
 #detailSummary.meow-summary-collapsed{max-height:190px;overflow:hidden;position:relative;}
 #detailSummary.meow-summary-collapsed:after{content:"";position:absolute;left:0;right:0;bottom:0;height:48px;background:linear-gradient(transparent,#fff8fc);pointer-events:none;}
 .meowSummaryToggle{display:block;margin:8px auto 18px;padding:8px 18px;border:1px solid #ffc9df;border-radius:999px;background:linear-gradient(135deg,#fff0f7,#f2eaff);color:#b34f83;font-weight:800;cursor:pointer;}
-.meowDetailCover{position:relative;}
+.meowDetailCover{position:relative;overflow:hidden;}
 .meowReaderChapterStats{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:8px auto 22px;max-width:1000px;padding:0 14px;}
 .meowReaderChapterStats span{padding:7px 11px;border:1px solid #ffd2e3;border-radius:999px;background:#fff3f8;color:#a65078;font-size:11px;font-weight:700;}
 #readerPage.reader-theme-night .meowReaderChapterStats span{background:#3b3040;border-color:#574255;color:#ffd7e9;}
@@ -2163,6 +2163,11 @@ body.meowDarkReader .meowReaderNav{
   #storyPage .meowStoryActions{background:linear-gradient(135deg,#e7c5fa,#ffd1e7 55%,#ead8ff)}
 }
 
+
+/* ⚡ Progressive rendering + low-priority cover loading */
+.meowStoryCard { content-visibility:auto; contain-intrinsic-size: 280px 390px; }
+.meowStoryCard img, .meowShelfRecentCover { decoding: async; }
+@media (prefers-reduced-motion: reduce) { .meowStoryCard, .meowStoryCard * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 </style>
 
 
@@ -2182,11 +2187,12 @@ body.meowDarkReader .meowReaderNav{
       </div>
 
       <h1 class="meowLoginTitle">
-        Mini Meow
+       MINI MEOW
       </h1>
 
       <div class="meowLoginSub">
-        Mở WEB trong trình duyệt nhé. Không hỗ trợ FB 
+        Mở bằng trình duyệt nha, không hỗ trợ FB.
+Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
       </div>
 
 
@@ -2235,7 +2241,7 @@ body.meowDarkReader .meowReaderNav{
         </div>
 
         <span>
-          MINI MEOW
+          Meow Reader
         </span>
 
       </div>
@@ -2397,6 +2403,7 @@ body.meowDarkReader .meowReaderNav{
               src=""
               alt=""
             >
+            <button type="button" class="meowFollowBtn" id="meowDetailFollowBtn" aria-pressed="false">♡ Theo dõi</button>
 
           </div>
 
@@ -2490,7 +2497,7 @@ body.meowDarkReader .meowReaderNav{
           <div class="meowCommentList" id="meowStoryCommentList"><div class="meowCommentHint">Bấm mở bình luận để xem mọi người nói gì nhé 💗</div></div>
           <button type="button" id="meowStoryCommentsLoad" class="meowStoryCommentsLoad">💗 Xem bình luận</button>
           <form class="meowCommentForm" id="meowStoryCommentForm"><input maxlength="1000" name="comment" placeholder="Viết vài dòng cảm nhận dễ thương..." aria-label="Nội dung bình luận" required><button type="submit">Gửi</button></form>
-          
+       
         </section>
 
       </div>
@@ -2731,6 +2738,13 @@ from
 
 
 /* =========================================================
+   GITHUB PAGES — MỖI LINK CÓ THỂ MỞ THẲNG MỘT TRUYỆN
+   Ví dụ: https://TEN.github.io/REPO/luong-son.html?story=luongson
+   Dữ liệu truyện vẫn lấy từ Firebase olncm-fa88c.
+========================================================= */
+const MEOW_URL_STORY_ID = new URLSearchParams(window.location.search).get("story");
+
+/* =========================================================
    FIREBASE
 ========================================================= */
 
@@ -2789,6 +2803,102 @@ let currentChapterId = null;
 let currentShelf = "public";
 let currentGenreFilter = "";
 let meowFollowedStories = {};
+let meowCloudReadingHistory = {};
+let meowReadingHistoryUnsubscribe = null;
+
+/* =========================================================
+   ⚡ MEOW FAST DATA LAYER
+   storyCatalog/{storyId} chỉ chứa metadata nhẹ.
+   stories/{storyId} vẫn giữ dữ liệu đầy đủ để tương thích dữ liệu cũ.
+========================================================= */
+/* =========================================================
+   📶 MEOW WIFI GUARD — retry nhẹ khi mạng chập chờn
+   Không đổi cấu trúc Firebase, không xóa dữ liệu cũ.
+========================================================= */
+const MEOW_NET_NOTICE_ID = "meowNetworkNotice";
+function meowNetworkNotice(message, mode = "info") {
+  let el = document.getElementById(MEOW_NET_NOTICE_ID);
+  if (!el) {
+    el = document.createElement("div");
+    el.id = MEOW_NET_NOTICE_ID;
+    el.setAttribute("role", "status");
+    el.style.cssText = "position:fixed;z-index:999999;left:50%;bottom:16px;transform:translateX(-50%);max-width:calc(100vw - 24px);padding:10px 15px;border-radius:18px;font:600 13px/1.45 system-ui,sans-serif;box-shadow:0 6px 24px #0002;text-align:center;";
+    document.body.appendChild(el);
+  }
+  el.style.background = mode === "error" ? "#ffe4e8" : mode === "ok" ? "#e4ffef" : "#fff0f7";
+  el.style.color = mode === "error" ? "#9b2440" : mode === "ok" ? "#17653b" : "#87345b";
+  el.textContent = message;
+  if (el._hideTimer) clearTimeout(el._hideTimer);
+  if (mode === "ok") el._hideTimer = setTimeout(() => { if (el.isConnected) el.remove(); }, 2200);
+}
+async function meowGetWithRetry(databaseRef, attempts = 3) {
+  let lastError;
+  for (let i = 0; i < attempts; i++) {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) throw new Error("Thiết bị đang ngoại tuyến");
+    try { return await get(databaseRef); }
+    catch (error) {
+      lastError = error;
+      if (i < attempts - 1) await new Promise(resolve => setTimeout(resolve, 450 * (i + 1)));
+    }
+  }
+  throw lastError || new Error("Không thể kết nối Firebase");
+}
+(function meowWatchNetwork() {
+  if (typeof window === "undefined" || window.__meowNetworkGuardBound) return;
+  window.__meowNetworkGuardBound = true;
+  window.addEventListener("offline", () => meowNetworkNotice("📶 Mạng đang mất kết nối. Meow sẽ giữ phần đã tải để bà không mất nội dung nha.", "error"));
+  window.addEventListener("online", () => meowNetworkNotice("💗 Có mạng lại rồi! Bà có thể thử tải lại phần chưa mở được nha.", "ok"));
+})();
+
+const MEOW_CATALOG_PATH = "storyCatalog";
+const MEOW_CATALOG_CACHE_KEY = "MEOW_STORY_CATALOG_CACHE_V1";
+const MEOW_CATALOG_CACHE_TTL = 6 * 60 * 60 * 1000;
+let meowCatalogMode = false;
+let meowOpenRequestToken = 0;
+
+function meowNormalizeCatalog(raw) {
+  const result = {};
+  Object.entries(raw || {}).forEach(([id, value]) => {
+    if (!value || typeof value !== "object") return;
+    // Accept either {info:{...}, chapterCount:n} or a direct info object.
+    const info = value.info && typeof value.info === "object" ? value.info : value;
+    result[id] = {
+      info: info || {},
+      chapterCount: Number(value.chapterCount ?? value.chaptersCount ?? value.totalChapters ?? 0) || 0,
+      _catalogOnly: true
+    };
+  });
+  return result;
+}
+function meowGetStoryChapterCount(story) {
+  if (Number.isFinite(Number(story?.chapterCount)) && Number(story?.chapterCount) > 0) return Number(story.chapterCount);
+  return Object.keys(story?.chapters || {}).length;
+}
+function meowReadCatalogCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(MEOW_CATALOG_CACHE_KEY) || "null");
+    // Hiện dữ liệu đã lưu ngay cả khi cache cũ; loadStories sẽ tự lấy bản mới từ Firebase.
+    // Cách stale-while-revalidate giúp lần mở sau không phải chờ mạng mới thấy danh mục.
+    if (!cached || !cached.data || typeof cached.data !== "object") return null;
+    return meowNormalizeCatalog(cached.data);
+  } catch (_) { return null; }
+}
+function meowSaveCatalogCache(data) {
+  try {
+    const light = {};
+    Object.entries(data || {}).forEach(([id, story]) => {
+      light[id] = { info: story?.info || {}, chapterCount: meowGetStoryChapterCount(story) };
+    });
+    localStorage.setItem(MEOW_CATALOG_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: light }));
+  } catch (e) { console.warn("Meow: không lưu được cache danh mục", e); }
+}
+function meowCatalogFromLegacy(stories) {
+  const catalog = {};
+  Object.entries(stories || {}).forEach(([id, story]) => {
+    catalog[id] = { info: story?.info || {}, chapterCount: Object.keys(story?.chapters || {}).length, _catalogOnly: false };
+  });
+  return catalog;
+}
 
 
 /* =========================================================
@@ -2873,7 +2983,7 @@ function escapeHTML(value){
    MEOW WALLET + PRICE DISPLAY
    DÁN LINK VÍ/NẠP CỦA BÀ VÀO MEOW_WALLET_URL BÊN DƯỚI
 ========================================================= */
-const MEOW_WALLET_URL = "https://oluoinhocuameowfullsac.blogspot.com/2026/10/nap-tien.html";
+const MEOW_WALLET_URL = "PASTE_YOUR_WALLET_LINK_HERE";
 let meowBalanceListenerRef = null;
 let meowBalanceListenerStartedFor = "";
 let meowPurchasedRecords = [];
@@ -2943,7 +3053,7 @@ function setupMeowWalletLink() {
   if (MEOW_WALLET_URL && MEOW_WALLET_URL !== "PASTE_YOUR_WALLET_LINK_HERE") {
     link.href = MEOW_WALLET_URL;
   } else {
-    link.href = "#";
+    link.href = "https://oluoinhocuameow-ops.github.io/nap-tien/";
     link.addEventListener("click", event => { event.preventDefault(); alert("Bà dán link ví/nạp tiền vào biến MEOW_WALLET_URL trong code Reader nha."); }, { once: true });
   }
 }
@@ -3197,23 +3307,8 @@ async function loginCustomer(){
 
     };
 
-    try {
-      const followSnap = await get(ref(db, "meowFollows/" + id));
-      if (followSnap.exists()) {
-        const savedFollows = followSnap.val() || {};
-        meowFollowedStories = Object.fromEntries(
-          Object.entries(savedFollows).filter(([storyId, value]) =>
-            !!storyId && (value === true || (value && typeof value === "object" && value.followed !== false))
-          )
-        );
-      } else {
-        meowFollowedStories = {};
-      }
-    } catch (followError) {
-      // Không ghi đè danh sách theo dõi đang có nếu Firebase tạm lỗi.
-      // Dữ liệu theo dõi được lưu trên Firebase nên vẫn còn sau khi reset trình duyệt.
-      console.warn("Chưa tải được tủ theo dõi từ Firebase:", followError);
-    }
+    await meowLoadFollowedStories(id);
+    await meowLoadReadingHistory(id);
 
 
     localStorage.setItem(
@@ -3293,7 +3388,12 @@ function enterReader(){
   startMeowBalanceSync();
   setupMeowWalletLink();
 setupMeowPurchaseButtons();
-  loadStories();
+  loadStories().then(() => {
+    if (MEOW_URL_STORY_ID) {
+      const wanted = String(MEOW_URL_STORY_ID).trim();
+      if (wanted) openStory(wanted);
+    }
+  });
 
 }
 
@@ -3309,6 +3409,10 @@ function logout(){
   );
 
 
+  if (typeof meowReadingHistoryUnsubscribe === "function") meowReadingHistoryUnsubscribe();
+  meowReadingHistoryUnsubscribe = null;
+  meowCloudReadingHistory = {};
+  meowFollowedStories = {};
   currentCustomer = null;
 
   currentStoryId = null;
@@ -3357,70 +3461,59 @@ function logout(){
 ========================================================= */
 
 async function loadStories(){
+  const grid = document.getElementById("storyGrid");
+  if (!grid) return;
+  const cached = meowReadCatalogCache();
+  let renderedCache = false;
 
-  const grid =
-    document.getElementById(
-      "storyGrid"
-    );
-
-
-  grid.innerHTML =
-    `
-      <div class="meowEmpty">
-        ⏳ Đang đồng bộ truyện...
-      </div>
-    `;
-
-
-  try{
-
-    const snap =
-      await get(
-        ref(
-          db,
-          "stories"
-        )
-      );
-
-
-    if(!snap.exists()){
-
-      allStories = {};
-
-
-      grid.innerHTML =
-        `
-          <div class="meowEmpty">
-            📚 Chưa có truyện.
-          </div>
-        `;
-
-      return;
-
-    }
-
-
-    allStories =
-      snap.val() || {};
-
-
+  // Show cached light metadata immediately on repeat visits; never wait for covers.
+  if (cached && Object.keys(cached).length) {
+    allStories = cached;
+    meowCatalogMode = true;
+    renderedCache = true;
     renderStories();
-
-
-  }catch(error){
-
-    console.error(error);
-
-
-    grid.innerHTML =
-      `
-        <div class="meowEmpty">
-          ❌ Không tải được danh sách truyện.
-        </div>
-      `;
-
+    const note = document.getElementById("meowShelfNote");
+    if (note) note.dataset.syncState = "refreshing";
+  } else {
+    grid.innerHTML = `<div class="meowEmpty">🐾 Đang mở tủ truyện...</div>`;
   }
 
+  try {
+    // Fast path: this node contains only book metadata, never chapter text.
+    const catalogSnap = await meowGetWithRetry(ref(db, MEOW_CATALOG_PATH));
+    if (catalogSnap.exists()) {
+      const catalog = meowNormalizeCatalog(catalogSnap.val());
+      allStories = catalog;
+      meowCatalogMode = true;
+      meowSaveCatalogCache(catalog);
+      renderStories();
+      return;
+    }
+
+    // Compatibility path for existing Firebase projects that have not created storyCatalog yet.
+    // It works with the current database but the first uncached load remains heavier.
+    const legacySnap = await meowGetWithRetry(ref(db, "stories"));
+    if (!legacySnap.exists()) {
+      allStories = {};
+      meowCatalogMode = false;
+      grid.innerHTML = `<div class="meowEmpty">📚 Chưa có truyện.</div>`;
+      return;
+    }
+    const legacy = legacySnap.val() || {};
+    allStories = legacy;
+    meowCatalogMode = false;
+    meowSaveCatalogCache(meowCatalogFromLegacy(legacy));
+    renderStories();
+  } catch (error) {
+    console.error(error);
+    // Keep usable cached content if network refresh fails.
+    if (renderedCache) {
+      meowNetworkNotice("📚 Đang dùng danh sách truyện đã lưu vì mạng hơi chậm nha bà.", "info");
+    } else {
+      grid.innerHTML = `<div class="meowEmpty">❌ Chưa tải được danh sách truyện. Kiểm tra Wi-Fi rồi bấm tải lại nha bà. <button type="button" onclick="loadStories()" style="margin:10px;padding:9px 14px;border:0;border-radius:14px;background:#ff7aa2;color:#fff;font-weight:700">↻ Thử lại</button></div>`;
+      meowNetworkNotice("📶 Firebase chưa phản hồi sau vài lần thử. Bà kiểm tra Wi-Fi rồi thử lại nha.", "error");
+    }
+  }
 }
 
 
@@ -3483,12 +3576,13 @@ function meowStoryCardHTML(storyId, story, options = {}) {
   const name = info.name || storyId;
   const author = info.author || "Chưa cập nhật";
   const cover = info.cover || "";
-  const chapterCount = Object.keys(story?.chapters || {}).length;
+  const chapterCount = meowGetStoryChapterCount(story);
   const isPersonal = options.personal === true;
   return `<div class="meowStoryCard">
     <div class="meowCover">
       ${cover ? `<img src="${escapeHTML(cover)}" alt="${escapeHTML(name)}" loading="lazy">` : `<div class="meowCoverPlaceholder">🐱🎀</div>`}
       <span class="meowStatusBadge ${meowStatusType(info)==="full"?"is-full":meowStatusType(info)==="upcoming"?"is-upcoming":"is-ongoing"}">${meowStatusType(info)==="full"?"FULL":meowStatusType(info)==="upcoming"?"SẮP RA":"ĐANG RA"}</span>
+      <button type="button" class="meowFollowBtn ${meowFollowedStories[String(storyId)] ? "is-following" : ""}" data-follow-story="${escapeHTML(storyId)}" aria-pressed="${!!meowFollowedStories[String(storyId)]}">${meowFollowedStories[String(storyId)] ? "♥ Đang theo dõi" : "♡ Theo dõi"}</button>
     </div>
     <div class="meowStoryInfo">
       <h3 class="meowStoryName">${escapeHTML(name)}</h3>
@@ -3521,8 +3615,9 @@ function meowGetPurchasedStoryIds() {
 }
 
 function meowGetRecentReads() {
-  const rows = [];
-  if (!currentCustomer) return rows;
+  const byStory = new Map();
+  if (!currentCustomer) return [];
+  // Ưu tiên lịch sử mới nhất; ghép lịch sử local cũ với lịch sử Firebase để hiện trên mọi thiết bị.
   const prefix = "MEOW_READER_HISTORY_" + encodeURIComponent(currentCustomer.id || "") + "_";
   try {
     for (let i=0;i<localStorage.length;i++) {
@@ -3530,15 +3625,95 @@ function meowGetRecentReads() {
       if (!key || !key.startsWith(prefix)) continue;
       const storyId = decodeURIComponent(key.slice(prefix.length));
       const chapterId = localStorage.getItem(key);
-      if (storyId && chapterId && allStories[storyId]?.chapters?.[chapterId]) {
-        const stampKey = key + "__readAt";
-        const stamp = Number(localStorage.getItem(stampKey) || 0);
-        rows.push({storyId,chapterId,story:allStories[storyId],readAt:stamp});
-      }
+      if (!storyId || !chapterId) continue;
+      byStory.set(storyId, {storyId, chapterId, readAt:Number(localStorage.getItem(key + "__readAt") || 0)});
     }
   } catch (e) { console.warn("Không đọc được lịch sử đọc:", e); }
-  return rows.sort((a,b)=>(b.readAt||0)-(a.readAt||0));
+  Object.entries(meowCloudReadingHistory || {}).forEach(([storyId, item]) => {
+    if (!item || !item.chapterId) return;
+    const old = byStory.get(storyId);
+    if (!old || Number(item.readAt || 0) >= Number(old.readAt || 0)) {
+      byStory.set(storyId, {storyId, chapterId:String(item.chapterId), readAt:Number(item.readAt || 0)});
+    }
+  });
+  return [...byStory.values()].filter(row => !!allStories[row.storyId])
+    .map(row => ({...row, story:allStories[row.storyId]})).sort((a,b)=>(b.readAt||0)-(a.readAt||0));
 }
+
+async function meowLoadReadingHistory(customerId = currentCustomer?.id) {
+  if (typeof meowReadingHistoryUnsubscribe === "function") meowReadingHistoryUnsubscribe();
+  meowReadingHistoryUnsubscribe = null;
+  meowCloudReadingHistory = {};
+  if (!customerId) return;
+  const path = "meowReadingHistory/" + encodeURIComponent(String(customerId));
+  try {
+    const snap = await get(ref(db, path));
+    meowCloudReadingHistory = snap.exists() ? (snap.val() || {}) : {};
+  } catch (err) { console.warn("Chưa tải được lịch sử đọc trên Firebase:", err); }
+  // Giữ các thiết bị đang mở được cập nhật khi cùng ID đọc ở thiết bị khác.
+  try {
+    meowReadingHistoryUnsubscribe = onValue(ref(db, path), snap => {
+      meowCloudReadingHistory = snap.exists() ? (snap.val() || {}) : {};
+      if (currentCustomer?.id && String(currentCustomer.id) === String(customerId)) {
+        if (typeof renderStories === "function" && currentShelf === "personal") renderStories();
+      }
+    }, err => console.warn("Không thể nghe đồng bộ lịch sử đọc:", err));
+  } catch (err) { console.warn("Không thể bật đồng bộ lịch sử đọc:", err); }
+}
+
+
+
+async function meowLoadFollowedStories(customerId = currentCustomer?.id) {
+  if (!customerId) { meowFollowedStories = {}; return; }
+  try {
+    const snap = await get(ref(db, "meowFollows/" + String(customerId)));
+    const saved = snap.exists() ? (snap.val() || {}) : {};
+    meowFollowedStories = Object.fromEntries(Object.entries(saved).filter(([storyId,value]) =>
+      !!storyId && (value === true || (value && typeof value === "object" && value.followed !== false))
+    ));
+  } catch (error) {
+    console.warn("Chưa tải được danh sách theo dõi:", error);
+  }
+}
+async function meowToggleFollow(storyId) {
+  if (!currentCustomer?.id) {
+    alert("Bà đăng nhập ID khách trước để đồng bộ truyện theo dõi trên mọi thiết bị nha 💗");
+    return false;
+  }
+  const id = String(storyId || "");
+  if (!id) return false;
+  const wasFollowing = !!meowFollowedStories[id];
+  try {
+    const followRef = ref(db, "meowFollows/" + String(currentCustomer.id) + "/" + id);
+    if (wasFollowing) {
+      await remove(followRef);
+      delete meowFollowedStories[id];
+    } else {
+      await set(followRef, { followed:true, storyId:id, followedAt:Date.now() });
+      meowFollowedStories[id] = { followed:true, storyId:id, followedAt:Date.now() };
+    }
+    renderStories();
+    meowUpdateDetailFollowButton();
+    return true;
+  } catch (error) {
+    console.error("Không lưu được truyện theo dõi:", error);
+    alert("Chưa đồng bộ được truyện theo dõi. Bà kiểm tra quyền ghi Firebase rồi thử lại nha 💗");
+    return false;
+  }
+}
+function meowUpdateDetailFollowButton() {
+  const btn = document.getElementById("meowDetailFollowBtn");
+  if (!btn) return;
+  const followed = !!(currentStoryId && meowFollowedStories[String(currentStoryId)]);
+  btn.classList.toggle("is-following", followed);
+  btn.textContent = followed ? "♥ Đang theo dõi" : "♡ Theo dõi truyện";
+  btn.setAttribute("aria-pressed", String(followed));
+}
+document.getElementById("meowDetailFollowBtn")?.addEventListener("click", async event => {
+  event.preventDefault();
+  event.stopPropagation();
+  if (currentStoryId) await meowToggleFollow(currentStoryId);
+});
 
 function renderStories() {
   const grid = document.getElementById("storyGrid");
@@ -3558,6 +3733,8 @@ function renderStories() {
     const purchased = entries.filter(([id]) => purchasedIds.has(String(id)));
     const recent = meowGetRecentReads();
     html += meowShelfSection("🛍️ Truyện đã mua", "purchased", `<div class="meowShelfCards">${purchased.map(([id,st])=>meowStoryCardHTML(id,st,{personal:true})).join("")}</div>`);
+    const followed = Object.keys(meowFollowedStories || {}).map(id => [String(id), allStories[id]]).filter(([id,st]) => !!st);
+    html += meowShelfSection("💗 Truyện theo dõi", "followed", `<div class="meowShelfCards">${followed.map(([id,st])=>meowStoryCardHTML(id,st,{personal:true})).join("")}</div>`);
     const recentHtml = recent.map(({storyId,chapterId,story}) => {
       const info=story.info||{}, ch=story.chapters?.[chapterId]||{};
       return `<button type="button" class="meowShelfRecentItem" data-continue-story="${escapeHTML(storyId)}" data-continue-chapter="${escapeHTML(chapterId)}">
@@ -3569,7 +3746,7 @@ function renderStories() {
     const allCards = entries.map(([id,st])=>meowStoryCardHTML(id,st)).join("");
     const full = entries.filter(([id,st])=>meowStatusType(st?.info)==="full");
     const ongoing = entries.filter(([id,st])=>meowStatusType(st?.info)==="ongoing");
-    const upcoming = entries.filter(([id,st])=>Object.keys(st?.chapters || {}).length === 0);
+    const upcoming = entries.filter(([id,st])=>meowGetStoryChapterCount(st) === 0);
     html += meowShelfSection("🎠 Tất cả truyện - Vuốt ngang để xem", "all", `<div class="meowShelfSlider">${allCards}</div>`);
     html += meowShelfSection("🌸 Truyện Full", "full", `<div class="meowShelfCards">${full.map(([id,st])=>meowStoryCardHTML(id,st)).join("")}</div>`);
     html += meowShelfSection("📝 Truyện đang ra", "ongoing", `<div class="meowShelfCards">${ongoing.map(([id,st])=>meowStoryCardHTML(id,st)).join("")}</div>`);
@@ -3577,6 +3754,10 @@ function renderStories() {
   }
   grid.innerHTML = html || `<div class="meowShelfEmpty">🔍 Không tìm thấy truyện phù hợp.</div>`;
   grid.querySelectorAll(".meowOpenStory").forEach(btn=>btn.onclick=()=>openStory(btn.dataset.storyId));
+  grid.querySelectorAll("[data-follow-story]").forEach(btn=>btn.onclick=async event=>{
+    event.preventDefault(); event.stopPropagation();
+    await meowToggleFollow(btn.dataset.followStory);
+  });
   grid.querySelectorAll(".meowShelfCollapse").forEach(btn=>btn.onclick=()=>{
     const section=btn.closest(".meowShelfSection"); if(!section)return;
     section.classList.toggle("is-collapsed"); const collapsed=section.classList.contains("is-collapsed");
@@ -3605,44 +3786,49 @@ function renderStories() {
    OPEN STORY
 ========================================================= */
 
-function openStory(
-  storyId
-){
+async function openStory(storyId){
+  const token = ++meowOpenRequestToken;
+  let story = allStories[storyId];
+  if (!story) return;
 
-  const story =
-    allStories[storyId];
+  currentStoryId = storyId;
+  currentStory = story;
+  currentChapters = story.chapters || {};
 
+  homePage.style.display = "none";
+  storyPage.style.display = "block";
+  readerPage.style.display = "none";
 
-  if(!story)
-    return;
+  // Catalog entries contain only the book cover/info. Fetch chapter payload only when opened.
+  if (story._catalogOnly || !story.chapters) {
+    const detailCover = document.getElementById("detailCover");
+    if (detailCover) detailCover.innerHTML = `<div class="meowEmpty">🐾 Đang tải thông tin truyện...</div>`;
+    try {
+      const snap = await meowGetWithRetry(ref(db, "stories/" + storyId));
+      if (token !== meowOpenRequestToken) return;
+      if (!snap.exists()) throw new Error("Không tìm thấy dữ liệu truyện");
+      const fullStory = snap.val() || {};
+      // Keep the lightweight catalog fields as a fallback if legacy info is incomplete.
+      fullStory.info = { ...(story.info || {}), ...(fullStory.info || {}) };
+      allStories[storyId] = fullStory;
+      currentStory = fullStory;
+      currentChapters = fullStory.chapters || {};
+    } catch (error) {
+      console.error(error);
+      if (token === meowOpenRequestToken) {
+        storyPage.style.display = "none";
+        homePage.style.display = "block";
+        const grid = document.getElementById("storyGrid");
+        if (grid) grid.insertAdjacentHTML("afterbegin", `<div class="meowEmpty">❌ Chưa tải được truyện này. Bà thử bấm lại khi mạng ổn nha.</div>`);
+        meowNetworkNotice("🐾 Tải truyện chưa thành công. Kiểm tra Wi-Fi rồi bấm truyện lại nha.", "error");
+      }
+      return;
+    }
+  }
 
-
-  currentStoryId =
-    storyId;
-
-
-  currentStory =
-    story;
-
-
-  currentChapters =
-    story.chapters || {};
-
-
-  homePage.style.display =
-    "none";
-
-
-  storyPage.style.display =
-    "block";
-
-
-  readerPage.style.display =
-    "none";
-
-
+  if (token !== meowOpenRequestToken) return;
   renderStoryInfo();
-updateMeowReadingActions();
+  updateMeowReadingActions();
 }
 
 
@@ -3682,6 +3868,8 @@ function renderStoryInfo(){
 
   }
 
+
+  meowUpdateDetailFollowButton();
 
   const detailTitleEl = document.getElementById("detailTitle");
   const storyBlogLink = String(info.blogUrl || info.blogLink || info.blogURL || info.blogPostUrl || info.blogPostLink || info.blog || info.postUrl || info.postURL || info.sourceUrl || info.externalUrl || info.link || "").trim();
@@ -3997,23 +4185,27 @@ function getReadingHistoryKey(storyId) {
 
 function getLastReadChapter(storyId) {
   if (!currentCustomer) return "";
-
-  return localStorage.getItem(
-    getReadingHistoryKey(storyId)
-  ) || "";
+  const key = getReadingHistoryKey(storyId);
+  const localChapter = localStorage.getItem(key) || "";
+  const localAt = Number(localStorage.getItem(key + "__readAt") || 0);
+  const cloud = meowCloudReadingHistory?.[String(storyId)];
+  if (cloud?.chapterId && Number(cloud.readAt || 0) > localAt) return String(cloud.chapterId);
+  return localChapter || (cloud?.chapterId ? String(cloud.chapterId) : "");
 }
 
 function saveLastReadChapter(storyId, chapterId) {
   if (!currentCustomer) return;
 
   const historyKey = getReadingHistoryKey(storyId);
+  const readAt = Date.now();
   localStorage.setItem(historyKey, String(chapterId));
-  localStorage.setItem(historyKey + "__readAt", String(Date.now()));
-  // Đồng bộ chương đã đọc lên Firebase để thiết bị khác dùng cùng tài khoản thấy được.
+  localStorage.setItem(historyKey + "__readAt", String(readAt));
+  const record = {chapterId:String(chapterId), readAt, storyId:String(storyId)};
+  meowCloudReadingHistory[String(storyId)] = record;
+  // Đồng bộ chương đã đọc lên Firebase để cùng ID thấy lịch sử và tiếp tục đọc ở thiết bị khác.
   try {
-    set(ref(db, "meowReadingHistory/" + encodeURIComponent(currentCustomer.id) + "/" + encodeURIComponent(storyId)), {
-      chapterId: String(chapterId), readAt: Date.now(), storyId: String(storyId)
-    }).catch(err => console.warn("Không thể đồng bộ lịch sử đọc Meow:", err));
+    set(ref(db, "meowReadingHistory/" + encodeURIComponent(currentCustomer.id) + "/" + encodeURIComponent(storyId)), record)
+      .catch(err => console.warn("Không thể đồng bộ lịch sử đọc Meow:", err));
   } catch (err) { console.warn("Không thể đồng bộ lịch sử đọc Meow:", err); }
 }
 
@@ -4060,7 +4252,7 @@ function switchMeowShelf(shelf) {
 
   document.getElementById("meowShelfNote").innerText =
     currentShelf === "personal"
-      ? "👑 Truyện đã được cấp VIP chương lẻ hoặc VIP full cho ID của bạn."
+      ? "👑 Tủ cá nhân gồm truyện đã mua, truyện theo dõi và chương đang đọc."
       : "📚 Khám phá tất cả truyện trong thư viện Meow.";
 
   updateMeowGenreFilter();
@@ -5175,6 +5367,8 @@ async function restoreLogin(){
 
     };
 
+    await meowLoadFollowedStories(savedID);
+    await meowLoadReadingHistory(savedID);
 
     enterReader();
 
@@ -5629,6 +5823,66 @@ meowTTSProgress?.addEventListener("change", () => {
 @media(max-width:480px){.meowWalletBar{padding:11px;gap:8px}.meowWalletLink{padding:10px;font-size:11px}.meowWalletBalance strong{font-size:16px}.meowPriceLine{font-size:11px}}
 </style>
 
+
+<!-- 🐱 MEOW QUICK NAV — đặt chính giữa Reader và khung liên hệ -->
+<style id="meowQuickNavStyles">
+#meow-quick-nav,#meow-quick-nav *{box-sizing:border-box}
+#meow-quick-nav{width:calc(100% - 24px);max-width:720px;margin:26px auto 22px;padding:20px 18px 18px;position:relative;overflow:hidden;border:1.5px solid #ffd0e6;border-radius:28px;background:radial-gradient(circle at 8% 0%,#ffe0ef 0,transparent 35%),radial-gradient(circle at 100% 100%,#eee1ff 0,transparent 38%),linear-gradient(145deg,#fffaff,#fff0f7 62%,#fff7fc);box-shadow:0 12px 32px #d977a51c, inset 0 1px 0 #fff;font-family:Arial,sans-serif;text-align:center;color:#995579}
+#meow-quick-nav:before{content:'✦';position:absolute;top:12px;left:18px;color:#f39ac3;font-size:18px;opacity:.8}
+#meow-quick-nav:after{content:'♡';position:absolute;right:18px;top:10px;color:#c4a1f4;font-size:24px;opacity:.85}
+#meow-quick-nav .mqn-cat{font-size:29px;line-height:1.2;margin:0 0 7px;filter:drop-shadow(0 4px 5px #f4b0d2)}
+#meow-quick-nav .mqn-title{margin:0;color:#d94f98;font-size:clamp(17px,4vw,22px);font-weight:900;line-height:1.4}
+#meow-quick-nav .mqn-desc{margin:6px 0 17px;color:#b17a9a;font-size:12px;line-height:1.7}
+#meow-quick-nav .mqn-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:520px;margin:0 auto}
+#meow-quick-nav .mqn-link{min-width:0;display:flex;align-items:center;gap:11px;padding:13px 14px;border:1px solid #fff;border-radius:19px;background:linear-gradient(145deg,#fff,#fff3f9);box-shadow:0 5px 0 #f2c4dc,0 9px 18px #dc8ab51a;color:#a64c7b;text-decoration:none;text-align:left;transition:transform .18s,box-shadow .18s;}
+#meow-quick-nav .mqn-link:nth-child(2){background:linear-gradient(145deg,#fff,#f7f0ff);box-shadow:0 5px 0 #dfd0f6,0 9px 18px #b69be51a;color:#8561aa}
+#meow-quick-nav .mqn-link:hover{transform:translateY(-3px);filter:saturate(1.06)}
+#meow-quick-nav .mqn-link:active{transform:translateY(2px);box-shadow:0 2px 0 #f2c4dc}
+#meow-quick-nav .mqn-icon{flex:0 0 43px;width:43px;height:43px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#ffb7d8,#ff80b8);box-shadow:inset 0 2px 0 #ffffffa8;color:#fff;font-size:22px}
+#meow-quick-nav .mqn-link:nth-child(2) .mqn-icon{background:linear-gradient(145deg,#d8c5ff,#b79aff)}
+#meow-quick-nav .mqn-copy{min-width:0;display:block}
+#meow-quick-nav .mqn-copy strong{display:block;font-size:13px;font-weight:900;line-height:1.4}
+#meow-quick-nav .mqn-copy small{display:block;margin-top:3px;font-size:10px;line-height:1.5;opacity:.8}
+#meow-quick-nav .mqn-foot{margin:15px 0 0;color:#c28baa;font-size:10px;line-height:1.6}
+@media(max-width:420px){#meow-quick-nav{padding:18px 12px 15px;border-radius:23px}#meow-quick-nav .mqn-links{gap:9px}#meow-quick-nav .mqn-link{padding:11px 9px;gap:8px;border-radius:16px}#meow-quick-nav .mqn-icon{width:36px;height:36px;flex-basis:36px;border-radius:12px;font-size:19px}#meow-quick-nav .mqn-copy strong{font-size:12px}#meow-quick-nav .mqn-copy small{font-size:9px}}
+@media(prefers-reduced-motion:reduce){#meow-quick-nav .mqn-link{transition:none}}
+</style>
+<div id="meow-quick-nav" aria-label="Điều hướng nhanh Meow Reader">
+  <div class="mqn-cat">🐱🎀</div>
+  <h3 class="mqn-title">Góc nhỏ tiện ích của Meow</h3>
+  <p class="mqn-desc">Chọn lối đi của nàng nè — nhanh gọn, xinh xắn, dễ tìm ♡</p>
+  <div class="mqn-links">
+    <!-- BÀ THAY href="#" BẰNG LINK TẠO ID CỦA BÀ -->
+    <a class="mqn-link" href="https://oluoinhocuameow-coder.github.io/tao-id/" data-meow-placeholder="Tạo ID">
+      <span class="mqn-icon">🪪</span>
+      <span class="mqn-copy"><strong>Tạo ID</strong><small>Đăng ký ID Meow</small></span>
+    </a>
+    <!-- BÀ THAY href="#" BẰNG LINK WEB CŨ CỦA BÀ -->
+    <a class="mqn-link" href="https://trangthongtincuameow.blogspot.com/p/list-truyen_6.html" data-meow-placeholder="Web cũ">
+      <span class="mqn-icon">🏡</span>
+      <span class="mqn-copy"><strong>Web cũ</strong><small>Ghé lại nhà cũ của Meow</small></span>
+    </a>
+  </div>
+  <p class="mqn-foot">✧ Một chút xinh xắn dành riêng cho các nàng ✧</p>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('meow-quick-nav');
+  if(!root)return;
+  root.querySelectorAll('a[data-meow-placeholder]').forEach(function(link){
+    link.addEventListener('click',function(event){
+      if(link.getAttribute('href')==='#'){
+        event.preventDefault();
+        var name=link.getAttribute('data-meow-placeholder')||'mục này';
+        var note=document.getElementById('meowQuickNavHint');
+        if(!note){note=document.createElement('div');note.id='meowQuickNavHint';note.setAttribute('role','status');note.style.cssText='margin:10px auto 0;padding:9px 12px;max-width:520px;border-radius:13px;background:#fff;color:#a64c7b;font:600 12px/1.5 Arial,sans-serif;border:1px dashed #f0b7d4';root.querySelector('.mqn-links').after(note)}
+        note.textContent='💗 Bà dán link '+name+' vào thuộc tính href của nút này là dùng được nha!';
+      }
+    });
+  });
+})();
+</script>
+
 <div id="meow-contact">
 
   <div class="mc-cat">🐱🎀</div>
@@ -5644,32 +5898,32 @@ meowTTSProgress?.addEventListener("change", () => {
 
   <div class="mc-socials">
 
-   <!-- FACEBOOK -->
-<a class="mc-social"
-   href="https://www.facebook.com/profile.php?id=61583591557663"
-   target="_blank"
-   rel="noopener">
-  <span class="mc-circle">f</span>
-  <span>Facebook</span>
-</a>
+    <!-- FACEBOOK: THAY LINK CỦA BÀ -->
+    <a class="mc-social"
+       href="https://www.facebook.com/profile.php?id=61583591557663"
+       target="_blank"
+       rel="noopener">
+      <span class="mc-circle">f</span>
+      <span>Facebook</span>
+    </a>
 
-<!-- EMAIL -->
-<a class="mc-social"
-   href="mailto:oluoinhocuameow@gmail.com">
-  <span class="mc-circle">@</span>
-  <span>Mail</span>
-</a>
+    <!-- EMAIL: THAY EMAIL NẾU CẦN -->
+    <a class="mc-social"
+       href="oluoinhocuameow@gmail.com">
+      <span class="mc-circle">@</span>
+      <span>Mail</span>
+    </a>
 
-<!-- PAGE -->
-<a class="mc-social"
-   href="https://www.facebook.com/profile.php?id=61582069564705"
-   target="_blank"
-   rel="noopener">
-  <span class="mc-circle">P</span>
-  <span>Page</span>
-</a>
+    <!-- PAGE: THAY LINK PAGE CỦA BÀ -->
+    <a class="mc-social"
+       href="https://www.facebook.com/profile.php?id=61582069564705"
+       target="_blank"
+       rel="noopener">
+      <span class="mc-circle">P</span>
+      <span>Page</span>
+    </a>
 
-</div>
+  </div>
 
   <div class="mc-footer">
     ♡ Ổ Lười Nhỏ Của Meow - Khu Vườn Sắc Nữ ♡
@@ -5682,57 +5936,75 @@ meowTTSProgress?.addEventListener("change", () => {
 .meowPurchaseOverlay{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(48,20,39,.48);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:meowPopFade .18s ease both}.meowPurchaseModal{width:min(100%,420px);overflow:hidden;border:1px solid rgba(255,255,255,.9);border-radius:28px;background:linear-gradient(155deg,#fffafd 0%,#fff0f6 55%,#f8f0ff 100%);box-shadow:0 24px 80px rgba(104,35,72,.28);font-family:'Be Vietnam Pro',sans-serif;color:#59364b;animation:meowPopIn .24s cubic-bezier(.2,.8,.2,1) both}.meowPurchaseHero{position:relative;padding:25px 24px 18px;text-align:center;background:radial-gradient(circle at 50% 0%,#fff 0,transparent 68%),linear-gradient(135deg,#ffe0ed,#f3e4ff)}.meowPurchaseIcon{display:grid;place-items:center;width:66px;height:66px;margin:0 auto 12px;border-radius:23px;background:rgba(255,255,255,.8);box-shadow:0 8px 22px #dc8bb833;font-size:31px}.meowPurchaseTitle{margin:0;font-size:21px;font-weight:800;color:#bd4f83}.meowPurchaseSub{margin:7px 0 0;font-size:12px;line-height:1.6;color:#94647e}.meowPurchaseBody{padding:19px 22px 22px}.meowPurchaseItem{padding:13px 14px;border:1px solid #f4cadd;border-radius:17px;background:rgba(255,255,255,.72);font-size:13px;line-height:1.6;overflow-wrap:anywhere}.meowPurchaseItem strong{display:block;color:#9f3e70;font-size:14px}.meowPurchasePrice{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:13px 14px;border-radius:16px;background:#fff;color:#8b5271;font-size:13px}.meowPurchasePrice b{font-size:20px;color:#d13e83;white-space:nowrap}.meowPurchaseBalance{margin:10px 2px 0;font-size:12px;color:#967087}.meowPurchaseActions{display:flex;gap:10px;margin-top:19px}.meowPurchaseActions button{flex:1;min-height:45px;border:0;border-radius:15px;font:700 13px 'Be Vietnam Pro',sans-serif;cursor:pointer;transition:transform .15s,filter .15s}.meowPurchaseActions button:active{transform:scale(.97)}.meowPurchaseCancel{background:#fff;border:1px solid #f0d3e0!important;color:#a36a86}.meowPurchaseConfirm{background:linear-gradient(135deg,#ff83b2,#e65395);color:#fff;box-shadow:0 7px 17px #e6539538}.meowPurchaseConfirm.full{background:linear-gradient(135deg,#df8af4,#bb62d7)}.meowPurchaseTiny{margin:13px 0 0;text-align:center;font-size:10px;color:#a78398;line-height:1.5}@keyframes meowPopFade{from{opacity:0}to{opacity:1}}@keyframes meowPopIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}@media(max-width:420px){.meowPurchaseModal{border-radius:24px}.meowPurchaseHero{padding-top:22px}.meowPurchaseBody{padding:16px}.meowPurchaseTitle{font-size:19px}.meowPurchasePrice b{font-size:18px}}
 </style>
 
+<!-- MEOW MOBILE-FIRST RESPONSIVE PATCH -->
+<style id="meowMobileFirstPatch">
+:root{color-scheme:light}
+html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
+body{width:100%;max-width:100%;overflow-x:hidden;margin:0;-webkit-tap-highlight-color:transparent}
+img,video,canvas,iframe{max-width:100%;height:auto}
+button,input,select,textarea{font:inherit;max-width:100%}
+button,a,[role="button"]{touch-action:manipulation}
+#meowApp,#storyPage,.meowReader,.meowReaderApp,.meowShelfSection,.meowLibrary,.meowHome,.meowContainer{min-width:0;max-width:100%}
+@media(max-width:768px){
+  body{font-size:14px}
+  #meowApp{padding-left:0!important;padding-right:0!important}
+  .meowReaderTop,.meowReaderHeader,.meowTopBar{position:sticky;top:0;z-index:50;max-width:100%;gap:8px}
+  .meowReaderTop{padding:8px 10px!important}
+  .meowReaderBody{width:100%!important;max-width:760px;margin-inline:auto;padding:18px 16px calc(105px + env(safe-area-inset-bottom))!important}
+  .meowShelfSection{margin:10px!important;padding:13px!important;border-radius:20px!important}
+  .meowShelfCards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .meowStoryCard{min-width:0;max-width:100%;overflow:hidden}
+  .meowStoryCard img,.meowDetailCover img{object-fit:cover}
+  .meowReaderStoryStats{display:flex;flex-wrap:wrap;gap:6px!important}
+  .meowReaderStoryStats span{font-size:11px!important;max-width:100%;overflow-wrap:anywhere}
+  .meowChapterTools{display:flex;flex-wrap:wrap;gap:8px}
+  .meowChapterTools button,.meowChapterSort button{min-height:40px}
+  #storyPage .meowStoryDetail{padding:10px!important}
+  #storyPage .meowStoryHead{display:flex;flex-direction:column;align-items:center;text-align:center;padding:18px 14px!important;gap:12px!important}
+  #storyPage .meowDetailCover{width:min(58vw,220px)!important;max-width:220px;border-radius:18px;flex:0 0 auto}
+  #storyPage .meowStoryHead>div:not(.meowDetailCover){width:100%;min-width:0}
+  #storyPage .meowDetailTitle{font-size:clamp(21px,6vw,29px);line-height:1.3;overflow-wrap:anywhere}
+  #storyPage .meowDetailMetaPanel{grid-template-columns:1fr!important;gap:7px!important}
+  #storyPage .meowStoryActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 16px!important}
+  #storyPage .meowReadAction{min-height:44px;font-size:12px!important;white-space:normal}
+  .meowReaderChapterTitle{font-size:clamp(20px,5.6vw,28px);line-height:1.45;overflow-wrap:anywhere}
+  .meowReaderBody p{overflow-wrap:anywhere;word-break:normal}
+  .meowTTSPanel{margin-inline:10px;padding:12px!important;border-radius:18px}
+  .meowTTSButtons{display:flex;flex-wrap:wrap;gap:8px}
+  .meowTTSButtons button{min-height:42px;flex:1 1 90px}
+  .meowTTSMainBtn{flex-basis:100%}
+  .meowPurchaseOverlay{padding:12px!important;align-items:center}
+  .meowPurchaseModal{width:100%;max-width:420px;max-height:calc(100dvh - 24px);overflow-y:auto;border-radius:23px}
+  .meowPurchaseActions button{min-height:46px}
+  input,select,textarea{font-size:16px!important}
+}
+@media(max-width:420px){
+  .meowShelfSection{padding:10px!important;margin:8px!important}
+  .meowShelfCards{gap:8px!important}
+  .meowReaderBody{padding-left:13px!important;padding-right:13px!important}
+  .meowReaderTop{padding:7px 8px!important}
+  .meowReaderMetaBar{font-size:10px!important;flex-wrap:wrap;gap:5px}
+  .readerThemeChoices{display:flex;flex-wrap:wrap;gap:5px!important}
+  .readerThemeChoices button{min-height:36px;padding:7px 9px!important}
+  #storyPage .meowStoryActions{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
-<script>
+/* 🐱 MEOW FOLLOW SYSTEM — đồng bộ tủ theo dõi theo ID khách */
+.meowFollowBtn{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  border:1px solid rgba(255,255,255,.9);border-radius:999px;
+  padding:8px 11px;background:linear-gradient(135deg,#fff7fbf2,#f4eafff2);
+  color:#b34f83;font-size:11px;font-weight:800;line-height:1.2;
+  box-shadow:0 4px 13px #63304b26;cursor:pointer;
+  transition:transform .18s,box-shadow .18s,background .18s;
+}
+.meowFollowBtn:hover{transform:translateY(-1px);box-shadow:0 7px 17px #63304b30}
+.meowFollowBtn.is-following{background:linear-gradient(135deg,#ff86b2,#c79bff);color:#fff;border-color:#ffffff8a}
+.meowCover .meowFollowBtn{position:absolute;right:8px;bottom:8px;top:auto;z-index:5;max-width:calc(100% - 16px)}
+.meowDetailCover .meowFollowBtn{position:absolute;right:8px;left:auto;bottom:8px;transform:none;z-index:6;white-space:nowrap;max-width:calc(100% - 12px)}
+.meowDetailCover .meowFollowBtn:hover{transform:translateY(-1px)}
+.meowFollowHint{margin:8px 0 0;color:#b07896;font-size:11px;line-height:1.5}
+@media(max-width:430px){.meowCover .meowFollowBtn{padding:7px 8px;font-size:10px}.meowDetailCover .meowFollowBtn{font-size:10px;padding:8px 10px}}
 
-/* 🚫 BLOCK */
-
-document.addEventListener("keydown",e=>{
-
-  let k=e.key.toLowerCase();
-
-  if(e.ctrlKey && ["s","p","u","c","x"].includes(k)){
-
-    e.preventDefault();
-
-    alert("⛔ Bị chặn!");
-
-  }
-
-  if(e.ctrlKey && e.shiftKey) e.preventDefault();
-
-  if(e.key==="F12") e.preventDefault();
-
-});
-
-["copy","cut","contextmenu","selectstart","dragstart"]
-
-.forEach(evt=>document.addEventListener(evt,e=>e.preventDefault()));
-
-window.print=()=>alert("⛔ Không được in!");
-
-/* 📸 BLUR */
-
-window.addEventListener("blur",()=>{
-  document.body.style.filter="blur(10px)";
-
-});
-
-window.addEventListener("focus",()=>{
-
-  document.body.style.filter="none";
-
-});
-
-/* 🔍 DEVTOOLS */
-
-setInterval(()=>{
-
-  if(window.outerWidth-window.innerWidth>160){
-
-    document.body.style.filter="blur(12px)";
-
-  }
-
-},500);
-  </script>
+</style>
