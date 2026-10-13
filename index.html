@@ -7393,4 +7393,62 @@ body {
   #chapterContent { font-size: 17px !important; }
 }
 
+
+
+/* =========================================================
+   MEOW — BẢN MOBILE TO HƠN (GitHub Pages)
+   Dán cuối CSS, trước </style>.
+========================================================= */
+@media screen and (max-width: 768px) {
+  html, body { width:100% !important; min-width:0 !important; }
+  body { font-size:17px !important; }
+  #meowReaderApp { width:100% !important; max-width:100% !important; left:auto !important; margin-left:0 !important; margin-right:0 !important; }
+  #meowReaderApp .meowPage { width:calc(100% - 16px) !important; max-width:none !important; margin:10px auto 26px !important; }
+  #meowReaderApp .meowTopbar { padding:12px 12px !important; }
+  #meowReaderApp .meowLogo { font-size:17px !important; }
+  #meowReaderApp .meowLogoCat { width:42px !important; height:42px !important; flex-basis:42px !important; }
+  #meowReaderApp .meowTopBtn { min-height:46px !important; padding:11px 12px !important; font-size:14px !important; }
+  #meowReaderApp .meowHero { padding:24px 17px !important; }
+  #meowReaderApp .meowHero h1 { font-size:clamp(28px, 7vw, 36px) !important; }
+  #meowReaderApp .meowHero p { font-size:16px !important; line-height:1.75 !important; }
+  #meowReaderApp .meowStoryGrid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:12px !important; }
+  #meowReaderApp .meowStoryInfo { padding:12px !important; }
+  #meowReaderApp .meowStoryName { font-size:16px !important; line-height:1.5 !important; }
+  #meowReaderApp .meowStoryAuthor,
+  #meowReaderApp .meowStoryMeta { font-size:13px !important; line-height:1.6 !important; }
+  #meowReaderApp .meowOpenStory { min-height:46px !important; font-size:14px !important; padding:12px 8px !important; }
+  #meowReaderApp .meowShelfSection { padding:14px !important; }
+  #meowReaderApp .meowShelfTab { min-height:46px !important; font-size:13px !important; }
+  #meowReaderApp .meowDetailTitle { font-size:clamp(23px,6.3vw,30px) !important; }
+  #meowReaderApp .meowDetailLine { font-size:14px !important; }
+  #meowReaderApp .meowSummary,
+  #meowReaderApp #detailSummary { font-size:16px !important; line-height:1.9 !important; }
+  #meowReaderApp .meowReaderChapterTitle { font-size:clamp(25px,6.5vw,33px) !important; }
+  #meowReaderApp .meowReaderBody { width:calc(100% - 24px) !important; padding-top:20px !important; }
+  #meowReaderApp #readerContent,
+  #meowReaderApp .meowChapterContent,
+  #meowReaderApp #chapterContent { font-size:20px !important; line-height:2 !important; }
+  #meowReaderApp #readerContent p,
+  #meowReaderApp .meowChapterContent p,
+  #meowReaderApp #chapterContent p { margin-bottom:1.25em !important; }
+  #meowReaderApp button,
+  #meowReaderApp .meowReadAction,
+  #meowReaderApp .meowChapterItem { font-size:14px !important; }
+  #meowReaderApp input,
+  #meowReaderApp select,
+  #meowReaderApp textarea { font-size:16px !important; }
+}
+@media screen and (max-width: 480px) {
+  #meowReaderApp .meowPage { width:calc(100% - 10px) !important; }
+  #meowReaderApp .meowStoryGrid,
+  #meowReaderApp .meowShelfCards { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:9px !important; }
+  #meowReaderApp .meowStoryInfo { padding:9px !important; }
+  #meowReaderApp .meowStoryName { font-size:15px !important; }
+  #meowReaderApp .meowStoryAuthor,
+  #meowReaderApp .meowStoryMeta { font-size:12px !important; }
+  #meowReaderApp #readerContent,
+  #meowReaderApp .meowChapterContent,
+  #meowReaderApp #chapterContent { font-size:19px !important; line-height:1.95 !important; }
+}
+
 </style>
