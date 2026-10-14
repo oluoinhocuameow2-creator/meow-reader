@@ -2245,6 +2245,15 @@ img[loading="lazy"] { height: auto; }
 .meowShelfRecentCover[loading="lazy"] {
   content-visibility: auto;
 }
+
+/* 🐾 Nút phân trang nhẹ: không dựng hàng trăm thẻ truyện cùng lúc */
+.meowShowMoreStories{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  margin:12px auto;padding:10px 16px;border:1px solid #ffc2d7;border-radius:999px;
+  background:linear-gradient(135deg,#fff0f6,#ffe0ec);color:#c94f7d;
+  font:600 13px inherit;cursor:pointer;box-shadow:0 4px 12px rgba(239,103,148,.12);
+}
+.meowShowMoreStories:hover{transform:translateY(-1px)}
 </style>
 
 
@@ -3098,13 +3107,22 @@ async function meowLoadLegacyLightCatalog() {
   if (!keys || typeof keys !== "object") return {};
   const ids = Object.keys(keys);
   const catalog = {};
+  // Giữ danh sách cache cũ trong lúc đồng bộ để truyện đã hiện không bị biến mất
+  // khi các nhóm mới đang tải về.
+  const cachedSeed = meowReadCatalogCache() || {};
 
   // Normalize metadata field names without downloading chapter contents.
   const normalizeInfo = meowNormalizeStoryInfo;
 
-  for (let start = 0; start < ids.length; start += 12) {
-    const batch = ids.slice(start, start + 12);
+  // 🐾 Tải nhóm nhỏ để Firebase không bị dồn quá nhiều yêu cầu cùng lúc.
+  // Chỉ render nhóm đầu tiên ngay lập tức; các nhóm sau được gom lại để tránh giật giao diện.
+  const MEOW_STORY_BATCH_SIZE = 5;
+  const MEOW_RENDER_EVERY_BATCHES = 4; // cập nhật giao diện sau mỗi 20 truyện
+  let completedBatches = 0;
+  for (let start = 0; start < ids.length; start += MEOW_STORY_BATCH_SIZE) {
+    const batch = ids.slice(start, start + MEOW_STORY_BATCH_SIZE);
     const rows = await Promise.all(batch.map(async id => {
+      try {
       const path = "/stories/" + encodeURIComponent(id);
       const [storyResponse, chapterResponse] = await Promise.all([
         fetch(base + path + ".json?shallow=true", { cache: "default" }),
@@ -3135,8 +3153,42 @@ async function meowLoadLegacyLightCatalog() {
       const chapterKeys = chapterResponse.ok ? await chapterResponse.json() : null;
       const chapterCount = chapterKeys && typeof chapterKeys === "object" ? Object.keys(chapterKeys).length : 0;
       return [id, { info, chapterCount, _catalogOnly: true }];
+      } catch (error) {
+        // Một truyện lỗi không làm hỏng toàn bộ danh sách còn lại.
+        console.warn("Meow: chưa tải được metadata truyện", id, error);
+        return null;
+      }
     }));
-    rows.forEach(([id, story]) => { catalog[id] = story; });
+
+    rows.filter(Boolean).forEach(([id, story]) => { catalog[id] = story; });
+
+    completedBatches++;
+    const isFirstBatch = start === 0;
+    const isLastBatch = start + batch.length >= ids.length;
+    const shouldRefreshUI = isFirstBatch ||
+      completedBatches % MEOW_RENDER_EVERY_BATCHES === 0 ||
+      isLastBatch;
+
+    // Luôn cập nhật dữ liệu trong bộ nhớ, nhưng không thay toàn bộ HTML sau mỗi 5 truyện.
+    // Việc render + ghi localStorage quá dày khiến trang khựng, nhất là trên điện thoại.
+    if (Object.keys(catalog).length) {
+      allStories = { ...cachedSeed, ...catalog };
+      meowCatalogMode = true;
+
+      if (shouldRefreshUI) {
+        meowSaveCatalogCache(allStories);
+        // Nhường một nhịp cho trình duyệt xử lý cuộn/ảnh trước khi dựng lại danh sách.
+        await new Promise(resolve => requestAnimationFrame(() => resolve()));
+        renderStories();
+      }
+
+      const note = document.getElementById("meowShelfNote");
+      if (note && !isLastBatch) {
+        note.innerText = `🐾 Đã tải ${Math.min(start + batch.length, ids.length)}/${ids.length} truyện, Meow đang tải tiếp nhẹ nhàng...`;
+      } else if (note && isLastBatch) {
+        note.innerText = "📚 Khám phá tất cả truyện trong thư viện Meow.";
+      }
+    }
   }
   return catalog;
 }
@@ -3799,6 +3851,10 @@ async function loadStories(){
     meowCatalogMode = true;
     meowSaveCatalogCache(lightCatalog);
     renderStories();
+    const note = document.getElementById("meowShelfNote");
+    if (note && currentShelf === "public" && !currentGenreFilter) {
+      note.innerText = "📚 Khám phá tất cả truyện trong thư viện Meow.";
+    }
   } catch (error) {
     console.error(error);
     // Keep usable cached content if network refresh fails.
@@ -3832,6 +3888,7 @@ function showStoriesByAuthor(authorName) {
   if (typeof updateMeowGenreFilter === "function") updateMeowGenreFilter();
 
   if (typeof homePage !== "undefined") homePage.style.display = "block";
+  if (typeof meowSetHomeShareLink === "function") meowSetHomeShareLink();
   if (typeof storyPage !== "undefined") storyPage.style.display = "none";
   if (typeof readerPage !== "undefined") readerPage.style.display = "none";
 
@@ -4011,6 +4068,20 @@ document.getElementById("meowDetailFollowBtn")?.addEventListener("click", async 
   if (currentStoryId) await meowToggleFollow(currentStoryId);
 });
 
+// 🐾 Giới hạn số thẻ được dựng cùng lúc để tránh Chrome hết bộ nhớ.
+const MEOW_STORY_PAGE_SIZE = 12;
+const meowVisibleStoryCounts = Object.create(null);
+
+function meowRenderLimitedCards(entries, sectionKey, options = {}) {
+  const visibleCount = meowVisibleStoryCounts[sectionKey] || MEOW_STORY_PAGE_SIZE;
+  const shown = entries.slice(0, visibleCount);
+  const cards = shown.map(([id, st]) => meowStoryCardHTML(id, st, options)).join("");
+  const more = entries.length > shown.length
+    ? `<button type="button" class="meowShowMoreStories" data-show-more-stories="${escapeHTML(sectionKey)}">🐾 Xem thêm (${entries.length - shown.length} truyện)</button>`
+    : "";
+  return cards + more;
+}
+
 function renderStories() {
   const grid = document.getElementById("storyGrid");
   if (!grid) return;
@@ -4028,10 +4099,10 @@ function renderStories() {
     const purchasedIds = meowGetPurchasedStoryIds();
     const purchased = entries.filter(([id]) => purchasedIds.has(String(id)));
     const recent = meowGetRecentReads();
-    html += meowShelfSection("🛍️ Truyện đã mua", "purchased", `<div class="meowShelfCards">${purchased.map(([id,st])=>meowStoryCardHTML(id,st,{personal:true})).join("")}</div>`);
-    const followed = Object.keys(meowFollowedStories || {}).map(id => [String(id), allStories[id]]).filter(([id,st]) => !!st);
-    html += meowShelfSection("💗 Truyện theo dõi", "followed", `<div class="meowShelfCards">${followed.map(([id,st])=>meowStoryCardHTML(id,st,{personal:true})).join("")}</div>`);
-    const recentHtml = recent.map(({storyId,chapterId,story}) => {
+    const followed = Object.keys(meowFollowedStories || {}).map(id => [String(id), allStories[id]]).filter(([id, st]) => !!st);
+    html += meowShelfSection("🛍️ Truyện đã mua", "purchased", `<div class="meowShelfCards">${meowRenderLimitedCards(purchased, "purchased", {personal:true})}</div>`);
+    html += meowShelfSection("💗 Truyện theo dõi", "followed", `<div class="meowShelfCards">${meowRenderLimitedCards(followed, "followed", {personal:true})}</div>`);
+    const recentHtml = recent.slice(0, 12).map(({storyId,chapterId,story}) => {
       const info=story.info||{}, ch=story.chapters?.[chapterId]||{};
       return `<button type="button" class="meowShelfRecentItem" data-continue-story="${escapeHTML(storyId)}" data-continue-chapter="${escapeHTML(chapterId)}">
         ${info.cover?`<img class="meowShelfRecentCover" src="${escapeHTML(info.cover)}" alt="" loading="lazy" decoding="async" fetchpriority="low">`:`<span class="meowShelfRecentCover" style="display:grid;place-items:center">🐱</span>`}
@@ -4039,16 +4110,20 @@ function renderStories() {
     }).join("");
     html += meowShelfSection("📚 Những chương đang đọc", "recent", `<div class="meowShelfRecent">${recentHtml}</div>`);
   } else {
-    const allCards = entries.map(([id,st])=>meowStoryCardHTML(id,st)).join("");
     const full = entries.filter(([id,st])=>meowStatusType(st?.info)==="full");
     const ongoing = entries.filter(([id,st])=>meowStatusType(st?.info)==="ongoing");
     const upcoming = entries.filter(([id,st])=>meowGetStoryChapterCount(st) === 0);
-    html += meowShelfSection("🎠 Tất cả truyện - Vuốt ngang để xem", "all", `<div class="meowShelfSlider">${allCards}</div>`);
-    html += meowShelfSection("🌸 Truyện Full", "full", `<div class="meowShelfCards">${full.map(([id,st])=>meowStoryCardHTML(id,st)).join("")}</div>`);
-    html += meowShelfSection("📝 Truyện đang ra", "ongoing", `<div class="meowShelfCards">${ongoing.map(([id,st])=>meowStoryCardHTML(id,st)).join("")}</div>`);
-    html += meowShelfSection("🎀 Truyện sắp ra", "upcoming", `<div class="meowShelfCards">${upcoming.map(([id,st])=>meowStoryCardHTML(id,st)).join("")}</div>`);
+    html += meowShelfSection("🎠 Tất cả truyện - Vuốt ngang để xem", "all", `<div class="meowShelfSlider">${meowRenderLimitedCards(entries, "all")}</div>`);
+    html += meowShelfSection("🌸 Truyện Full", "full", `<div class="meowShelfCards">${meowRenderLimitedCards(full, "full")}</div>`);
+    html += meowShelfSection("📝 Truyện đang ra", "ongoing", `<div class="meowShelfCards">${meowRenderLimitedCards(ongoing, "ongoing")}</div>`);
+    html += meowShelfSection("🎀 Truyện sắp ra", "upcoming", `<div class="meowShelfCards">${meowRenderLimitedCards(upcoming, "upcoming")}</div>`);
   }
   grid.innerHTML = html || `<div class="meowShelfEmpty">🔍 Không tìm thấy truyện phù hợp.</div>`;
+  grid.querySelectorAll("[data-show-more-stories]").forEach(btn => btn.onclick = () => {
+    const key = btn.dataset.showMoreStories;
+    meowVisibleStoryCounts[key] = (meowVisibleStoryCounts[key] || MEOW_STORY_PAGE_SIZE) + MEOW_STORY_PAGE_SIZE;
+    renderStories();
+  });
   grid.querySelectorAll(".meowOpenStory").forEach(btn=>btn.onclick=()=>openStory(btn.dataset.storyId));
   grid.querySelectorAll("[data-follow-story]").forEach(btn=>btn.onclick=async event=>{
     event.preventDefault(); event.stopPropagation();
@@ -4060,8 +4135,6 @@ function renderStories() {
     btn.textContent=collapsed?"+":"−"; btn.setAttribute("aria-expanded",String(!collapsed));
   });
   grid.querySelectorAll("[data-continue-story]").forEach(btn=>btn.onclick=()=>{
-    // Từ khung chương đang đọc, mở trang thông tin truyện và danh sách chương.
-    // Người đọc có thể chọn chương tại đây thay vì bị đưa thẳng vào nội dung.
     const sid=btn.dataset.continueStory;
     const story=allStories[sid];
     if(!story)return;
@@ -4076,7 +4149,6 @@ function renderStories() {
     });
   });
 }
-
 
 /* =========================================================
    🔗 SHAREABLE STORY LINK + BROWSER TAB TITLE
@@ -4130,6 +4202,25 @@ function meowSetStoryShareLink(storyId, story) {
 // Keep a descriptive title when the shared link opens a story directly.
 function meowRestoreDefaultTabTitle() {
   document.title = "Ổ Lười Nhỏ của Meow";
+}
+
+// Home has its own canonical link: the same page URL without ?story=...
+// Preserve any unrelated query parameters and the current hash.
+function meowSetHomeShareLink() {
+  meowRestoreDefaultTabTitle();
+  try {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("story")) return;
+    url.searchParams.delete("story");
+    const nextUrl = url.pathname + (url.search ? url.search : "") + url.hash;
+    window.history.replaceState(
+      { ...(window.history.state || {}), meowStoryId: null, meowHome: true },
+      "",
+      nextUrl
+    );
+  } catch (error) {
+    console.warn("Meow: chưa thể cập nhật link trang chủ", error);
+  }
 }
 
 /* =========================================================
@@ -4189,6 +4280,7 @@ async function openStory(storyId){
       if (token === meowOpenRequestToken) {
         storyPage.style.display = "none";
         homePage.style.display = "block";
+        meowSetHomeShareLink();
         const grid = document.getElementById("storyGrid");
         if (grid) grid.insertAdjacentHTML("afterbegin", `<div class="meowEmpty">❌ Chưa tải được truyện này. Bà thử bấm lại khi mạng ổn nha.</div>`);
         meowNetworkNotice("🐾 Tải truyện chưa thành công. Kiểm tra Wi-Fi rồi bấm truyện lại nha.", "error");
@@ -4666,6 +4758,7 @@ function filterMeowByGenre(tag) {
   homePage.style.display = "block";
   storyPage.style.display = "none";
   readerPage.style.display = "none";
+  meowSetHomeShareLink();
 
   renderStories();
 
@@ -5581,6 +5674,7 @@ document
       homePage.style.display =
         "block";
 
+      meowSetHomeShareLink();
 
       window.scrollTo(
         0,
@@ -5608,6 +5702,7 @@ document
       homePage.style.display =
         "block";
 
+      meowSetHomeShareLink();
 
       window.scrollTo(
         0,
@@ -6238,7 +6333,7 @@ meowTTSProgress?.addEventListener("change", () => {
       <span class="mqn-copy"><strong>Tạo ID</strong><small>Đăng ký ID Meow</small></span>
     </a>
     <!-- BÀ THAY href="#" BẰNG LINK WEB CŨ CỦA BÀ -->
-    <a class="mqn-link" href="https://oluoinhocuameow-com.github.io/-L-i-Nh-C-a-Meow-/?fbclid=IwY2xjawU8W8NleHRuA2FlbQIxMABwZG9mA2JyaWQRMUJkZzd0dzFJdEhTWFZHU1FzcnRjBmFwcF9pZA81MTQ3NzE1NjkyMjgwNjEAAR7agyAR0_Du3vx4t3-nNAamgIKgGnywaXmnfA_I8ToUM6GvjvTJcSbVU10G8w_aem_h3qkCfozVsBMO0HQBbT3mg" data-meow-placeholder="Web cũ">
+    <a class="mqn-link" href="https://oluoinhocuameow-com.github.io/-L-i-Nh-C-a-Meow-/?fbclid=IwY2xjawU8aIhleHRuA2FlbQIxMABwZG9mA2JyaWQRMUJkZzd0dzFJdEhTWFZHU1FzcnRjBmFwcF9pZA81MTQ3NzE1NjkyMjgwNjEAAR7uMSGF4dHeNCquXRuY2f7FTX7ITSuwvi82VMjU-iS1Ls7Nqi3gf7cBL-qmrQ_aem_-oPA5SDS7s6Vl7sT9tlH5Q" data-meow-placeholder="Web cũ">
       <span class="mqn-icon">🏡</span>
       <span class="mqn-copy"><strong>Web cũ</strong><small>Ghé lại nhà cũ của Meow</small></span>
     </a>
