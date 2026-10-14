@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#fff0f7">
-<title>Ổ LƯỜI NHỎ CỦA MEOW 🐱</title>
+<title>Ổ LƯỜI NHỎ CỦA MEOW</title>
 <!-- Meow speed hints: establish Firebase connection early without loading database data -->
 <link rel="preconnect" href="https://olncm-fa88c-default-rtdb.asia-southeast1.firebasedatabase.app" crossorigin>
 <link rel="dns-prefetch" href="//olncm-fa88c-default-rtdb.asia-southeast1.firebasedatabase.app">
@@ -2128,6 +2128,58 @@ body.meowDarkReader .meowReaderNav{
   border-color:rgba(255,255,255,.65);
   color:#76527f;
 }
+/* 🎀 Link card above the cover — cute, paste/share style, iPhone friendly */
+.meowStoryShareBox{
+  position:relative;display:flex;flex-direction:column;gap:10px;
+  width:100%;min-width:0;margin:0 0 15px;padding:14px;
+  border:1.5px solid #ffc1dc;border-radius:20px;
+  background:
+    radial-gradient(circle at 95% 8%,rgba(255,198,225,.48) 0 24px,transparent 25px),
+    linear-gradient(135deg,#fffaff 0%,#fff0f7 55%,#f9f0ff 100%);
+  box-shadow:0 7px 18px rgba(213,104,163,.12),inset 0 1px 0 #fff;
+  box-sizing:border-box;overflow:hidden;
+}
+.meowStoryShareTop{display:flex;align-items:center;gap:10px;min-width:0}
+.meowStoryShareSticker{
+  display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;
+  border-radius:14px;background:linear-gradient(145deg,#ffe1ef,#f0ddff);
+  border:1px solid #fff;box-shadow:0 3px 8px #eab2d34d;font-size:22px;
+}
+.meowStoryShareHeading{display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
+.meowStoryShareHeading strong{font-size:15px;font-weight:900;color:#bd477f;line-height:1.3}
+.meowStoryShareHeading small{font-size:12px;color:#a56d91;line-height:1.4}
+.meowStoryShareSparkle{color:#ee85b6;font-size:22px}
+.meowStoryShareRow{
+  display:flex;align-items:center;gap:8px;min-width:0;padding:7px;
+  border:1px dashed #f1a9cc;border-radius:15px;background:rgba(255,255,255,.82);
+  box-shadow:inset 0 1px 3px rgba(194,91,143,.06);
+}
+.meowStoryShareLinkIcon{flex:0 0 auto;font-size:17px}
+.meowStoryShareUrl{
+  flex:1;min-width:0;display:block;box-sizing:border-box;
+  padding:8px 2px;color:#8d5270;font-size:13px;line-height:1.45;
+  overflow-wrap:anywhere;word-break:break-word;user-select:all;text-decoration:none;
+}
+.meowStoryShareUrl:hover{text-decoration:underline;color:#c44e88}
+.meowStoryCopyLink{
+  flex:0 0 auto;min-width:76px;min-height:44px;padding:10px 12px;
+  border:1px solid rgba(255,255,255,.8);border-radius:12px;
+  background:linear-gradient(135deg,#ff9dc8,#ff5e9b);
+  color:#fff;font-size:14px;font-weight:900;cursor:pointer;
+  box-shadow:0 4px 10px rgba(255,94,155,.22),inset 0 1px 0 #ffffff70;
+  touch-action:manipulation;
+}
+.meowStoryCopyLink:active{transform:scale(.97)}
+.meowStoryCopyStatus{min-height:16px;color:#b66a94;font-size:12px;padding-left:2px}
+@media(max-width:600px){
+ .meowStoryShareBox{padding:11px;margin:0 0 12px;border-radius:17px;gap:8px}
+ .meowStoryShareSticker{flex-basis:36px;height:36px;border-radius:12px;font-size:20px}
+ .meowStoryShareHeading strong{font-size:14px}
+ .meowStoryShareHeading small{font-size:11px}
+ .meowStoryShareRow{gap:6px;padding:6px}
+ .meowStoryShareUrl{font-size:12px;padding:8px 1px}
+ .meowStoryCopyLink{min-width:68px;padding:9px 8px;font-size:13px}
+}
 #storyPage .meowDetailMetaPanel .meowMetaStatus{
   background:linear-gradient(135deg,rgba(255,232,247,.84),rgba(239,222,255,.84));
   color:#a04c96;
@@ -2421,6 +2473,23 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
         <div class="meowStoryHead">
 
 
+          <div class="meowStoryShareBox" aria-label="Link riêng của truyện">
+            <div class="meowStoryShareTop">
+              <span class="meowStoryShareSticker">🐱</span>
+              <div class="meowStoryShareHeading">
+                <strong>Link truyện của Meow</strong>
+                <small>Chạm Copy để chia sẻ cho nàng nha 💗</small>
+              </div>
+              <span class="meowStoryShareSparkle">✦</span>
+            </div>
+            <div class="meowStoryShareRow">
+              <span class="meowStoryShareLinkIcon">🔗</span>
+              <a id="meowStoryShareUrl" class="meowStoryShareUrl" href="#" target="_blank" rel="noopener noreferrer">Đang tạo link truyện…</a>
+              <button type="button" id="meowStoryCopyLink" class="meowStoryCopyLink">📋 Copy</button>
+            </div>
+            <div id="meowStoryCopyStatus" class="meowStoryCopyStatus" aria-live="polite">✨ Mỗi truyện có một đường dẫn riêng</div>
+          </div>
+
           <div
             class="meowDetailCover"
           >
@@ -2433,7 +2502,6 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
             <button type="button" class="meowFollowBtn" id="meowDetailFollowBtn" aria-pressed="false">♡ Theo dõi</button>
 
           </div>
-
 
           <div>
 
@@ -2770,6 +2838,7 @@ from
    Dữ liệu truyện vẫn lấy từ Firebase olncm-fa88c.
 ========================================================= */
 const MEOW_URL_STORY_ID = new URLSearchParams(window.location.search).get("story");
+if (!MEOW_URL_STORY_ID) document.title = "Ổ Lười Nhỏ của Meow";
 
 /* =========================================================
    FIREBASE
@@ -2879,7 +2948,7 @@ async function meowGetWithRetry(databaseRef, attempts = 3) {
 
 const MEOW_CATALOG_PATH = "storyCatalog";
 const MEOW_CATALOG_CACHE_KEY = "MEOW_STORY_CATALOG_CACHE_V1";
-const MEOW_CATALOG_CACHE_TTL = 24 * 60 * 60 * 1000; // Revalidate lightweight catalog at most once per day
+const MEOW_CATALOG_CACHE_TTL = 24 * 60 * 60 * 1000; // Cache age marker; cached catalog is shown before background revalidation
 
 const MEOW_STORY_CACHE_DB = "MeowReaderFastCache";
 const MEOW_STORY_CACHE_STORE = "stories";
@@ -3072,13 +3141,47 @@ async function meowLoadLegacyLightCatalog() {
   return catalog;
 }
 function meowSaveCatalogCache(data) {
+  // Keep localStorage small: never cache every Firebase metadata field or base64 cover.
+  // Large data URLs can exceed the browser's entire localStorage quota by themselves.
   try {
     const light = {};
+    const keepFields = [
+      "name", "title", "storyName", "bookName", "author", "authorName", "writer",
+      "cover", "coverUrl", "coverImage", "imageUrl", "thumbnailUrl", "genre", "genres",
+      "category", "tags", "status", "price", "fullPrice", "fullBookPrice", "description"
+    ];
     Object.entries(data || {}).forEach(([id, story]) => {
-      light[id] = { info: story?.info || {}, chapterCount: meowGetStoryChapterCount(story) };
+      const source = story?.info && typeof story.info === "object" ? story.info : {};
+      const info = {};
+      keepFields.forEach(key => {
+        const value = source[key];
+        if (value === undefined || value === null || typeof value === "object") return;
+        let str = String(value);
+        if (/^data:image\//i.test(str.trim())) return; // don't store embedded images in localStorage
+        if (key === "description") str = str.slice(0, 500);
+        if (str.length > 2000) str = str.slice(0, 2000);
+        info[key] = value;
+      });
+      // Keep normalized card fields available regardless of legacy field names.
+      const normalized = meowNormalizeStoryInfo(source);
+      ["name", "author", "genre", "tags"].forEach(key => {
+        if (info[key] === undefined && normalized[key] !== undefined && typeof normalized[key] !== "object") info[key] = normalized[key];
+      });
+      const cover = normalized.cover;
+      if (cover && !/^data:image\//i.test(String(cover).trim()) && info.cover === undefined) info.cover = String(cover).slice(0, 2000);
+      light[id] = { info, chapterCount: meowGetStoryChapterCount(story) };
     });
-    localStorage.setItem(MEOW_CATALOG_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: light }));
-  } catch (e) { console.warn("Meow: không lưu được cache danh mục", e); }
+    const payload = JSON.stringify({ savedAt: Date.now(), data: light });
+    try {
+      localStorage.setItem(MEOW_CATALOG_CACHE_KEY, payload);
+    } catch (quotaError) {
+      // Last-resort compact retry: omit covers and descriptions, which are usually largest.
+      Object.values(light).forEach(item => {
+        if (item.info) { delete item.info.cover; delete item.info.coverUrl; delete item.info.coverImage; delete item.info.imageUrl; delete item.info.thumbnailUrl; delete item.info.description; }
+      });
+      localStorage.setItem(MEOW_CATALOG_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: light }));
+    }
+  } catch (e) { console.warn("Meow: không lưu được cache danh mục; danh sách vẫn có thể tải từ Firebase", e); }
 }
 function meowCatalogFromLegacy(stories) {
   const catalog = {};
@@ -3660,8 +3763,9 @@ async function loadStories(){
     meowCatalogMode = true;
     renderedCache = true;
     renderStories();
-    // Fresh cache avoids a Firebase read on every visit; sync again after the TTL.
-    if (meowCatalogCacheIsFresh()) return;
+    // Always revalidate in the background: cached cards render immediately,
+    // while Firebase can still deliver newly added stories and updated metadata.
+    // TTL remains useful as cache age information, not as a reason to skip sync.
     const note = document.getElementById("meowShelfNote");
     if (note) note.dataset.syncState = "refreshing";
   } else {
@@ -3975,6 +4079,60 @@ function renderStories() {
 
 
 /* =========================================================
+   🔗 SHAREABLE STORY LINK + BROWSER TAB TITLE
+========================================================= */
+function meowStoryDisplayName(storyId, story) {
+  const info = story?.info || {};
+  return String(info.name || info.title || info.storyName || info.bookName || storyId || "Meow Reader").trim();
+}
+
+function meowSetStoryShareLink(storyId, story) {
+  const title = meowStoryDisplayName(storyId, story);
+  document.title = title + " | Ổ Lười Nhỏ của Meow";
+  const url = new URL(window.location.href);
+  url.searchParams.set("story", String(storyId));
+  // Keep the address bar in sync so this exact URL can be copied/shared/reopened.
+  if (window.location.search !== url.search) {
+    try { window.history.replaceState({ ...(window.history.state || {}), meowStoryId: String(storyId) }, "", url.href); } catch (_) {}
+  }
+  const link = document.getElementById("meowStoryShareUrl");
+  if (link) {
+    link.href = url.href;
+    link.textContent = url.href;
+    link.title = "Mở trực tiếp truyện: " + title;
+  }
+  const copyBtn = document.getElementById("meowStoryCopyLink");
+  if (copyBtn) {
+    copyBtn.onclick = async () => {
+      const status = document.getElementById("meowStoryCopyStatus");
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(url.href);
+        } else {
+          const helper = document.createElement("textarea");
+          helper.value = url.href; helper.readOnly = true;
+          helper.style.position = "fixed"; helper.style.opacity = "0";
+          helper.style.fontSize = "16px";
+          document.body.appendChild(helper); helper.select(); helper.setSelectionRange(0, helper.value.length);
+          const copied = document.execCommand("copy"); helper.remove();
+          if (!copied) throw new Error("copy unavailable");
+        }
+        if (status) status.textContent = "💗 Đã copy link truyện!";
+        copyBtn.textContent = "✓ Đã copy";
+        setTimeout(() => { if (copyBtn.isConnected) copyBtn.textContent = "📋 Copy"; }, 1800);
+      } catch (_) {
+        if (status) status.textContent = "Bấm giữ link phía trên để sao chép nha.";
+      }
+    };
+  }
+}
+
+// Keep a descriptive title when the shared link opens a story directly.
+function meowRestoreDefaultTabTitle() {
+  document.title = "Ổ Lười Nhỏ của Meow";
+}
+
+/* =========================================================
    OPEN STORY
 ========================================================= */
 
@@ -3986,6 +4144,7 @@ async function openStory(storyId){
   currentStoryId = storyId;
   currentStory = story;
   currentChapters = story.chapters || {};
+  meowSetStoryShareLink(storyId, story);
 
   homePage.style.display = "none";
   storyPage.style.display = "block";
@@ -4040,6 +4199,7 @@ async function openStory(storyId){
 
   if (token !== meowOpenRequestToken) return;
   renderStoryInfo();
+  meowSetStoryShareLink(currentStoryId, currentStory);
   updateMeowReadingActions();
 }
 
@@ -4052,6 +4212,7 @@ function renderStoryInfo(){
   const info =
     currentStory.info || {};
 
+  if (currentStoryId) meowSetStoryShareLink(currentStoryId, currentStory);
 
   const chapters =
     currentStory.chapters || {};
@@ -5586,10 +5747,18 @@ async function restoreLogin(){
 
   }catch(error){
 
-    console.error(error);
+    console.error("Meow Reader: chưa khôi phục được phiên đăng nhập:", error);
 
-    loginPage.style.display =
-      "flex";
+    // Lỗi mạng/quyền đọc tạm thời không đồng nghĩa ID đã sai.
+    // Giữ nguyên ID đã lưu, không tự xóa phiên và cho người dùng thử lại.
+    const idInput = document.getElementById("readerCustomerID");
+    const loginMsg = document.getElementById("readerLoginMsg");
+    if (idInput && savedID) idInput.value = savedID;
+    if (loginMsg) {
+      loginMsg.innerText = "📶 Kết nối Firebase đang chậm hoặc bị gián đoạn. ID vẫn được giữ lại, bấm Đăng nhập để thử lại nha.";
+    }
+    loginPage.style.display = "flex";
+    readerMain.style.display = "none";
 
   }
 
@@ -6069,7 +6238,7 @@ meowTTSProgress?.addEventListener("change", () => {
       <span class="mqn-copy"><strong>Tạo ID</strong><small>Đăng ký ID Meow</small></span>
     </a>
     <!-- BÀ THAY href="#" BẰNG LINK WEB CŨ CỦA BÀ -->
-    <a class="mqn-link" href="https://trangthongtincuameow.blogspot.com/p/list-truyen_6.html" data-meow-placeholder="Web cũ">
+    <a class="mqn-link" href="https://oluoinhocuameow-com.github.io/-L-i-Nh-C-a-Meow-/?fbclid=IwY2xjawU8W8NleHRuA2FlbQIxMABwZG9mA2JyaWQRMUJkZzd0dzFJdEhTWFZHU1FzcnRjBmFwcF9pZA81MTQ3NzE1NjkyMjgwNjEAAR7agyAR0_Du3vx4t3-nNAamgIKgGnywaXmnfA_I8ToUM6GvjvTJcSbVU10G8w_aem_h3qkCfozVsBMO0HQBbT3mg" data-meow-placeholder="Web cũ">
       <span class="mqn-icon">🏡</span>
       <span class="mqn-copy"><strong>Web cũ</strong><small>Ghé lại nhà cũ của Meow</small></span>
     </a>
