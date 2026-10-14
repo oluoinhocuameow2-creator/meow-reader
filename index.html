@@ -2257,6 +2257,32 @@ img[loading="lazy"] { height: auto; }
 </style>
 
 
+
+<style id="meow-cute-showmore-and-ellipsis">
+/* 💗 Nút Xem thêm truyện — phong cách kẹo bông Meow */
+.meowShowMoreStories{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:fit-content;max-width:calc(100% - 24px);
+  margin:16px auto 22px;padding:11px 18px;
+  border:1px solid #ffb8d1;border-radius:999px;
+  background:linear-gradient(135deg,#fffafd 0%,#ffe5f0 52%,#f3e5ff 100%);
+  color:#b94d7b;font-family:inherit;font-size:13px;font-weight:800;line-height:1.4;
+  text-align:center;white-space:normal;overflow-wrap:anywhere;
+  box-shadow:0 4px 0 #f4bfd4,0 8px 18px rgba(220,105,157,.16),inset 0 1px 0 #fff;
+  cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+.meowShowMoreStories::before{content:"🐾";font-size:15px}
+.meowShowMoreStories::after{content:"✧";font-size:15px;color:#e57eae}
+.meowShowMoreStories:hover{transform:translateY(-2px);filter:saturate(1.06);box-shadow:0 6px 0 #f4bfd4,0 11px 22px rgba(220,105,157,.2),inset 0 1px 0 #fff}
+.meowShowMoreStories:active{transform:translateY(2px);box-shadow:0 2px 0 #f4bfd4,0 4px 10px rgba(220,105,157,.15)}
+/* ✂️ Tên chương/link quá dài sẽ thu gọn bằng dấu … thay vì tràn khung */
+.meowChapterLeft{flex:1 1 auto;min-width:0;overflow:hidden}
+.meowChapterTitle{display:block;flex:1 1 auto;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meowChapterItem{min-width:0;overflow:hidden}
+.meowChapterItem > *{min-width:0}
+@media(max-width:600px){.meowShowMoreStories{font-size:12px;padding:10px 14px;max-width:calc(100% - 18px)}}
+</style>
+
 </head>
 <body>
 <div id="meowReaderApp">
