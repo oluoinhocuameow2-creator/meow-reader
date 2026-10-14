@@ -5,14 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#fff0f7">
 <title>Meow Reader 🐱</title>
+<!-- Meow speed hints: establish Firebase connection early without loading database data -->
+<link rel="preconnect" href="https://olncm-fa88c-default-rtdb.asia-southeast1.firebasedatabase.app" crossorigin>
+<link rel="dns-prefetch" href="//olncm-fa88c-default-rtdb.asia-southeast1.firebasedatabase.app">
+<link rel="preconnect" href="https://olncm-fa88c.firebasestorage.app" crossorigin>
+<link rel="dns-prefetch" href="//olncm-fa88c.firebasestorage.app">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
 /* =========================================================
    🐱 MEOW VIP READER
    TRANG ĐỌC TRUYỆN KHÁCH
 ========================================================= */
-
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Comfortaa:wght@400;500;600;700&display=swap');
 
 *{
   box-sizing:border-box;
@@ -2175,6 +2181,18 @@ body.meowDarkReader .meowReaderNav{
 .meowStoryCard { content-visibility:auto; contain-intrinsic-size: 280px 390px; }
 .meowStoryCard img, .meowShelfRecentCover { decoding: async; }
 @media (prefers-reduced-motion: reduce) { .meowStoryCard, .meowStoryCard * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Performance: reduce off-screen card rendering work on long shelves. */
+#storyGrid > *, .storyCard, .meowStoryCard {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 300px;
+}
+img[loading="lazy"] { height: auto; }
+/* Keep image decoding off the main rendering path and defer non-critical cover downloads. */
+.meowStoryCard img[loading="lazy],
+.meowShelfRecentCover[loading="lazy"] {
+  content-visibility: auto;
+}
 </style>
 
 
@@ -2706,7 +2724,7 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
 /* Meow performance + story comments */
 .meowStoryCommentsCard{margin:18px 0 8px;padding:16px;background:linear-gradient(145deg,#fff8fc,#f8f5ff);border:1px solid #f4d5e5;border-radius:22px;box-shadow:0 8px 22px #bc7ca512;color:#59475a}
 .meowStoryCommentsHeading{display:flex;align-items:center;gap:11px;margin-bottom:12px}.meowCommentBubble{width:42px;height:42px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(135deg,#ffe0ed,#e9ddff);font-size:21px}.meowStoryCommentsHeading h3{margin:0;color:#a34f79;font-size:17px}.meowStoryCommentsHeading p{margin:4px 0 0;color:#a18a9b;font-size:12px}.meowStoryCommentsLoad{border:1px solid #f2c9dc;background:#fff;color:#ad5b83;border-radius:12px;padding:9px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;margin:8px 0}.meowStoryCommentsCard .meowCommentList{max-height:380px;overflow:auto}.meowStoryCommentsCard .meowCommentForm{margin-top:10px}
-img{content-visibility:auto}
+/* Safari/iOS compatibility: avoid content-visibility on images; native loading="lazy" handles deferred image loading. */
 .meowChapterCommentToggle{display:block;width:100%;border:1px solid #ffd4e5;background:linear-gradient(120deg,#fff7fb,#fff);color:#a84f79;border-radius:0 0 14px 14px;padding:8px 12px;text-align:left;font:600 12px inherit;cursor:pointer;margin:-2px 0 10px}
 .meowChapterComments{display:none;background:#fff8fc;border:1px solid #ffe0ec;border-radius:14px;padding:12px;margin:-5px 0 14px;box-shadow:0 4px 14px #d86c9810}
 .meowChapterComments.is-open{display:block}.meowCommentList{display:grid;gap:8px;margin:8px 0}.meowComment{background:#fff;border:1px solid #ffe5ef;border-radius:12px;padding:9px 11px;color:#59475a;font-size:13px;overflow-wrap:anywhere}.meowCommentTop{display:flex;justify-content:space-between;gap:8px;color:#a34f79;font-weight:700;margin-bottom:4px}.meowCommentDelete{border:0;background:#fff0f5;color:#b84c75;border-radius:8px;padding:3px 7px;cursor:pointer}.meowCommentForm{display:flex;gap:7px;margin-top:8px}.meowCommentForm input{min-width:0;flex:1;border:1px solid #f5c8dc;border-radius:10px;padding:10px;font:inherit;background:white}.meowCommentForm button{border:0;border-radius:10px;padding:0 12px;background:linear-gradient(135deg,#ff9fc4,#dc80c7);color:white;font-weight:700;cursor:pointer}.meowCommentHint{font-size:11px;color:#a18a9b;margin-top:6px}
@@ -2861,18 +2879,123 @@ async function meowGetWithRetry(databaseRef, attempts = 3) {
 
 const MEOW_CATALOG_PATH = "storyCatalog";
 const MEOW_CATALOG_CACHE_KEY = "MEOW_STORY_CATALOG_CACHE_V1";
-const MEOW_CATALOG_CACHE_TTL = 6 * 60 * 60 * 1000;
+const MEOW_CATALOG_CACHE_TTL = 24 * 60 * 60 * 1000; // Revalidate lightweight catalog at most once per day
+
+const MEOW_STORY_CACHE_DB = "MeowReaderFastCache";
+const MEOW_STORY_CACHE_STORE = "stories";
+const MEOW_STORY_CACHE_TTL = 6 * 60 * 60 * 1000; // Revalidate full story data every 6 hours
+let meowStoryCacheDbPromise = null;
+
+function meowOpenStoryCacheDb() {
+  if (!("indexedDB" in window)) return Promise.resolve(null);
+  if (meowStoryCacheDbPromise) return meowStoryCacheDbPromise;
+  meowStoryCacheDbPromise = new Promise(resolve => {
+    try {
+      const request = indexedDB.open(MEOW_STORY_CACHE_DB, 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(MEOW_STORY_CACHE_STORE)) {
+          db.createObjectStore(MEOW_STORY_CACHE_STORE, { keyPath: "id" });
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => resolve(null);
+      request.onblocked = () => resolve(null);
+    } catch (_) { resolve(null); }
+  });
+  return meowStoryCacheDbPromise;
+}
+async function meowGetCachedFullStory(storyId) {
+  const db = await meowOpenStoryCacheDb();
+  if (!db) return null;
+  return new Promise(resolve => {
+    try {
+      const request = db.transaction(MEOW_STORY_CACHE_STORE, "readonly")
+        .objectStore(MEOW_STORY_CACHE_STORE).get(String(storyId));
+      request.onsuccess = () => {
+        const row = request.result;
+        resolve(row && row.story && typeof row.story === "object" ? row : null);
+      };
+      request.onerror = () => resolve(null);
+    } catch (_) { resolve(null); }
+  });
+}
+async function meowSaveCachedFullStory(storyId, story) {
+  const db = await meowOpenStoryCacheDb();
+  if (!db || !story || typeof story !== "object") return;
+  return new Promise(resolve => {
+    try {
+      const tx = db.transaction(MEOW_STORY_CACHE_STORE, "readwrite");
+      tx.objectStore(MEOW_STORY_CACHE_STORE).put({
+        id: String(storyId),
+        savedAt: Date.now(),
+        story
+      });
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = tx.onabort = () => resolve(false);
+    } catch (_) { resolve(false); }
+  });
+}
+async function meowRefreshStoryInBackground(storyId, requestToken) {
+  try {
+    const snap = await meowGetWithRetry(ref(db, "stories/" + storyId), 2);
+    if (!snap.exists()) return;
+    const freshStory = snap.val() || {};
+    const previousInfo = allStories[storyId]?.info || {};
+    freshStory.info = { ...previousInfo, ...(freshStory.info || {}) };
+    await meowSaveCachedFullStory(storyId, freshStory);
+    allStories[storyId] = freshStory;
+    // Update the open story only if the user is still viewing this same request.
+    if (requestToken === meowOpenRequestToken && String(currentStoryId) === String(storyId)) {
+      currentStory = freshStory;
+      currentChapters = freshStory.chapters || {};
+      renderStoryInfo();
+      updateMeowReadingActions();
+    }
+  } catch (error) {
+    console.warn("Meow: dùng cache truyện vì chưa làm mới được", error);
+  }
+}
 let meowCatalogMode = false;
 let meowOpenRequestToken = 0;
 
+function meowPickStoryField(source, aliases) {
+  if (!source || typeof source !== "object") return "";
+  const normalized = new Map(Object.entries(source).map(([key, value]) => [String(key).toLocaleLowerCase("vi").replace(/[\s_\-]/g, ""), value]));
+  for (const alias of aliases) {
+    const value = normalized.get(String(alias).toLocaleLowerCase("vi").replace(/[\s_\-]/g, ""));
+    if (value !== undefined && value !== null && String(value).trim() !== "" && typeof value !== "object") return value;
+  }
+  return "";
+}
+function meowNormalizeStoryInfo(raw) {
+  const info = raw && typeof raw === "object" ? { ...raw } : {};
+  // Hỗ trợ metadata ở các tên trường khác nhau, kể cả các bản admin cũ.
+  const nested = ["info", "metadata", "details", "storyInfo", "bookInfo", "data", "basicInfo"];
+  for (const key of nested) {
+    if (info[key] && typeof info[key] === "object" && !Array.isArray(info[key])) {
+      const child = meowNormalizeStoryInfo(info[key]);
+      for (const [k, v] of Object.entries(child)) if ((info[k] === undefined || info[k] === null || info[k] === "") && v !== "") info[k] = v;
+    }
+  }
+  const name = meowPickStoryField(info, ["name","title","storyName","storyTitle","bookName","tenTruyen","tên truyện","tênTruyện","tieuDe","tên sách","bookTitle","displayName","tenSach","ten","truyenName"]);
+  const author = meowPickStoryField(info, ["author","authorName","writer","writerName","tacGia","tác giả","tênTácGiả","tenTacGia","createdByName","nguoiViet","tenNguoiViet"]);
+  const cover = meowPickStoryField(info, ["cover","coverUrl","coverURL","coverImage","coverImageUrl","image","imageUrl","thumbnail","thumbnailUrl","poster","posterUrl","avatar","bookCover","urlAnhBia","anhBia","ảnh bìa","coverSrc","imageSrc","hinhBia","bìa"]);
+  const genre = meowPickStoryField(info, ["genre","genres","category","categories","tags","theLoai","thể loại","loaiTruyen","genreName"]);
+  if (name) info.name = name;
+  if (author) info.author = author;
+  if (cover) info.cover = cover;
+  if (genre) { info.genre = genre; if (!info.tags && !info.genres && !info.category) info.tags = genre; }
+  return info;
+}
 function meowNormalizeCatalog(raw) {
   const result = {};
   Object.entries(raw || {}).forEach(([id, value]) => {
     if (!value || typeof value !== "object") return;
-    // Accept either {info:{...}, chapterCount:n} or a direct info object.
-    const info = value.info && typeof value.info === "object" ? value.info : value;
+    const sourceInfo = value.info && typeof value.info === "object" ? value.info : value;
+    const info = meowNormalizeStoryInfo(sourceInfo);
     result[id] = {
-      info: info || {},
+      info,
       chapterCount: Number(value.chapterCount ?? value.chaptersCount ?? value.totalChapters ?? 0) || 0,
       _catalogOnly: true
     };
@@ -2886,11 +3009,67 @@ function meowGetStoryChapterCount(story) {
 function meowReadCatalogCache() {
   try {
     const cached = JSON.parse(localStorage.getItem(MEOW_CATALOG_CACHE_KEY) || "null");
-    // Hiện dữ liệu đã lưu ngay cả khi cache cũ; loadStories sẽ tự lấy bản mới từ Firebase.
-    // Cách stale-while-revalidate giúp lần mở sau không phải chờ mạng mới thấy danh mục.
     if (!cached || !cached.data || typeof cached.data !== "object") return null;
     return meowNormalizeCatalog(cached.data);
   } catch (_) { return null; }
+}
+function meowCatalogCacheIsFresh() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(MEOW_CATALOG_CACHE_KEY) || "null");
+    return !!(cached && cached.data && cached.savedAt && Date.now() - Number(cached.savedAt) < MEOW_CATALOG_CACHE_TTL);
+  } catch (_) { return false; }
+}
+// Legacy compatibility without downloading every chapter body. REST shallow=true returns child keys only.
+async function meowLoadLegacyLightCatalog() {
+  const base = String(firebaseConfig.databaseURL || "").replace(/\/$/, "");
+  if (!base) throw new Error("Thiếu databaseURL");
+  const rootResponse = await fetch(base + "/stories.json?shallow=true", { cache: "no-store" });
+  if (!rootResponse.ok) throw new Error("Không đọc được danh sách ID truyện");
+  const keys = await rootResponse.json();
+  if (!keys || typeof keys !== "object") return {};
+  const ids = Object.keys(keys);
+  const catalog = {};
+
+  // Normalize metadata field names without downloading chapter contents.
+  const normalizeInfo = meowNormalizeStoryInfo;
+
+  for (let start = 0; start < ids.length; start += 12) {
+    const batch = ids.slice(start, start + 12);
+    const rows = await Promise.all(batch.map(async id => {
+      const path = "/stories/" + encodeURIComponent(id);
+      const [storyResponse, chapterResponse] = await Promise.all([
+        fetch(base + path + ".json?shallow=true", { cache: "default" }),
+        fetch(base + path + "/chapters.json?shallow=true", { cache: "default" })
+      ]);
+      if (!storyResponse.ok) throw new Error("Không đọc được thông tin truyện " + id);
+      const topKeys = await storyResponse.json() || {};
+      let rawInfo = {};
+
+      // With shallow=true, an object child is represented by `true`; therefore
+      // test for the existence of the `info` key, not whether its value is an object.
+      const infoKey = ["info", "metadata", "details", "storyInfo", "bookInfo"].find(key => Object.prototype.hasOwnProperty.call(topKeys, key));
+      if (infoKey) {
+        const infoResponse = await fetch(base + path + "/" + infoKey + ".json", { cache: "default" });
+        if (infoResponse.ok) rawInfo = await infoResponse.json() || {};
+      } else {
+        const metadataKeys = [
+          "name", "title", "storyName", "storyTitle", "bookName", "tenTruyen", "tênTruyện", "tieuDe", "bookTitle",
+          "author", "authorName", "writer", "writerName", "tacGia", "tênTácGiả", "tenTacGia", "createdByName",
+          "cover", "coverUrl", "coverURL", "coverImage", "coverImageUrl", "image", "imageUrl", "thumbnail", "thumbnailUrl", "poster", "posterUrl", "avatar", "bookCover", "urlAnhBia", "anhBia",
+          "description", "status", "genre", "genres", "category", "categories", "tags", "theLoai", "thể loại", "loaiTruyen", "displayName", "tenSach", "ten", "truyenName", "coverSrc", "imageSrc", "hinhBia", "bìa", "createdAt", "updatedAt", "publishedAt", "publishDate", "price"
+        ];
+        metadataKeys.forEach(key => {
+          if (Object.prototype.hasOwnProperty.call(topKeys, key) && topKeys[key] !== true) rawInfo[key] = topKeys[key];
+        });
+      }
+      const info = normalizeInfo(rawInfo);
+      const chapterKeys = chapterResponse.ok ? await chapterResponse.json() : null;
+      const chapterCount = chapterKeys && typeof chapterKeys === "object" ? Object.keys(chapterKeys).length : 0;
+      return [id, { info, chapterCount, _catalogOnly: true }];
+    }));
+    rows.forEach(([id, story]) => { catalog[id] = story; });
+  }
+  return catalog;
 }
 function meowSaveCatalogCache(data) {
   try {
@@ -2992,7 +3171,7 @@ function escapeHTML(value){
    MEOW WALLET + PRICE DISPLAY
    DÁN LINK VÍ/NẠP CỦA BÀ VÀO MEOW_WALLET_URL BÊN DƯỚI
 ========================================================= */
-const MEOW_WALLET_URL = "PASTE_YOUR_WALLET_LINK_HERE";
+const MEOW_WALLET_URL = "https://oluoinhocuameow-ops.github.io/nap-tien/";
 let meowBalanceListenerRef = null;
 let meowBalanceListenerStartedFor = "";
 let meowPurchasedRecords = [];
@@ -3481,6 +3660,8 @@ async function loadStories(){
     meowCatalogMode = true;
     renderedCache = true;
     renderStories();
+    // Fresh cache avoids a Firebase read on every visit; sync again after the TTL.
+    if (meowCatalogCacheIsFresh()) return;
     const note = document.getElementById("meowShelfNote");
     if (note) note.dataset.syncState = "refreshing";
   } else {
@@ -3488,30 +3669,31 @@ async function loadStories(){
   }
 
   try {
-    // Fast path: this node contains only book metadata, never chapter text.
+    // Preferred path: a metadata-only catalog, never chapter text.
     const catalogSnap = await meowGetWithRetry(ref(db, MEOW_CATALOG_PATH));
     if (catalogSnap.exists()) {
       const catalog = meowNormalizeCatalog(catalogSnap.val());
-      allStories = catalog;
-      meowCatalogMode = true;
-      meowSaveCatalogCache(catalog);
-      renderStories();
-      return;
+      if (Object.keys(catalog).length) {
+        allStories = catalog;
+        meowCatalogMode = true;
+        meowSaveCatalogCache(catalog);
+        renderStories();
+        return;
+      }
     }
 
-    // Compatibility path for existing Firebase projects that have not created storyCatalog yet.
-    // It works with the current database but the first uncached load remains heavier.
-    const legacySnap = await meowGetWithRetry(ref(db, "stories"));
-    if (!legacySnap.exists()) {
+    // Safe legacy fallback: retrieve only story IDs, each story's info, and chapter keys.
+    // Never read /stories as a whole because that would download every chapter body.
+    const lightCatalog = await meowLoadLegacyLightCatalog();
+    if (!Object.keys(lightCatalog).length) {
       allStories = {};
-      meowCatalogMode = false;
-      grid.innerHTML = `<div class="meowEmpty">📚 Chưa có truyện.</div>`;
+      meowCatalogMode = true;
+      grid.innerHTML = `<div class="meowEmpty">📚 Chưa có truyện hoặc Firebase chưa cho phép đọc danh sách.</div>`;
       return;
     }
-    const legacy = legacySnap.val() || {};
-    allStories = legacy;
-    meowCatalogMode = false;
-    meowSaveCatalogCache(meowCatalogFromLegacy(legacy));
+    allStories = lightCatalog;
+    meowCatalogMode = true;
+    meowSaveCatalogCache(lightCatalog);
     renderStories();
   } catch (error) {
     console.error(error);
@@ -3582,14 +3764,15 @@ function meowStoryDate(info) {
 
 function meowStoryCardHTML(storyId, story, options = {}) {
   const info = story?.info || {};
-  const name = info.name || storyId;
-  const author = info.author || "Chưa cập nhật";
-  const cover = info.cover || "";
+  const name = info.name || info.title || info.storyName || info.bookName || "Chưa có tên truyện";
+  const author = info.author || info.authorName || info.writer || "Chưa cập nhật tác giả";
+  const cover = info.cover || info.coverUrl || info.coverImage || info.imageUrl || info.thumbnailUrl || "";
+  const tags = getStoryTags(info);
   const chapterCount = meowGetStoryChapterCount(story);
   const isPersonal = options.personal === true;
   return `<div class="meowStoryCard">
     <div class="meowCover">
-      ${cover ? `<img src="${escapeHTML(cover)}" alt="${escapeHTML(name)}" loading="lazy">` : `<div class="meowCoverPlaceholder">🐱🎀</div>`}
+      ${cover ? `<img src="${escapeHTML(cover)}" alt="${escapeHTML(name)}" loading="lazy" decoding="async" fetchpriority="low">` : `<div class="meowCoverPlaceholder">🐱🎀</div>`}
       <span class="meowStatusBadge ${meowStatusType(info)==="full"?"is-full":meowStatusType(info)==="upcoming"?"is-upcoming":"is-ongoing"}">${meowStatusType(info)==="full"?"FULL":meowStatusType(info)==="upcoming"?"SẮP RA":"ĐANG RA"}</span>
       <button type="button" class="meowFollowBtn ${meowFollowedStories[String(storyId)] ? "is-following" : ""}" data-follow-story="${escapeHTML(storyId)}" aria-pressed="${!!meowFollowedStories[String(storyId)]}">${meowFollowedStories[String(storyId)] ? "♥ Đang theo dõi" : "♡ Theo dõi"}</button>
     </div>
@@ -3747,7 +3930,7 @@ function renderStories() {
     const recentHtml = recent.map(({storyId,chapterId,story}) => {
       const info=story.info||{}, ch=story.chapters?.[chapterId]||{};
       return `<button type="button" class="meowShelfRecentItem" data-continue-story="${escapeHTML(storyId)}" data-continue-chapter="${escapeHTML(chapterId)}">
-        ${info.cover?`<img class="meowShelfRecentCover" src="${escapeHTML(info.cover)}" alt="">`:`<span class="meowShelfRecentCover" style="display:grid;place-items:center">🐱</span>`}
+        ${info.cover?`<img class="meowShelfRecentCover" src="${escapeHTML(info.cover)}" alt="" loading="lazy" decoding="async" fetchpriority="low">`:`<span class="meowShelfRecentCover" style="display:grid;place-items:center">🐱</span>`}
         <span class="meowShelfRecentText"><strong>${escapeHTML(info.name||storyId)}</strong><span>📖 Chương ${escapeHTML(chapterId)}${ch.title?" - "+escapeHTML(ch.title):""}</span><span>Nhấn để đọc tiếp ngay →</span></span></button>`;
     }).join("");
     html += meowShelfSection("📚 Những chương đang đọc", "recent", `<div class="meowShelfRecent">${recentHtml}</div>`);
@@ -3808,20 +3991,40 @@ async function openStory(storyId){
   storyPage.style.display = "block";
   readerPage.style.display = "none";
 
-  // Catalog entries contain only the book cover/info. Fetch chapter payload only when opened.
+  // If this is a lightweight catalog entry, check the persistent full-story cache first.
   if (story._catalogOnly || !story.chapters) {
     const detailCover = document.getElementById("detailCover");
-    if (detailCover) detailCover.innerHTML = `<div class="meowEmpty">🐾 Đang tải thông tin truyện...</div>`;
+    if (detailCover) detailCover.innerHTML = `<div class="meowEmpty">🐾 Đang mở truyện...</div>`;
+
+    const cachedRow = await meowGetCachedFullStory(storyId);
+    if (token !== meowOpenRequestToken) return;
+
+    if (cachedRow && cachedRow.story) {
+      const cachedStory = cachedRow.story;
+      cachedStory.info = { ...(story.info || {}), ...(cachedStory.info || {}) };
+      allStories[storyId] = cachedStory;
+      currentStory = cachedStory;
+      currentChapters = cachedStory.chapters || {};
+      renderStoryInfo();
+      updateMeowReadingActions();
+
+      // Fresh cache = instant open without a network wait. Stale cache remains usable while refreshing.
+      if (Date.now() - Number(cachedRow.savedAt || 0) < MEOW_STORY_CACHE_TTL) return;
+      meowRefreshStoryInBackground(storyId, token);
+      return;
+    }
+
+    // First visit: fetch once, save the full story for instant opens on later visits.
     try {
       const snap = await meowGetWithRetry(ref(db, "stories/" + storyId));
       if (token !== meowOpenRequestToken) return;
       if (!snap.exists()) throw new Error("Không tìm thấy dữ liệu truyện");
       const fullStory = snap.val() || {};
-      // Keep the lightweight catalog fields as a fallback if legacy info is incomplete.
       fullStory.info = { ...(story.info || {}), ...(fullStory.info || {}) };
       allStories[storyId] = fullStory;
       currentStory = fullStory;
       currentChapters = fullStory.chapters || {};
+      void meowSaveCachedFullStory(storyId, fullStory);
     } catch (error) {
       console.error(error);
       if (token === meowOpenRequestToken) {
@@ -3839,7 +4042,6 @@ async function openStory(storyId){
   renderStoryInfo();
   updateMeowReadingActions();
 }
-
 
 /* =========================================================
    STORY INFO
@@ -6093,6 +6295,35 @@ body{font-size:16px;line-height:1.65}
  .meowReaderBody{padding-left:13px!important;padding-right:13px!important}
 }
 </style>
+
+
+<script>
+/* Meow Reader: Safari-safe app-shell cache. Requires HTTPS and meow-sw.js beside this HTML. */
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") return;
+
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./meow-sw.js", { scope: "./" })
+      .then(function (registration) {
+        function tellWorker(worker) {
+          if (worker) worker.postMessage({ type: "CACHE_PAGE", url: location.href });
+        }
+        tellWorker(navigator.serviceWorker.controller);
+        tellWorker(registration.active);
+        registration.addEventListener("updatefound", function () {
+          const installing = registration.installing;
+          if (installing) installing.addEventListener("statechange", function () {
+            if (installing.state === "activated") tellWorker(registration.active);
+          });
+        });
+      })
+      .catch(function (error) {
+        console.warn("Meow: chưa bật được cache trang offline (Safari vẫn có thể tải trang bình thường).", error);
+      });
+  });
+})();
+</script>
 
 </body>
 </html>
