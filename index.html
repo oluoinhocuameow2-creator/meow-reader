@@ -2366,8 +2366,8 @@ img[loading="lazy"] { height: auto; }
       </h1>
 
       <div class="meowLoginSub">
-        Mở bằng trình duyệt nha, không hỗ trợ FB.
-Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
+Trải nghiệm thử trước khi tạo ID nhập "1" 
+  Nếu muốn có tài khoản riêng mà chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
       </div>
 
 
@@ -3697,103 +3697,95 @@ function setupMeowPurchaseButtons() {
    LOGIN
 ========================================================= */
 
+const MEOW_LOGIN_GUARD_KEY = "MEOW_READER_LOGIN_GUARD_V1";
+const MEOW_LOGIN_MAX_ATTEMPTS = 3;
+const MEOW_LOGIN_LOCK_MS = 24 * 60 * 60 * 1000;
+
+function meowReadLoginGuard(){
+  try {
+    const raw = localStorage.getItem(MEOW_LOGIN_GUARD_KEY);
+    const state = raw ? JSON.parse(raw) : {};
+    return {
+      attempts: Math.max(0, Number(state.attempts) || 0),
+      lockedUntil: Math.max(0, Number(state.lockedUntil) || 0)
+    };
+  } catch (_) { return { attempts: 0, lockedUntil: 0 }; }
+}
+function meowWriteLoginGuard(state){
+  try { localStorage.setItem(MEOW_LOGIN_GUARD_KEY, JSON.stringify(state)); } catch (_) {}
+}
+function meowLoginLockMessage(lockedUntil){
+  const remaining = Math.max(0, lockedUntil - Date.now());
+  const hours = Math.floor(remaining / 3600000);
+  const minutes = Math.ceil((remaining % 3600000) / 60000);
+  return `🔒 Bà đã nhập sai ID 3 lần. Meow tạm khóa đăng nhập trong 24 giờ nha. Thử lại sau ${hours} giờ ${minutes} phút.`;
+}
+function meowCheckLoginLock(showMessage = true){
+  const state = meowReadLoginGuard();
+  if (state.lockedUntil > Date.now()) {
+    const msg = document.getElementById("readerLoginMsg");
+    if (showMessage && msg) msg.innerText = meowLoginLockMessage(state.lockedUntil);
+    return true;
+  }
+  if (state.lockedUntil && state.lockedUntil <= Date.now()) {
+    meowWriteLoginGuard({ attempts: 0, lockedUntil: 0 });
+  }
+  return false;
+}
+function meowRecordWrongLogin(){
+  const state = meowReadLoginGuard();
+  const attempts = state.attempts + 1;
+  if (attempts >= MEOW_LOGIN_MAX_ATTEMPTS) {
+    const lockedUntil = Date.now() + MEOW_LOGIN_LOCK_MS;
+    meowWriteLoginGuard({ attempts: MEOW_LOGIN_MAX_ATTEMPTS, lockedUntil });
+    return { locked: true, message: meowLoginLockMessage(lockedUntil) };
+  }
+  meowWriteLoginGuard({ attempts, lockedUntil: 0 });
+  return { locked: false, message: `❌ ID khách không tồn tại. Bà còn ${MEOW_LOGIN_MAX_ATTEMPTS - attempts} lần nhập thử nha.` };
+}
+
 async function loginCustomer(){
+  const msg = document.getElementById("readerLoginMsg");
+  if (meowCheckLoginLock()) return;
 
-  const id =
-    document
-      .getElementById(
-        "readerCustomerID"
-      )
-      .value
-      .trim();
-
-
-  const msg =
-    document.getElementById(
-      "readerLoginMsg"
-    );
-
-
-  if(!id){
-
-    msg.innerText =
-      "⚠️ Vui lòng nhập ID khách.";
-
+  const id = document.getElementById("readerCustomerID").value.trim();
+  if (!id) {
+    msg.innerText = "⚠️ Vui lòng nhập ID khách.";
     return;
-
   }
 
+  msg.innerText = "⏳ Đang kiểm tra ID...";
+  const loginBtn = document.getElementById("readerLoginBtn");
+  if (loginBtn) loginBtn.disabled = true;
 
-  msg.innerText =
-    "⏳ Đang kiểm tra ID...";
-
-
-  try{
-
-    const snap =
-      await get(
-        ref(
-          db,
-          "customers/" + id
-        )
-      );
-
-
-    if(!snap.exists()){
-
-      msg.innerText =
-        "❌ ID khách không tồn tại.";
-
+  try {
+    const snap = await get(ref(db, "customers/" + id));
+    if (!snap.exists()) {
+      const result = meowRecordWrongLogin();
+      msg.innerText = result.message;
       return;
-
     }
 
-
-    const data =
-      snap.val();
-
-
-    currentCustomer = {
-
-      id:id,
-
-      ...data
-
-    };
+    // ID hợp lệ thì xóa bộ đếm sai.
+    meowWriteLoginGuard({ attempts: 0, lockedUntil: 0 });
+    const data = snap.val();
+    currentCustomer = { id, ...data };
 
     await meowLoadFollowedStories(id);
     await meowLoadReadingHistory(id);
+    localStorage.setItem("MEOW_READER_ID", id);
 
-
-    localStorage.setItem(
-      "MEOW_READER_ID",
-      id
-    );
-
-
-    msg.innerText =
-      "💖 Đăng nhập thành công";
-
-
-    setTimeout(
-      ()=>{
-        enterReader();
-      },
-      250
-    );
-
-
-  }catch(error){
-
+    msg.innerText = "💖 Đăng nhập thành công";
+    setTimeout(() => { enterReader(); }, 250);
+  } catch (error) {
     console.error(error);
-
-    msg.innerText =
-      "❌ Không thể kiểm tra ID.";
-
+    // Lỗi mạng/Firebase không tính là nhập sai ID.
+    msg.innerText = "❌ Chưa kiểm tra được ID do lỗi kết nối. Bà thử lại khi mạng ổn định nha.";
+  } finally {
+    if (loginBtn) loginBtn.disabled = false;
+    meowCheckLoginLock();
   }
-
 }
-
 
 /* =========================================================
    ENTER
@@ -5956,6 +5948,9 @@ document
   .onclick =
     logout;
 
+// Hiển thị trạng thái khóa nếu người dùng tải lại trang trong thời gian khóa.
+meowCheckLoginLock();
+
 
 /* =========================================================
    TỰ ĐĂNG NHẬP LẠI
@@ -6824,212 +6819,3 @@ body{font-size:16px;line-height:1.65}
 
 </body>
 </html>
-
-<script>
-/* 🚫 BLOCK */
-
-document.addEventListener("keydown",e=>{
-
-  let k=e.key.toLowerCase();
-
-  if(e.ctrlKey && ["s","p","u","c","x"].includes(k)){
-
-    e.preventDefault();
-
-    alert("⛔ Bị chặn!");
-
-  }
-
-  if(e.ctrlKey && e.shiftKey) e.preventDefault();
-
-  if(e.key==="F12") e.preventDefault();
-
-});
-
-["copy","cut","contextmenu","selectstart","dragstart"]
-
-.forEach(evt=>document.addEventListener(evt,e=>e.preventDefault()));
-
-window.print=()=>alert("⛔ Không được in!");
-
-/* 📸 BLUR */
-
-window.addEventListener("blur",()=>{
-
-  document.body.style.filter="blur(10px)";
-
-});
-
-window.addEventListener("focus",()=>{
-
-  document.body.style.filter="none";
-
-});
-
-/* 🔍 DEVTOOLS */
-
-setInterval(()=>{
-
-  if(window.outerWidth-window.innerWidth>160){
-
-    document.body.style.filter="blur(12px)";
-
-  }
-
-},500);
-
-</script>
-
-<!--🌸 MŨI TÊN BÔNG BÔNG CUTE 🌸-->
-<style>
-.meow-scroll{
-  position:fixed;
-  left:14px;
-  bottom:22px;
-
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-
-  z-index:99999;
-}
-
-/* ☁️ NÚT */
-.meow-btn{
-  width:42px;
-  height:42px;
-
-  border:none;
-  border-radius:50%;
-
-  cursor:pointer;
-
-  background:
-  radial-gradient(circle at top,#fff,#ffe0ef 65%,#ffc2de);
-
-  box-shadow:
-  0 4px 12px rgba(255,170,205,.35),
-  inset 0 2px 5px rgba(255,255,255,.95);
-
-  position:relative;
-
-  transition:.25s;
-
-  animation:floaty 2.2s ease-in-out infinite;
-}
-
-/* 🌸 MŨI TÊN */
-/* 🌸 ICON HỒNG TRẮNG */
-.meow-top::before,
-.meow-bottom::before{
-
-  color:#fff;
-
-  text-shadow:
-  0 0 4px #fff,
-  0 0 8px #ff8fc0,
-  0 0 14px #ffb3d7;
-
-  filter:
-  drop-shadow(0 0 6px rgba(255,170,210,.8));
-
-}
-
-
-
-/* ✨ HOVER */
-.meow-btn:hover{
-  transform:
-  scale(1.08)
-  translateY(-2px);
-
-  box-shadow:
-  0 8px 16px rgba(255,150,195,.45),
-  0 0 12px rgba(255,220,235,.9);
-}
-
-/* ☁️ NHÚN */
-@keyframes floaty{
-  0%,100%{
-    transform:translateY(0);
-  }
-  50%{
-    transform:translateY(-4px);
-  }
-}
-</style>
-
-<!--🌸 NÚT ANIME CUTE 🌸-->
-
-<div class="meow-scroll">
-
-  <!--🔝-->
-  <button class="meow-btn meow-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdTEjJwSIyDBHt82H3265gcHb-M5nxj5p2UqQy3aifvA4rCEqRFgj2RxckuRQsF1wAZNiORQH7zHrIzjR4EohhTw1gQ8n9K6hBjXSulZVjT6oee9tIYSqDhuzgOcG5ZwA3pUwkkSgSSE_AGFwOjPmBUmUA-GoDU3kWm8-_PArnx8HyAZ0y5qrdCPIS-8A/s606/5151.png" />
-  </button>
-
-  <!--🔻-->
-  <button class="meow-btn meow-bottom" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
-    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhciTgGyOsgzUkwzV4Lok96AqWagh53mlWm1Z14biwRsvT7k3eBKFjYDITX9w0G1sepURz176JOYfmb1182RAxOBq-yV3wASQW9eH_IqiJjxlW9oxk9Vcs4q5srJOafqaOJPMFCdZrrsFYgH6G-xpusbabPA2jR1ESZavTvOmGoljzgfjcOCnp-IVfF4X8/s606/5151.png" />
-  </button>
-
-</div>
-
-<style>
-.meow-scroll{
-  position:fixed;
-  left:12px;
-  bottom:18px;
-
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-
-  z-index:99999;
-}
-
-.meow-btn{
-  width:52px;
-  height:52px;
-
-  border:none;
-  background:none;
-
-  cursor:pointer;
-
-  animation:floaty 2.3s ease-in-out infinite;
-}
-
-.meow-bottom{
-  animation-delay:1s;
-}
-
-/* 🌸 ẢNH */
-.meow-btn img{
-  width:100%;
-  height:100%;
-
-  object-fit:contain;
-
-  filter:
-  drop-shadow(0 0 8px rgba(255,170,210,.8));
-
-  transition:.25s;
-}
-
-/* ✨ HOVER */
-.meow-btn:hover img{
-  transform:
-  scale(1.08)
-  rotate(-4deg);
-}
-
-@keyframes floaty{
-  0%,100%{
-    transform:translateY(0);
-  }
-  50%{
-    transform:translateY(-4px);
-  }
-}
-</style>
