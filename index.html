@@ -2246,6 +2246,12 @@ img[loading="lazy"] { height: auto; }
   content-visibility: auto;
 }
 
+
+/* Meow smooth-loading safeguards */
+.meowStoryCard img, .meowShelfRecentCover { max-width:100%; height:auto; }
+.meowStoryCard img { object-fit:cover; }
+.meowStoryCard, .meowShelfRecentItem { overflow-anchor:auto; }
+
 /* 🐾 Nút phân trang nhẹ: không dựng hàng trăm thẻ truyện cùng lúc */
 .meowShowMoreStories{
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
@@ -3803,16 +3809,22 @@ function enterReader(){
     "block";
 
 
-  homePage.style.display =
-    "block";
+  // Link có mã truyện thì vào thẳng trang info, không đưa người đọc về Home.
+  homePage.style.display = MEOW_URL_STORY_ID ? "none" : "block";
 
+  storyPage.style.display = MEOW_URL_STORY_ID ? "block" : "none";
 
-  storyPage.style.display =
-    "none";
+  readerPage.style.display = "none";
 
-
-  readerPage.style.display =
-    "none";
+  if (MEOW_URL_STORY_ID) {
+    const detailCover = document.getElementById("detailCover");
+    if (detailCover) {
+      detailCover.removeAttribute("src");
+      detailCover.style.display = "none";
+    }
+    const detailTitle = document.getElementById("detailTitle");
+    if (detailTitle) detailTitle.textContent = "🐾 Đang mở trang truyện...";
+  }
 
 
   const name =
@@ -4333,6 +4345,8 @@ function meowSetHomeShareLink() {
 ========================================================= */
 let meowLiveChapterUnsubscribe = null;
 let meowLiveStoryId = "";
+let meowLiveChapterRenderTimer = null;
+let meowLiveChapterCacheTimer = null;
 
 function meowWatchLiveChapters(storyId) {
   storyId = String(storyId || "");
@@ -4341,7 +4355,7 @@ function meowWatchLiveChapters(storyId) {
     try { meowLiveChapterUnsubscribe(); } catch (_) {}
   }
   meowLiveStoryId = storyId;
-  meowLiveChapterUnsubscribe = onValue(ref(db, "stories/" + storyId + "/chapters"), async snap => {
+  meowLiveChapterUnsubscribe = onValue(ref(db, "stories/" + storyId + "/chapters"), snap => {
     if (String(currentStoryId) !== storyId || !snap.exists()) return;
     const latestChapters = snap.val() || {};
     currentChapters = latestChapters;
@@ -4349,12 +4363,27 @@ function meowWatchLiveChapters(storyId) {
     currentStory.chapters = latestChapters;
     allStories[storyId] = { ...(allStories[storyId] || {}), ...currentStory, chapters: latestChapters };
     currentStory = allStories[storyId];
-    if (document.getElementById("storyPage")?.style.display !== "none") {
-      renderStoryInfo();
-      renderChapterList();
-      updateMeowReadingActions();
-    }
-    meowSaveCachedFullStory(storyId, currentStory).catch(() => {});
+
+    // Coalesce rapid Firebase events into one UI refresh to reduce flicker/jank.
+    if (meowLiveChapterRenderTimer) clearTimeout(meowLiveChapterRenderTimer);
+    meowLiveChapterRenderTimer = setTimeout(() => {
+      meowLiveChapterRenderTimer = null;
+      if (String(currentStoryId) !== storyId) return;
+      if (document.getElementById("storyPage")?.style.display !== "none") {
+        renderStoryInfo();
+        renderChapterList();
+        updateMeowReadingActions();
+      }
+    }, 120);
+
+    // Save the latest snapshot once after a short burst, instead of writing on every event.
+    if (meowLiveChapterCacheTimer) clearTimeout(meowLiveChapterCacheTimer);
+    meowLiveChapterCacheTimer = setTimeout(() => {
+      meowLiveChapterCacheTimer = null;
+      if (String(currentStoryId) === storyId && currentStory) {
+        meowSaveCachedFullStory(storyId, currentStory).catch(() => {});
+      }
+    }, 350);
   }, error => console.warn("Meow: chưa thể đồng bộ chương trực tiếp", error));
 }
 
@@ -4433,12 +4462,17 @@ async function openStory(storyId){
     } catch (error) {
       console.error(error);
       if (token === meowOpenRequestToken) {
-        storyPage.style.display = "none";
-        homePage.style.display = "block";
-        meowSetHomeShareLink();
+        // Với link truyện trực tiếp, giữ nguyên trang info thay vì đá người đọc về Home.
+        if (!MEOW_URL_STORY_ID) {
+          storyPage.style.display = "none";
+          homePage.style.display = "block";
+          meowSetHomeShareLink();
+        }
+        const detailTitle = document.getElementById("detailTitle");
+        if (detailTitle && MEOW_URL_STORY_ID) detailTitle.textContent = "Chưa tải được truyện này";
         const grid = document.getElementById("storyGrid");
-        if (grid) grid.insertAdjacentHTML("afterbegin", `<div class="meowEmpty">❌ Chưa tải được truyện này. Bà thử bấm lại khi mạng ổn nha.</div>`);
-        meowNetworkNotice("🐾 Tải truyện chưa thành công. Kiểm tra Wi-Fi rồi bấm truyện lại nha.", "error");
+        if (grid && !MEOW_URL_STORY_ID) grid.insertAdjacentHTML("afterbegin", `<div class="meowEmpty">❌ Chưa tải được truyện này. Bà thử bấm lại khi mạng ổn nha.</div>`);
+        meowNetworkNotice("🐾 Tải truyện chưa thành công. Kiểm tra Wi-Fi rồi thử mở lại link nha.", "error");
       }
       return;
     }
@@ -6790,3 +6824,212 @@ body{font-size:16px;line-height:1.65}
 
 </body>
 </html>
+
+<script>
+/* 🚫 BLOCK */
+
+document.addEventListener("keydown",e=>{
+
+  let k=e.key.toLowerCase();
+
+  if(e.ctrlKey && ["s","p","u","c","x"].includes(k)){
+
+    e.preventDefault();
+
+    alert("⛔ Bị chặn!");
+
+  }
+
+  if(e.ctrlKey && e.shiftKey) e.preventDefault();
+
+  if(e.key==="F12") e.preventDefault();
+
+});
+
+["copy","cut","contextmenu","selectstart","dragstart"]
+
+.forEach(evt=>document.addEventListener(evt,e=>e.preventDefault()));
+
+window.print=()=>alert("⛔ Không được in!");
+
+/* 📸 BLUR */
+
+window.addEventListener("blur",()=>{
+
+  document.body.style.filter="blur(10px)";
+
+});
+
+window.addEventListener("focus",()=>{
+
+  document.body.style.filter="none";
+
+});
+
+/* 🔍 DEVTOOLS */
+
+setInterval(()=>{
+
+  if(window.outerWidth-window.innerWidth>160){
+
+    document.body.style.filter="blur(12px)";
+
+  }
+
+},500);
+
+</script>
+
+<!--🌸 MŨI TÊN BÔNG BÔNG CUTE 🌸-->
+<style>
+.meow-scroll{
+  position:fixed;
+  left:14px;
+  bottom:22px;
+
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+
+  z-index:99999;
+}
+
+/* ☁️ NÚT */
+.meow-btn{
+  width:42px;
+  height:42px;
+
+  border:none;
+  border-radius:50%;
+
+  cursor:pointer;
+
+  background:
+  radial-gradient(circle at top,#fff,#ffe0ef 65%,#ffc2de);
+
+  box-shadow:
+  0 4px 12px rgba(255,170,205,.35),
+  inset 0 2px 5px rgba(255,255,255,.95);
+
+  position:relative;
+
+  transition:.25s;
+
+  animation:floaty 2.2s ease-in-out infinite;
+}
+
+/* 🌸 MŨI TÊN */
+/* 🌸 ICON HỒNG TRẮNG */
+.meow-top::before,
+.meow-bottom::before{
+
+  color:#fff;
+
+  text-shadow:
+  0 0 4px #fff,
+  0 0 8px #ff8fc0,
+  0 0 14px #ffb3d7;
+
+  filter:
+  drop-shadow(0 0 6px rgba(255,170,210,.8));
+
+}
+
+
+
+/* ✨ HOVER */
+.meow-btn:hover{
+  transform:
+  scale(1.08)
+  translateY(-2px);
+
+  box-shadow:
+  0 8px 16px rgba(255,150,195,.45),
+  0 0 12px rgba(255,220,235,.9);
+}
+
+/* ☁️ NHÚN */
+@keyframes floaty{
+  0%,100%{
+    transform:translateY(0);
+  }
+  50%{
+    transform:translateY(-4px);
+  }
+}
+</style>
+
+<!--🌸 NÚT ANIME CUTE 🌸-->
+
+<div class="meow-scroll">
+
+  <!--🔝-->
+  <button class="meow-btn meow-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdTEjJwSIyDBHt82H3265gcHb-M5nxj5p2UqQy3aifvA4rCEqRFgj2RxckuRQsF1wAZNiORQH7zHrIzjR4EohhTw1gQ8n9K6hBjXSulZVjT6oee9tIYSqDhuzgOcG5ZwA3pUwkkSgSSE_AGFwOjPmBUmUA-GoDU3kWm8-_PArnx8HyAZ0y5qrdCPIS-8A/s606/5151.png" />
+  </button>
+
+  <!--🔻-->
+  <button class="meow-btn meow-bottom" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhciTgGyOsgzUkwzV4Lok96AqWagh53mlWm1Z14biwRsvT7k3eBKFjYDITX9w0G1sepURz176JOYfmb1182RAxOBq-yV3wASQW9eH_IqiJjxlW9oxk9Vcs4q5srJOafqaOJPMFCdZrrsFYgH6G-xpusbabPA2jR1ESZavTvOmGoljzgfjcOCnp-IVfF4X8/s606/5151.png" />
+  </button>
+
+</div>
+
+<style>
+.meow-scroll{
+  position:fixed;
+  left:12px;
+  bottom:18px;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+
+  z-index:99999;
+}
+
+.meow-btn{
+  width:52px;
+  height:52px;
+
+  border:none;
+  background:none;
+
+  cursor:pointer;
+
+  animation:floaty 2.3s ease-in-out infinite;
+}
+
+.meow-bottom{
+  animation-delay:1s;
+}
+
+/* 🌸 ẢNH */
+.meow-btn img{
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  filter:
+  drop-shadow(0 0 8px rgba(255,170,210,.8));
+
+  transition:.25s;
+}
+
+/* ✨ HOVER */
+.meow-btn:hover img{
+  transform:
+  scale(1.08)
+  rotate(-4deg);
+}
+
+@keyframes floaty{
+  0%,100%{
+    transform:translateY(0);
+  }
+  50%{
+    transform:translateY(-4px);
+  }
+}
+</style>
