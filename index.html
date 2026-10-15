@@ -6819,3 +6819,212 @@ body{font-size:16px;line-height:1.65}
 
 </body>
 </html>
+
+<script>
+/* 🚫 BLOCK */
+
+document.addEventListener("keydown",e=>{
+
+  let k=e.key.toLowerCase();
+
+  if(e.ctrlKey && ["s","p","u","c","x"].includes(k)){
+
+    e.preventDefault();
+
+    alert("⛔ Bị chặn!");
+
+  }
+
+  if(e.ctrlKey && e.shiftKey) e.preventDefault();
+
+  if(e.key==="F12") e.preventDefault();
+
+});
+
+["copy","cut","contextmenu","selectstart","dragstart"]
+
+.forEach(evt=>document.addEventListener(evt,e=>e.preventDefault()));
+
+window.print=()=>alert("⛔ Không được in!");
+
+/* 📸 BLUR */
+
+window.addEventListener("blur",()=>{
+
+  document.body.style.filter="blur(10px)";
+
+});
+
+window.addEventListener("focus",()=>{
+
+  document.body.style.filter="none";
+
+});
+
+/* 🔍 DEVTOOLS */
+
+setInterval(()=>{
+
+  if(window.outerWidth-window.innerWidth>160){
+
+    document.body.style.filter="blur(12px)";
+
+  }
+
+},500);
+
+</script>
+
+<!--🌸 MŨI TÊN BÔNG BÔNG CUTE 🌸-->
+<style>
+.meow-scroll{
+  position:fixed;
+  left:14px;
+  bottom:22px;
+
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+
+  z-index:99999;
+}
+
+/* ☁️ NÚT */
+.meow-btn{
+  width:42px;
+  height:42px;
+
+  border:none;
+  border-radius:50%;
+
+  cursor:pointer;
+
+  background:
+  radial-gradient(circle at top,#fff,#ffe0ef 65%,#ffc2de);
+
+  box-shadow:
+  0 4px 12px rgba(255,170,205,.35),
+  inset 0 2px 5px rgba(255,255,255,.95);
+
+  position:relative;
+
+  transition:.25s;
+
+  animation:floaty 2.2s ease-in-out infinite;
+}
+
+/* 🌸 MŨI TÊN */
+/* 🌸 ICON HỒNG TRẮNG */
+.meow-top::before,
+.meow-bottom::before{
+
+  color:#fff;
+
+  text-shadow:
+  0 0 4px #fff,
+  0 0 8px #ff8fc0,
+  0 0 14px #ffb3d7;
+
+  filter:
+  drop-shadow(0 0 6px rgba(255,170,210,.8));
+
+}
+
+
+
+/* ✨ HOVER */
+.meow-btn:hover{
+  transform:
+  scale(1.08)
+  translateY(-2px);
+
+  box-shadow:
+  0 8px 16px rgba(255,150,195,.45),
+  0 0 12px rgba(255,220,235,.9);
+}
+
+/* ☁️ NHÚN */
+@keyframes floaty{
+  0%,100%{
+    transform:translateY(0);
+  }
+  50%{
+    transform:translateY(-4px);
+  }
+}
+</style>
+
+<!--🌸 NÚT ANIME CUTE 🌸-->
+
+<div class="meow-scroll">
+
+  <!--🔝-->
+  <button class="meow-btn meow-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdTEjJwSIyDBHt82H3265gcHb-M5nxj5p2UqQy3aifvA4rCEqRFgj2RxckuRQsF1wAZNiORQH7zHrIzjR4EohhTw1gQ8n9K6hBjXSulZVjT6oee9tIYSqDhuzgOcG5ZwA3pUwkkSgSSE_AGFwOjPmBUmUA-GoDU3kWm8-_PArnx8HyAZ0y5qrdCPIS-8A/s606/5151.png" />
+  </button>
+
+  <!--🔻-->
+  <button class="meow-btn meow-bottom" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhciTgGyOsgzUkwzV4Lok96AqWagh53mlWm1Z14biwRsvT7k3eBKFjYDITX9w0G1sepURz176JOYfmb1182RAxOBq-yV3wASQW9eH_IqiJjxlW9oxk9Vcs4q5srJOafqaOJPMFCdZrrsFYgH6G-xpusbabPA2jR1ESZavTvOmGoljzgfjcOCnp-IVfF4X8/s606/5151.png" />
+  </button>
+
+</div>
+
+<style>
+.meow-scroll{
+  position:fixed;
+  left:12px;
+  bottom:18px;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+
+  z-index:99999;
+}
+
+.meow-btn{
+  width:52px;
+  height:52px;
+
+  border:none;
+  background:none;
+
+  cursor:pointer;
+
+  animation:floaty 2.3s ease-in-out infinite;
+}
+
+.meow-bottom{
+  animation-delay:1s;
+}
+
+/* 🌸 ẢNH */
+.meow-btn img{
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  filter:
+  drop-shadow(0 0 8px rgba(255,170,210,.8));
+
+  transition:.25s;
+}
+
+/* ✨ HOVER */
+.meow-btn:hover img{
+  transform:
+  scale(1.08)
+  rotate(-4deg);
+}
+
+@keyframes floaty{
+  0%,100%{
+    transform:translateY(0);
+  }
+  50%{
+    transform:translateY(-4px);
+  }
+}
+</style>
