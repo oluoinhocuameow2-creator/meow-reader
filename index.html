@@ -2350,8 +2350,9 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
 
       <div class="meowLogo">
 
-        <div class="meowLogoCat">
-          🐱
+        <div class="meowLogoCat" id="meowLogoCat">
+          <span id="meowLogoFallback" aria-hidden="true">🐱</span>
+          <img id="meowLogoImage" alt="Logo Ổ Lười Nhỏ của Meow" style="display:none;width:100%;height:100%;object-fit:contain;border-radius:inherit">
         </div>
 
         <span>
@@ -2508,22 +2509,7 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
         <div class="meowStoryHead">
 
 
-          <div class="meowStoryShareBox" aria-label="Link riêng của truyện">
-            <div class="meowStoryShareTop">
-              <span class="meowStoryShareSticker">🐱</span>
-              <div class="meowStoryShareHeading">
-                <strong>Link truyện của Meow</strong>
-                <small>Chạm Copy để chia sẻ cho nàng nha 💗</small>
-              </div>
-              <span class="meowStoryShareSparkle">✦</span>
-            </div>
-            <div class="meowStoryShareRow">
-              <span class="meowStoryShareLinkIcon">🔗</span>
-              <a id="meowStoryShareUrl" class="meowStoryShareUrl" href="#" target="_blank" rel="noopener noreferrer">Đang tạo link truyện…</a>
-              <button type="button" id="meowStoryCopyLink" class="meowStoryCopyLink">📋 Copy</button>
-            </div>
-            <div id="meowStoryCopyStatus" class="meowStoryCopyStatus" aria-live="polite">✨ Mỗi truyện có một đường dẫn riêng</div>
-          </div>
+
 
           <div
             class="meowDetailCover"
@@ -2629,6 +2615,24 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
           <form class="meowCommentForm" id="meowStoryCommentForm"><input maxlength="1000" name="comment" placeholder="Viết vài dòng cảm nhận dễ thương..." aria-label="Nội dung bình luận" required><button type="submit">Gửi</button></form>
        
         </section>
+
+        <!-- Link riêng của truyện nằm bên dưới khung bình luận -->
+                  <div class="meowStoryShareBox" aria-label="Link riêng của truyện">
+            <div class="meowStoryShareTop">
+              <span class="meowStoryShareSticker">🐱</span>
+              <div class="meowStoryShareHeading">
+                <strong>Link truyện của Meow</strong>
+                <small>Chạm Copy để chia sẻ cho nàng nha 💗</small>
+              </div>
+              <span class="meowStoryShareSparkle">✦</span>
+            </div>
+            <div class="meowStoryShareRow">
+              <span class="meowStoryShareLinkIcon">🔗</span>
+              <a id="meowStoryShareUrl" class="meowStoryShareUrl" href="#" target="_blank" rel="noopener noreferrer">Đang tạo link truyện…</a>
+              <button type="button" id="meowStoryCopyLink" class="meowStoryCopyLink">📋 Copy</button>
+            </div>
+            <div id="meowStoryCopyStatus" class="meowStoryCopyStatus" aria-live="polite">✨ Mỗi truyện có một đường dẫn riêng</div>
+          </div>
 
       </div>
 
@@ -2904,6 +2908,19 @@ const firebaseConfig = {
 
 };
 
+// 🐱 DÁN LINK ẢNH LOGO CỦA MEOW VÀO DÒNG DƯỚI (URL ảnh https://...)
+// Để trống nếu muốn dùng biểu tượng mèo mặc định.
+const MEOW_LOGO_IMAGE_URL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiYLy-jUq5mKOkoChPcUJsJ5IT1l5L7sIKkoOjTyULdBkGEOegPZC8oNdfUB6dQc0ECqpxqsXvqUDDvLwtyHsojFAwInnybvlmAXrcLJgcF0baf_axwaBw1quRqvnStggDn9EOMrTPwN0efVoGiveqMnTvlinkEsMMlmeb4Nc6Bg-bMK7VQLQmDVQVWnSOl/s720/843314900_1323578224180665_2998633598834296176_n.jpg";
+
+function meowApplyLogoImage() {
+  const url = String(MEOW_LOGO_IMAGE_URL || "").trim();
+  const img = document.getElementById("meowLogoImage");
+  const fallback = document.getElementById("meowLogoFallback");
+  if (!img || !fallback || !url || url === "DAN_LINK_ANH_LOGO_VAO_DAY") return;
+  img.onload = () => { img.style.display = "block"; fallback.style.display = "none"; };
+  img.onerror = () => { img.style.display = "none"; fallback.style.display = "inline"; };
+  img.src = url;
+}
 
 const app =
   getApps().length
@@ -2913,6 +2930,12 @@ const app =
 
 const db =
   getDatabase(app);
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", meowApplyLogoImage, { once: true });
+} else {
+  meowApplyLogoImage();
+}
 
 
 /* =========================================================
@@ -4250,6 +4273,36 @@ function meowSetHomeShareLink() {
 }
 
 /* =========================================================
+   LIVE CHAPTER SYNC — chương mới trên Firebase hiện ngay
+========================================================= */
+let meowLiveChapterUnsubscribe = null;
+let meowLiveStoryId = "";
+
+function meowWatchLiveChapters(storyId) {
+  storyId = String(storyId || "");
+  if (!storyId || meowLiveStoryId === storyId) return;
+  if (typeof meowLiveChapterUnsubscribe === "function") {
+    try { meowLiveChapterUnsubscribe(); } catch (_) {}
+  }
+  meowLiveStoryId = storyId;
+  meowLiveChapterUnsubscribe = onValue(ref(db, "stories/" + storyId + "/chapters"), async snap => {
+    if (String(currentStoryId) !== storyId || !snap.exists()) return;
+    const latestChapters = snap.val() || {};
+    currentChapters = latestChapters;
+    currentStory = currentStory || allStories[storyId] || {};
+    currentStory.chapters = latestChapters;
+    allStories[storyId] = { ...(allStories[storyId] || {}), ...currentStory, chapters: latestChapters };
+    currentStory = allStories[storyId];
+    if (document.getElementById("storyPage")?.style.display !== "none") {
+      renderStoryInfo();
+      renderChapterList();
+      updateMeowReadingActions();
+    }
+    meowSaveCachedFullStory(storyId, currentStory).catch(() => {});
+  }, error => console.warn("Meow: chưa thể đồng bộ chương trực tiếp", error));
+}
+
+/* =========================================================
    OPEN STORY
 ========================================================= */
 
@@ -4283,6 +4336,7 @@ async function openStory(storyId){
       currentChapters = cachedStory.chapters || {};
       renderStoryInfo();
       updateMeowReadingActions();
+      meowWatchLiveChapters(storyId);
 
       // Fresh cache = instant open without a network wait. Stale cache remains usable while refreshing.
       if (Date.now() - Number(cachedRow.savedAt || 0) < MEOW_STORY_CACHE_TTL) return;
@@ -4319,6 +4373,7 @@ async function openStory(storyId){
   renderStoryInfo();
   meowSetStoryShareLink(currentStoryId, currentStory);
   updateMeowReadingActions();
+  meowWatchLiveChapters(storyId);
 }
 
 /* =========================================================
