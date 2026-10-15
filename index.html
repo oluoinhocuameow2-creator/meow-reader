@@ -2283,6 +2283,61 @@ img[loading="lazy"] { height: auto; }
 @media(max-width:600px){.meowShowMoreStories{font-size:12px;padding:10px 14px;max-width:calc(100% - 18px)}}
 </style>
 
+
+<style>
+/* MEOW TTS — hộp đọc truyện kẹo bông */
+.meowTTSPanel{
+  width:min(calc(100% - 24px),980px)!important;
+  margin:18px auto 100px!important;
+  padding:18px!important;
+  border:1px solid #ffc6df!important;
+  border-radius:27px!important;
+  background:
+    radial-gradient(circle at 8% 0%,#ffe0f0 0,transparent 36%),
+    radial-gradient(circle at 100% 100%,#eee0ff 0,transparent 38%),
+    linear-gradient(145deg,#fffafd 0%,#fff0f7 58%,#f8f1ff 100%)!important;
+  box-shadow:0 14px 34px #d77eaa25,inset 0 1px 0 #fff!important;
+  color:#86516e!important;
+}
+.meowTTSHead{gap:12px!important;align-items:center}
+.meowTTSIcon{
+  width:48px!important;height:48px!important;flex:0 0 48px;
+  border:2px solid #fff!important;border-radius:17px!important;
+  background:linear-gradient(145deg,#ffb8d6,#d9b9ff)!important;
+  box-shadow:0 5px 0 #eaa0c7,0 8px 15px #d88dbb35!important;
+  font-size:25px!important;
+}
+.meowTTSHeading strong{font-size:16px!important;color:#bd4f86!important}
+.meowTTSHeading small{font-size:12px!important;white-space:normal!important;line-height:1.5}
+.meowTTSSpeedLabel{padding:8px 10px;border:1px solid #f5c3da;border-radius:13px;background:#ffffffc9;color:#a45b80!important;font-size:12px!important}
+.meowTTSSpeedLabel b{color:#d84d91!important}
+.meowTTSSpeedRow{padding:10px 3px 2px!important}
+.meowTTSPanel input[type=range]{accent-color:#e95b9c!important;min-height:20px}
+.meowTTSProgressRow{gap:10px!important;margin-top:7px!important;padding:8px 10px;border:1px solid #f8d5e6;border-radius:15px;background:#ffffffa8;font-size:11px!important}
+.meowTTSButtons{gap:8px!important;margin-top:12px!important;flex-wrap:wrap}
+.meowTTSButtons button{
+  min-height:43px;padding:11px 14px!important;border-radius:15px!important;
+  font-family:inherit!important;font-size:12px!important;font-weight:800!important;
+  transition:transform .18s,box-shadow .18s;
+}
+.meowTTSButtons button:hover{transform:translateY(-2px)}
+.meowTTSMainBtn{background:linear-gradient(135deg,#ff7eb0,#d59aff)!important;box-shadow:0 5px 0 #d77cb1,0 8px 14px #d77eaa30!important}
+.meowTTSBtn{border:1px solid #f7c5dc!important;background:linear-gradient(145deg,#fff,#ffe7f2)!important;color:#a64e7b!important;box-shadow:0 3px 0 #f3c2da!important}
+.meowTTSNote{margin:13px 0 0!important;padding:10px 12px;border-radius:14px;background:#ffffffa0;color:#a87892!important;font-size:11px!important;line-height:1.7!important}
+#readerPage.reader-theme-night .meowTTSPanel{background:linear-gradient(145deg,#302837,#3c2c40)!important;border-color:#61455b!important;color:#f6e4ee!important}
+#readerPage.reader-theme-night .meowTTSHeading strong{color:#ffb6d6!important}
+#readerPage.reader-theme-night .meowTTSProgressRow,#readerPage.reader-theme-night .meowTTSSpeedLabel{background:#443548;border-color:#64475c;color:#f4d9e8!important}
+#readerPage.reader-theme-night .meowTTSBtn{background:#49374a!important;border-color:#65475d!important;color:#ffe2f0!important;box-shadow:0 3px 0 #35273a!important}
+#readerPage.reader-theme-night .meowTTSNote{background:#443548;color:#d7bfd0!important}
+@media(max-width:520px){
+ .meowTTSPanel{padding:13px!important;border-radius:22px!important}
+ .meowTTSIcon{width:42px!important;height:42px!important;flex-basis:42px}
+ .meowTTSHeading strong{font-size:14px!important}
+ .meowTTSSpeedLabel{padding:7px;font-size:10px!important}
+ .meowTTSButtons button{flex:1;min-width:calc(50% - 8px);padding:10px 8px!important}
+ .meowTTSMainBtn{min-width:100%!important}
+}
+</style>
 </head>
 <body>
 <div id="meowReaderApp">
@@ -2729,8 +2784,8 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
 
     <div id="meowTTSPanel" class="meowTTSPanel" aria-label="AI đọc truyện">
       <div class="meowTTSHead">
-        <span class="meowTTSIcon">🔊</span>
-        <div class="meowTTSHeading"><strong>Meow AI đọc</strong><small id="meowTTSStatus">Sẵn sàng đọc chương này</small></div>
+        <span class="meowTTSIcon">🐱</span>
+        <div class="meowTTSHeading"><strong>🎀 Meow kể chuyện</strong><small id="meowTTSStatus">Chạm nút bên dưới để nghe truyện nha</small></div>
         <label class="meowTTSSpeedLabel" for="meowTTSSpeed">Tốc độ <b id="meowTTSSpeedLabel">1.0×</b></label>
       </div>
       <div class="meowTTSSpeedRow"><input id="meowTTSSpeed" type="range" min="0.5" max="2" step="0.1" value="1" aria-label="Điều chỉnh tốc độ đọc"></div>
@@ -2740,7 +2795,7 @@ Nếu chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
         <span id="meowTTSTotal">100%</span>
       </div>
       <div class="meowTTSButtons">
-        <button type="button" id="meowTTSPlay" class="meowTTSMainBtn">▶ Đọc truyện</button>
+        <button type="button" id="meowTTSPlay" class="meowTTSMainBtn">▶ Bắt đầu nghe</button>
         <button type="button" id="meowTTSPause" class="meowTTSBtn">Ⅱ Tạm dừng</button>
         <button type="button" id="meowTTSStop" class="meowTTSBtn">■ Dừng</button>
       </div>
@@ -2876,7 +2931,8 @@ from
    Ví dụ: https://TEN.github.io/REPO/luong-son.html?story=luongson
    Dữ liệu truyện vẫn lấy từ Firebase olncm-fa88c.
 ========================================================= */
-const MEOW_URL_STORY_ID = new URLSearchParams(window.location.search).get("story");
+const MEOW_URL_PARAMS = new URLSearchParams(window.location.search);
+const MEOW_URL_STORY_ID = (MEOW_URL_PARAMS.get("story") || MEOW_URL_PARAMS.get("storyId") || MEOW_URL_PARAMS.get("id") || (window.location.hash.match(/(?:^#|[?&])story=([^&]+)/i) || [])[1] || "").trim();
 if (!MEOW_URL_STORY_ID) document.title = "Ổ Lười Nhỏ của Meow";
 
 /* =========================================================
@@ -4308,8 +4364,27 @@ function meowWatchLiveChapters(storyId) {
 
 async function openStory(storyId){
   const token = ++meowOpenRequestToken;
+  storyId = String(storyId || "").trim();
+  if (!storyId) return;
   let story = allStories[storyId];
-  if (!story) return;
+
+  // Link được dán trực tiếp vẫn mở được info dù catalog chưa kịp cập nhật.
+  if (!story) {
+    try {
+      const directSnap = await meowGetWithRetry(ref(db, "stories/" + storyId));
+      if (token !== meowOpenRequestToken) return;
+      if (directSnap.exists()) {
+        story = directSnap.val() || {};
+        allStories[storyId] = story;
+      }
+    } catch (error) {
+      console.warn("Meow: không tải được truyện từ link trực tiếp", error);
+    }
+  }
+  if (!story) {
+    meowNetworkNotice("🐾 Không tìm thấy truyện theo link này. Kiểm tra lại mã truyện nha.", "error");
+    return;
+  }
 
   currentStoryId = storyId;
   currentStory = story;
@@ -6116,6 +6191,7 @@ let meowTTSRunToken = 0;
 let meowTTSChunkStart = 0;
 let meowTTSChunkEnd = 0;
 let meowTTSVoicesReady = false;
+let meowTTSPendingStart = null;
 
 function meowTTSGetText(){
   const el = document.getElementById("readerContent");
@@ -6131,7 +6207,10 @@ function meowTTSUpdateProgress(offset){
 function meowTTSSetStatus(text){ if (meowTTSStatus) meowTTSStatus.textContent = text; }
 function meowTTSStopInternal(reset = true){
   meowTTSRunToken++;
-  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  meowTTSPendingStart = null;
+  if ("speechSynthesis" in window) {
+    try { window.speechSynthesis.cancel(); } catch (_) {}
+  }
   meowTTSUtterance = null;
   meowTTSIsPaused = false;
   if (reset) { meowTTSStartOffset = 0; meowTTSUpdateProgress(0); }
@@ -6139,13 +6218,14 @@ function meowTTSStopInternal(reset = true){
 function meowTTSChooseVoice(){
   if (!("speechSynthesis" in window)) return null;
   const voices = window.speechSynthesis.getVoices() || [];
-  return voices.find(v => /^vi(-|_)/i.test(v.lang)) || voices.find(v => /vietnam|tiếng việt/i.test(v.name)) || null;
+  return voices.find(v => /^vi(-|_)/i.test(v.lang || "")) ||
+         voices.find(v => /vietnam|tiếng việt|an\b|linh\b/i.test(v.name || "")) || null;
 }
 function meowTTSGetChunkEnd(text, start){
-  // Keep utterances short for iPhone/iPad and Android reliability.
-  const max = Math.min(start + 220, text.length);
+  // Đoạn ngắn giúp hạn chế tình trạng trình duyệt/mobile tự ngắt giọng.
+  const max = Math.min(start + 160, text.length);
   if (max >= text.length) return text.length;
-  const floor = Math.min(start + 100, max);
+  const floor = Math.min(start + 65, max);
   let cut = -1;
   for (const mark of [". ", "! ", "? ", "; ", ": ", ", ", "。", "！", "？", "\n"]) {
     const found = text.lastIndexOf(mark, max);
@@ -6161,9 +6241,10 @@ function meowTTSSpeakChunk(start, token){
   if (token !== meowTTSRunToken || meowTTSIsPaused) return;
   if (start >= meowTTSFullText.length) {
     meowTTSUpdateProgress(meowTTSFullText.length);
-    meowTTSSetStatus("Đã đọc hết chương.");
+    meowTTSSetStatus("🎀 Đọc xong chương rồi nè!");
     meowTTSUtterance = null;
     meowTTSIsPaused = false;
+    if (meowTTSPlay) meowTTSPlay.textContent = "↻ Đọc lại";
     return;
   }
   const end = meowTTSGetChunkEnd(meowTTSFullText, start);
@@ -6176,7 +6257,11 @@ function meowTTSSpeakChunk(start, token){
   const voice = meowTTSChooseVoice();
   if (voice) utterance.voice = voice;
   meowTTSUtterance = utterance;
-  meowTTSSetStatus(voice ? "Đang đọc bằng giọng tiếng Việt" : "Đang đọc - giọng tiếng Việt mặc định");
+  meowTTSSetStatus(voice ? "🔊 Đang đọc bằng giọng tiếng Việt" : "🔊 Đang đọc bằng giọng mặc định của máy");
+  if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đang đọc";
+  utterance.onstart = () => {
+    if (token === meowTTSRunToken) meowTTSSetStatus(voice ? "💗 Đang đọc tiếng Việt…" : "💗 Đang đọc…");
+  };
   utterance.onboundary = event => {
     if (token !== meowTTSRunToken || meowTTSIsSeeking) return;
     if (typeof event.charIndex === "number") meowTTSUpdateProgress(start + event.charIndex);
@@ -6184,15 +6269,26 @@ function meowTTSSpeakChunk(start, token){
   utterance.onend = () => {
     if (token !== meowTTSRunToken) return;
     meowTTSUpdateProgress(end);
-    meowTTSSpeakChunk(end, token);
+    // Nhường một nhịp giữa các đoạn để Chrome/Android không bỏ mất câu tiếp theo.
+    if (end < meowTTSFullText.length) {
+      setTimeout(() => meowTTSSpeakChunk(end, token), 90);
+    } else {
+      meowTTSSpeakChunk(end, token);
+    }
   };
   utterance.onerror = event => {
-    if (token !== meowTTSRunToken || event.error === "canceled" || event.error === "interrupted") return;
-    meowTTSSetStatus("Thiết bị không phát được giọng đọc. Hãy thử bấm Đọc truyện lại.");
+    if (token !== meowTTSRunToken || ["canceled", "interrupted"].includes(event.error)) return;
+    meowTTSSetStatus("🌷 Giọng đọc bị ngắt. Bấm Đọc truyện để thử tiếp nha.");
     meowTTSUtterance = null;
+    if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đọc truyện";
   };
-  try { window.speechSynthesis.speak(utterance); }
-  catch (err) { meowTTSSetStatus("Không khởi động được giọng đọc trên trình duyệt này."); }
+  try {
+    // Một số trình duyệt bị kẹt trạng thái pause sau khi đổi chương.
+    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {
+    meowTTSSetStatus("Máy chưa khởi động được giọng đọc. Thử tải lại trang nha.");
+  }
 }
 function meowTTSSpeakFrom(offset){
   if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
@@ -6202,25 +6298,37 @@ function meowTTSSpeakFrom(offset){
   if (!meowTTSFullText){ meowTTSSetStatus("Chương chưa có nội dung để đọc."); return; }
   const start = Math.max(0, Math.min(meowTTSFullText.length, Number(offset) || 0));
   if (start >= meowTTSFullText.length){ meowTTSStopInternal(true); meowTTSSetStatus("Đã đọc hết chương."); return; }
-  window.speechSynthesis.cancel();
-  const token = ++meowTTSRunToken;
+  meowTTSRunToken++;
+  const token = meowTTSRunToken;
+  meowTTSPendingStart = start;
+  try { window.speechSynthesis.cancel(); } catch (_) {}
   meowTTSStartOffset = start;
   meowTTSUpdateProgress(start);
   meowTTSIsPaused = false;
-  // Force voice list initialization; default vi-VN voice still works if list is empty.
-  window.speechSynthesis.getVoices();
-  meowTTSSpeakChunk(start, token);
+  meowTTSSetStatus("🐾 Đang chuẩn bị giọng đọc…");
+  if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đang đọc";
+  // Chờ một nhịp sau cancel giúp một số trình duyệt nhận utterance mới ổn định hơn.
+  setTimeout(() => {
+    if (token !== meowTTSRunToken) return;
+    try { window.speechSynthesis.getVoices(); } catch (_) {}
+    meowTTSPendingStart = null;
+    meowTTSSpeakChunk(start, token);
+  }, 120);
 }
 if ("speechSynthesis" in window) {
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => { meowTTSVoicesReady = true; };
+  try { window.speechSynthesis.getVoices(); } catch (_) {}
+  window.speechSynthesis.onvoiceschanged = () => {
+    meowTTSVoicesReady = true;
+    try { window.speechSynthesis.getVoices(); } catch (_) {}
+  };
 }
 meowTTSPlay?.addEventListener("click", () => {
   if (!("speechSynthesis" in window)) { meowTTSSetStatus("Trình duyệt không hỗ trợ giọng đọc."); return; }
   if (window.speechSynthesis.paused || meowTTSIsPaused) {
     window.speechSynthesis.resume();
     meowTTSIsPaused = false;
-    meowTTSSetStatus("Đang tiếp tục đọc…");
+    meowTTSSetStatus("💗 Đang tiếp tục đọc…");
+    if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đang đọc";
     return;
   }
   if (window.speechSynthesis.speaking && meowTTSUtterance) return;
@@ -6230,19 +6338,29 @@ meowTTSPlay?.addEventListener("click", () => {
 meowTTSPause?.addEventListener("click", () => {
   if (!("speechSynthesis" in window)) return;
   if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-    window.speechSynthesis.pause(); meowTTSIsPaused = true; meowTTSSetStatus("Đã tạm dừng");
+    window.speechSynthesis.pause(); meowTTSIsPaused = true; meowTTSSetStatus("⏸ Đã tạm dừng"); 
+    if (meowTTSPlay) meowTTSPlay.textContent = "▶ Tiếp tục";
   } else if (window.speechSynthesis.paused) {
-    window.speechSynthesis.resume(); meowTTSIsPaused = false; meowTTSSetStatus("Đang đọc…");
+    window.speechSynthesis.resume(); meowTTSIsPaused = false; meowTTSSetStatus("💗 Đang đọc…");
+    if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đang đọc";
   }
 });
-meowTTSStop?.addEventListener("click", () => { meowTTSStopInternal(true); meowTTSSetStatus("Đã dừng đọc"); });
+meowTTSStop?.addEventListener("click", () => {
+  meowTTSStopInternal(true);
+  meowTTSSetStatus("🌸 Đã dừng đọc");
+  if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đọc truyện";
+});
 meowTTSSpeed?.addEventListener("input", () => {
   if (meowTTSSpeedLabel) meowTTSSpeedLabel.textContent = Number(meowTTSSpeed.value).toFixed(1) + "×";
   if ("speechSynthesis" in window && (window.speechSynthesis.speaking || window.speechSynthesis.paused)) {
     const pos = meowTTSCurrentOffset;
     const wasPaused = window.speechSynthesis.paused || meowTTSIsPaused;
     meowTTSSpeakFrom(pos);
-    if (wasPaused) { window.speechSynthesis.pause(); meowTTSIsPaused = true; }
+    if (wasPaused) {
+      setTimeout(() => {
+        if (window.speechSynthesis.speaking) { window.speechSynthesis.pause(); meowTTSIsPaused = true; }
+      }, 180);
+    }
   }
 });
 meowTTSProgress?.addEventListener("input", () => {
@@ -6250,7 +6368,7 @@ meowTTSProgress?.addEventListener("input", () => {
   if (!meowTTSFullText) meowTTSFullText = meowTTSGetText();
   const target = Math.round(Number(meowTTSProgress.value) / 1000 * meowTTSFullText.length);
   meowTTSUpdateProgress(target);
-  meowTTSSetStatus("Đã chọn vị trí " + Math.round(target / Math.max(1, meowTTSFullText.length) * 100) + "% - bấm Đọc truyện để tiếp tục");
+  meowTTSSetStatus("Đã chọn vị trí " + Math.round(target / Math.max(1, meowTTSFullText.length) * 100) + "% · bấm Đọc truyện để nghe tiếp");
   meowTTSIsSeeking = false;
 });
 meowTTSProgress?.addEventListener("change", () => {
