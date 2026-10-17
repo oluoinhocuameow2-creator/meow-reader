@@ -3063,11 +3063,11 @@ async function meowGetWithRetry(databaseRef, attempts = 3) {
 
 const MEOW_CATALOG_PATH = "storyCatalog";
 const MEOW_CATALOG_CACHE_KEY = "MEOW_STORY_CATALOG_CACHE_V1";
-const MEOW_CATALOG_CACHE_TTL = 24 * 60 * 60 * 1000; // Cache age marker; cached catalog is shown before background revalidation
+const MEOW_CATALOG_CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 ngày: ưu tiên danh mục đã lưu, sau đó mới đồng bộ lại nền
 
 const MEOW_STORY_CACHE_DB = "MeowReaderFastCache";
 const MEOW_STORY_CACHE_STORE = "stories";
-const MEOW_STORY_CACHE_TTL = 6 * 60 * 60 * 1000; // Revalidate full story data every 6 hours
+const MEOW_STORY_CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 ngày: mở truyện từ IndexedDB gần như tức thì; cache không tự xóa khi quá hạn
 let meowStoryCacheDbPromise = null;
 
 function meowOpenStoryCacheDb() {
@@ -3975,6 +3975,37 @@ async function loadStories(){
 
 
 /* =========================================================
+   LIVE CATALOG SYNC — danh sách truyện/metadata tự cập nhật
+========================================================= */
+let meowCatalogLiveUnsubscribe = null;
+function meowStartLiveCatalogSync() {
+  if (meowCatalogLiveUnsubscribe) return;
+  meowCatalogLiveUnsubscribe = onValue(ref(db, MEOW_CATALOG_PATH), snap => {
+    if (!snap.exists()) return;
+    const freshCatalog = meowNormalizeCatalog(snap.val());
+    if (!Object.keys(freshCatalog).length) return;
+    // Keep full story objects already loaded in memory; only refresh lightweight catalog metadata.
+    for (const [id, entry] of Object.entries(freshCatalog)) {
+      const existing = allStories[id];
+      if (existing && existing.chapters) {
+        allStories[id] = {
+          ...existing,
+          info: { ...(existing.info || {}), ...(entry.info || {}) },
+          chapterCount: entry.chapterCount ?? existing.chapterCount
+        };
+      } else {
+        allStories[id] = entry;
+      }
+    }
+    meowSaveCatalogCache(freshCatalog);
+    if (document.getElementById("storyGrid") && document.getElementById("homePage")?.style.display !== "none") {
+      renderStories();
+    }
+  }, error => console.warn("Meow: chưa thể đồng bộ danh sách truyện trực tiếp", error));
+}
+meowStartLiveCatalogSync();
+
+/* =========================================================
    LỌC TRUYỆN THEO TÁC GIẢ
 ========================================================= */
 function showStoriesByAuthor(authorName) {
@@ -4330,6 +4361,34 @@ function meowSetHomeShareLink() {
 }
 
 /* =========================================================
+   LIVE STORY INFO SYNC — cập nhật tên/tác giả/bìa/trạng thái/giá ngay
+========================================================= */
+let meowLiveInfoUnsubscribe = null;
+let meowLiveInfoStoryId = "";
+
+function meowWatchLiveStoryInfo(storyId) {
+  storyId = String(storyId || "");
+  if (!storyId || meowLiveInfoStoryId === storyId) return;
+  if (typeof meowLiveInfoUnsubscribe === "function") {
+    try { meowLiveInfoUnsubscribe(); } catch (_) {}
+  }
+  meowLiveInfoStoryId = storyId;
+  meowLiveInfoUnsubscribe = onValue(ref(db, "stories/" + storyId + "/info"), snap => {
+    if (String(currentStoryId) !== storyId || !snap.exists()) return;
+    const latestInfo = snap.val() || {};
+    currentStory = currentStory || allStories[storyId] || {};
+    currentStory.info = { ...(currentStory.info || {}), ...latestInfo };
+    allStories[storyId] = { ...(allStories[storyId] || {}), ...currentStory };
+    currentStory = allStories[storyId];
+    void meowSaveCachedFullStory(storyId, currentStory);
+    if (document.getElementById("storyPage")?.style.display !== "none") {
+      renderStoryInfo();
+      updateMeowReadingActions();
+    }
+  }, error => console.warn("Meow: chưa thể đồng bộ thông tin truyện trực tiếp", error));
+}
+
+/* =========================================================
    LIVE CHAPTER SYNC — chương mới trên Firebase hiện ngay
 ========================================================= */
 let meowLiveChapterUnsubscribe = null;
@@ -4344,9 +4403,10 @@ function meowWatchLiveChapters(storyId) {
     try { meowLiveChapterUnsubscribe(); } catch (_) {}
   }
   meowLiveStoryId = storyId;
+  meowWatchLiveStoryInfo(storyId);
   meowLiveChapterUnsubscribe = onValue(ref(db, "stories/" + storyId + "/chapters"), snap => {
-    if (String(currentStoryId) !== storyId || !snap.exists()) return;
-    const latestChapters = snap.val() || {};
+    if (String(currentStoryId) !== storyId) return;
+    const latestChapters = snap.exists() ? (snap.val() || {}) : {};
     currentChapters = latestChapters;
     currentStory = currentStory || allStories[storyId] || {};
     currentStory.chapters = latestChapters;
@@ -4431,9 +4491,10 @@ async function openStory(storyId){
       updateMeowReadingActions();
       meowWatchLiveChapters(storyId);
 
-      // Fresh cache = instant open without a network wait. Stale cache remains usable while refreshing.
-      if (Date.now() - Number(cachedRow.savedAt || 0) < MEOW_STORY_CACHE_TTL) return;
-      meowRefreshStoryInBackground(storyId, token);
+      // Hiện cache ngay để mở truyện nhanh; đồng thời kiểm tra Firebase ở nền mỗi lần mở.
+      // Cache vẫn được giữ lâu dài, nhưng TTL không chặn cập nhật chương/thông tin mới.
+      void meowRefreshStoryInBackground(storyId, token);
+      meowWatchLiveStoryInfo(storyId);
       return;
     }
 
@@ -4471,6 +4532,7 @@ async function openStory(storyId){
   renderStoryInfo();
   meowSetStoryShareLink(currentStoryId, currentStory);
   updateMeowReadingActions();
+  meowWatchLiveStoryInfo(storyId);
   meowWatchLiveChapters(storyId);
 }
 
@@ -6563,8 +6625,8 @@ meowTTSProgress?.addEventListener("change", () => {
       <span class="mqn-copy"><strong>Web cũ</strong><small>Ghé lại nhà cũ của Meow</small></span>
     </a>
     <!-- DÁN LINK THEO DÕI BILL / NGHE NHẠC VÀO href -->
-    <a class="mqn-link" href="https://oluoinhocuameow-tdb.github.io/theodoibill/" data-meow-placeholder="Theo dõi bill"><span class="mqn-icon">🧾</span><span class="mqn-copy"><strong>Theo dõi bill</strong><small>Kiểm tra đơn của nàng</small></span></a>
-    <a class="mqn-link" href="https://oluoinhocuameow-music.github.io/meowmusic/" data-meow-placeholder="Nghe nhạc"><span class="mqn-icon">🎧</span><span class="mqn-copy"><strong>Nghe nhạc</strong><small>Chill cùng Meow ♫</small></span></a>
+    <a class="mqn-link" href="https://oluoinhocuameow-art.github.io/theodoibill/" data-meow-placeholder="Theo dõi bill"><span class="mqn-icon">🧾</span><span class="mqn-copy"><strong>Theo dõi bill</strong><small>Kiểm tra đơn của nàng</small></span></a>
+    <a class="mqn-link" href="https://oluoinhocuameow-art.github.io/meowmusic/" data-meow-placeholder="Nghe nhạc"><span class="mqn-icon">🎧</span><span class="mqn-copy"><strong>Nghe nhạc</strong><small>Chill cùng Meow ♫</small></span></a>
   </div>
   <p class="mqn-foot">✧ Một chút xinh xắn dành riêng cho các nàng ✧</p>
 </div>
