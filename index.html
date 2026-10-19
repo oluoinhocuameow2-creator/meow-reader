@@ -12,7 +12,7 @@
 <link rel="dns-prefetch" href="//olncm-fa88c.firebasestorage.app">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
 <style>
 
 /* =========================================================
@@ -2260,6 +2260,14 @@ img[loading="lazy"] { height: auto; }
   font:600 13px inherit;cursor:pointer;box-shadow:0 4px 12px rgba(239,103,148,.12);
 }
 .meowShowMoreStories:hover{transform:translateY(-1px)}
+
+/* MEOW watermark — lớp riêng trên nội dung, không phụ thuộc pseudo-element */
+#meowWatermarkOverlay{position:fixed;inset:55px 0 0;z-index:18;pointer-events:none;opacity:.42;background-repeat:repeat;background-size:340px 210px;}
+#readerPage.reader-theme-night #meowWatermarkOverlay{opacity:.38;filter:brightness(1.9)}
+#readerPage .meowReaderTop{z-index:12}
+#readerPage .meowReaderBottom{z-index:22}
+@media(max-width:600px){#meowWatermarkOverlay{background-size:270px 175px;opacity:.38}}
+@media(prefers-reduced-motion:reduce){.meowStoryCard,.meowCover img{transition:none!important;}}
 </style>
 
 
@@ -6280,6 +6288,31 @@ let meowTTSChunkStart = 0;
 let meowTTSChunkEnd = 0;
 let meowTTSVoicesReady = false;
 let meowTTSPendingStart = null;
+let meowTTSTimer = null;
+let meowTTSTimerStart = 0;
+let meowTTSTimerBase = 0;
+let meowTTSTimerEnd = 0;
+function meowTTSSecondsFor(chars){
+  return Math.max(0, Math.round(chars / (5.5 * Math.max(.5, Number(meowTTSSpeed?.value)||1))));
+}
+function meowTTSClock(seconds){
+  seconds=Math.max(0,Math.round(seconds));
+  return Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0");
+}
+function meowTTSClearTimer(){if(meowTTSTimer!==null){clearInterval(meowTTSTimer);meowTTSTimer=null;}}
+function meowTTSStartTimer(start,end,token){
+  meowTTSClearTimer();
+  meowTTSTimerBase=start;meowTTSTimerEnd=end;
+  meowTTSTimerStart=performance.now();
+  const tick=()=>{
+    if(token!==meowTTSRunToken||meowTTSIsPaused||meowTTSIsSeeking)return;
+    const elapsed=(performance.now()-meowTTSTimerStart)/1000;
+    const estimated=elapsed*5.5*Math.max(.5,Number(meowTTSSpeed?.value)||1);
+    // Giữ thanh chạy giữa các sự kiện onboundary; đồng bộ lại ở ranh giới từ.
+    meowTTSUpdateProgress(Math.min(end-1,Math.max(meowTTSCurrentOffset,meowTTSTimerBase+estimated)));
+  };
+  meowTTSTimer=setInterval(tick,250);
+}
 
 function meowTTSGetText(){
   const el = document.getElementById("readerContent");
@@ -6290,10 +6323,13 @@ function meowTTSUpdateProgress(offset){
   const safeOffset = Math.max(0, Math.min(length, Number(offset) || 0));
   meowTTSCurrentOffset = safeOffset;
   if (meowTTSProgress) meowTTSProgress.value = length ? Math.round(safeOffset / length * 1000) : 0;
-  if (meowTTSCurrent) meowTTSCurrent.textContent = length ? Math.round(safeOffset / length * 100) + "%" : "0%";
+  if (meowTTSCurrent) meowTTSCurrent.textContent = meowTTSClock(meowTTSSecondsFor(safeOffset));
+  const totalEl=document.getElementById("meowTTSTotal");
+  if(totalEl) totalEl.textContent = "≈"+meowTTSClock(meowTTSSecondsFor(length));
 }
 function meowTTSSetStatus(text){ if (meowTTSStatus) meowTTSStatus.textContent = text; }
 function meowTTSStopInternal(reset = true){
+  meowTTSClearTimer();
   meowTTSRunToken++;
   meowTTSPendingStart = null;
   if ("speechSynthesis" in window) {
@@ -6348,14 +6384,22 @@ function meowTTSSpeakChunk(start, token){
   meowTTSSetStatus(voice ? "🔊 Đang đọc bằng giọng tiếng Việt" : "🔊 Đang đọc bằng giọng mặc định của máy");
   if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đang đọc";
   utterance.onstart = () => {
+    if (token === meowTTSRunToken) meowTTSStartTimer(start,end,token);
     if (token === meowTTSRunToken) meowTTSSetStatus(voice ? "💗 Đang đọc tiếng Việt…" : "💗 Đang đọc…");
   };
   utterance.onboundary = event => {
     if (token !== meowTTSRunToken || meowTTSIsSeeking) return;
-    if (typeof event.charIndex === "number") meowTTSUpdateProgress(start + event.charIndex);
+    if (typeof event.charIndex === "number") {
+      const boundary=start+event.charIndex;
+      if(boundary>=start && boundary<=end){
+        meowTTSUpdateProgress(boundary);
+        meowTTSTimerStart=performance.now();meowTTSTimerBase=boundary;
+      }
+    }
   };
   utterance.onend = () => {
     if (token !== meowTTSRunToken) return;
+    meowTTSClearTimer();
     meowTTSUpdateProgress(end);
     // Nhường một nhịp giữa các đoạn để Chrome/Android không bỏ mất câu tiếp theo.
     if (end < meowTTSFullText.length) {
@@ -6365,6 +6409,7 @@ function meowTTSSpeakChunk(start, token){
     }
   };
   utterance.onerror = event => {
+    meowTTSClearTimer();
     if (token !== meowTTSRunToken || ["canceled", "interrupted"].includes(event.error)) return;
     meowTTSSetStatus("🌷 Giọng đọc bị ngắt. Bấm Đọc truyện để thử tiếp nha.");
     meowTTSUtterance = null;
@@ -6386,6 +6431,7 @@ function meowTTSSpeakFrom(offset){
   if (!meowTTSFullText){ meowTTSSetStatus("Chương chưa có nội dung để đọc."); return; }
   const start = Math.max(0, Math.min(meowTTSFullText.length, Number(offset) || 0));
   if (start >= meowTTSFullText.length){ meowTTSStopInternal(true); meowTTSSetStatus("Đã đọc hết chương."); return; }
+  meowTTSClearTimer();
   meowTTSRunToken++;
   const token = meowTTSRunToken;
   meowTTSPendingStart = start;
@@ -6415,6 +6461,7 @@ meowTTSPlay?.addEventListener("click", () => {
   if (window.speechSynthesis.paused || meowTTSIsPaused) {
     window.speechSynthesis.resume();
     meowTTSIsPaused = false;
+    meowTTSStartTimer(meowTTSCurrentOffset,meowTTSChunkEnd,meowTTSRunToken);
     meowTTSSetStatus("💗 Đang tiếp tục đọc…");
     if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đang đọc";
     return;
@@ -6426,10 +6473,10 @@ meowTTSPlay?.addEventListener("click", () => {
 meowTTSPause?.addEventListener("click", () => {
   if (!("speechSynthesis" in window)) return;
   if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-    window.speechSynthesis.pause(); meowTTSIsPaused = true; meowTTSSetStatus("⏸ Đã tạm dừng"); 
+    window.speechSynthesis.pause(); meowTTSIsPaused = true; meowTTSClearTimer(); meowTTSSetStatus("⏸ Đã tạm dừng"); 
     if (meowTTSPlay) meowTTSPlay.textContent = "▶ Tiếp tục";
   } else if (window.speechSynthesis.paused) {
-    window.speechSynthesis.resume(); meowTTSIsPaused = false; meowTTSSetStatus("💗 Đang đọc…");
+    window.speechSynthesis.resume(); meowTTSIsPaused = false; meowTTSStartTimer(meowTTSCurrentOffset,meowTTSChunkEnd,meowTTSRunToken); meowTTSSetStatus("💗 Đang đọc…");
     if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đang đọc";
   }
 });
@@ -6446,13 +6493,14 @@ meowTTSSpeed?.addEventListener("input", () => {
     meowTTSSpeakFrom(pos);
     if (wasPaused) {
       setTimeout(() => {
-        if (window.speechSynthesis.speaking) { window.speechSynthesis.pause(); meowTTSIsPaused = true; }
+        if (window.speechSynthesis.speaking) { window.speechSynthesis.pause(); meowTTSIsPaused = true; meowTTSClearTimer(); }
       }, 180);
     }
   }
 });
 meowTTSProgress?.addEventListener("input", () => {
   meowTTSIsSeeking = true;
+  meowTTSClearTimer();
   if (!meowTTSFullText) meowTTSFullText = meowTTSGetText();
   const target = Math.round(Number(meowTTSProgress.value) / 1000 * meowTTSFullText.length);
   meowTTSUpdateProgress(target);
@@ -6625,8 +6673,8 @@ meowTTSProgress?.addEventListener("change", () => {
       <span class="mqn-copy"><strong>Web cũ</strong><small>Ghé lại nhà cũ của Meow</small></span>
     </a>
     <!-- DÁN LINK THEO DÕI BILL / NGHE NHẠC VÀO href -->
-    <a class="mqn-link" href="https://oluoinhocuameow-art.github.io/theodoibill/" data-meow-placeholder="Theo dõi bill"><span class="mqn-icon">🧾</span><span class="mqn-copy"><strong>Theo dõi bill</strong><small>Kiểm tra đơn của nàng</small></span></a>
-    <a class="mqn-link" href="https://oluoinhocuameow-art.github.io/meowmusic/" data-meow-placeholder="Nghe nhạc"><span class="mqn-icon">🎧</span><span class="mqn-copy"><strong>Nghe nhạc</strong><small>Chill cùng Meow ♫</small></span></a>
+    <a class="mqn-link" href="https://meowmusic1.blogspot.com/?fbclid=IwY2xjawVDBeBleHRuA2FlbQIxMABwZG9mA2JyaWQRMXQ2UXF4QnhMQlN1Z1cycTBzcnRjBmFwcF9pZA81MTQ3NzE1NjkyMjgwNjEAAR79AnBAaxEJ8sEkFONk9HhWzPEoLl4-la_v4R1jZCGfJ1Ce0AZOdsOhUlgUWw_aem_D5jVUH7HDhsMZ73xc6RBHg" data-meow-placeholder="Theo dõi bill"><span class="mqn-icon">🧾</span><span class="mqn-copy"><strong>Theo dõi bill</strong><small>Kiểm tra đơn của nàng</small></span></a>
+    <a class="mqn-link" href="https://meowmusic71-arch.github.io/meow-music/" data-meow-placeholder="Nghe nhạc"><span class="mqn-icon">🎧</span><span class="mqn-copy"><strong>Nghe nhạc</strong><small>Chill cùng Meow ♫</small></span></a>
   </div>
   <p class="mqn-foot">✧ Một chút xinh xắn dành riêng cho các nàng ✧</p>
 </div>
@@ -6879,6 +6927,40 @@ body{font-size:16px;line-height:1.65}
 })();
 </script>
 
+
+<script>
+/* Progressive decoding for large illustrations inside chapters. */
+(function(){
+  const install=()=>{
+    const root=document.getElementById('readerContent');
+    if(!root||root.dataset.meowImageOptimized)return;
+    root.dataset.meowImageOptimized='1';
+    const tune=()=>root.querySelectorAll('img:not([data-meow-img-ready])').forEach(img=>{
+      img.dataset.meowImgReady='1'; img.loading='lazy'; img.decoding='async';
+    });
+    new MutationObserver(tune).observe(root,{childList:true,subtree:true});
+    tune();
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
+</script>
+
+<script>
+/* Watermark Meow: lớp cố định luôn hiển thị phía trên nội dung, không chặn chạm */
+(function(){
+ function mount(){
+  const reader=document.getElementById('readerPage');
+  if(!reader)return;
+  let overlay=document.getElementById('meowWatermarkOverlay');
+  if(!overlay){overlay=document.createElement('div');overlay.id='meowWatermarkOverlay';overlay.setAttribute('aria-hidden','true');reader.appendChild(overlay);}
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="340" height="210" viewBox="0 0 340 210"><g transform="translate(170 105) rotate(-25)" text-anchor="middle" font-family="Arial,sans-serif" fill="#985275"><text y="-12" font-size="16" font-weight="bold">Ổ LƯỜI NHỎ CỦA MEOW</text><text y="12" font-size="8.4">oluoinhocuameow2-creator.github.io/meow-reader/</text></g></svg>`;
+  overlay.style.setProperty('background-image','url("data:image/svg+xml,'+encodeURIComponent(svg)+'")','important');
+  overlay.style.setProperty('display','block','important');
+  overlay.style.setProperty('pointer-events','none','important');
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+</script>
 </body>
 </html>
 
