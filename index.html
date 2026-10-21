@@ -2381,8 +2381,8 @@ body.meowSiteDark .meowRecentUpdates{background:rgba(48,35,55,.91);border-color:
 body.meowSiteDark .meowRecentHeading,body.meowSiteDark .meowRecentType{color:#ffafd5}
 body.meowSiteDark .meowRecentHeading small,body.meowSiteDark .meowRecentMeta{color:#d4b0cd}
 body.meowSiteDark .meowRecentItem{color:#f2d8e9;border-left-color:#70516e}
-@media(max-width:700px){.meowFairyHero{min-height:440px;padding-bottom:154px}.meowFairyHeroText{width:70%}.meowFairyHero .meowWelcomeGuide{font-size:10px;line-height:1.5;max-width:95%}.meowRecentUpdates{left:10px;right:10px;bottom:9px;padding:8px}.meowRecentList{grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}.meowRecentItem{padding:5px 6px;border-left:0;border-top:1px solid #e7b9d1}.meowRecentItem:nth-child(-n+2){border-top:0}.meowRecentItem:nth-child(5){display:none}}
-@media(max-width:420px){.meowFairyHero{min-height:465px}.meowFairyHeroText{width:100%;padding-right:25px}.meowFairyHero h1{font-size:21px}.meowFairyHero .meowWelcomeGuide{max-width:100%;font-size:9px}.meowFairyHouse{opacity:.55;right:-4%;bottom:30%;width:105px;height:120px}.meowRecentList{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.meowFairyHero{min-height:440px;padding-bottom:154px}.meowFairyHeroText{width:70%}.meowFairyHero .meowWelcomeGuide{font-size:10px;line-height:1.5;width:calc(100% + 12px);max-width:none;margin-left:-6px;padding:9px 10px;box-sizing:border-box}.meowRecentUpdates{left:10px;right:10px;bottom:9px;padding:8px}.meowRecentList{grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}.meowRecentItem{padding:5px 6px;border-left:0;border-top:1px solid #e7b9d1}.meowRecentItem:nth-child(-n+2){border-top:0}.meowRecentItem:nth-child(5){display:none}}
+@media(max-width:420px){.meowFairyHero{min-height:465px}.meowFairyHeroText{width:100%;padding-right:25px}.meowFairyHero h1{font-size:21px}.meowFairyHero .meowWelcomeGuide{width:calc(100% + 16px);max-width:none;margin-left:-8px;font-size:10px;padding:9px 10px}.meowFairyHouse{opacity:.55;right:-4%;bottom:30%;width:105px;height:120px}.meowRecentList{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* === Meow profile refinements: dark matching background + open-book grid === */
 #meowProfileOverlay{background:#2b2233!important;color:#f5d9ea}
 .meowProfileShell{background:linear-gradient(145deg,#2b2233 0%,#38283f 55%,#28263c 100%)!important;color:#f5d9ea!important}
@@ -6810,14 +6810,18 @@ if ("speechSynthesis" in window) {
     try { window.speechSynthesis.getVoices(); } catch (_) {}
   };
 }
+let meowTTSLastPlayTap = 0;
 meowTTSPlay?.addEventListener("click", () => {
+  const now = Date.now();
+  if (now - meowTTSLastPlayTap < 280) return;
+  meowTTSLastPlayTap = now;
   if (!("speechSynthesis" in window)) { meowTTSSetStatus("Trình duyệt không hỗ trợ giọng đọc."); return; }
   if (window.speechSynthesis.paused || meowTTSIsPaused) {
-    window.speechSynthesis.resume();
+    // Trên một số trình duyệt điện thoại, resume() báo thành công nhưng âm thanh không chạy lại.
+    // Hủy utterance đang treo và tạo utterance mới từ vị trí đọc hiện tại sẽ ổn định hơn.
+    const resumeAt = Math.max(0, meowTTSCurrentOffset || meowTTSStartOffset || 0);
     meowTTSIsPaused = false;
-    meowTTSStartTimer(meowTTSCurrentOffset,meowTTSChunkEnd,meowTTSRunToken);
-    meowTTSSetStatus("💗 Đang tiếp tục đọc…");
-    if (meowTTSPlay) meowTTSPlay.textContent = "▶ Đang đọc";
+    meowTTSSpeakFrom(resumeAt);
     return;
   }
   if (window.speechSynthesis.speaking && meowTTSUtterance) return;
