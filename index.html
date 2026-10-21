@@ -8047,3 +8047,47 @@ const MEOW_WALLET_ICON_IMAGE_URL = "https://blogger.googleusercontent.com/img/b/
 #meowApp.dark .meowFairyHero .meowWelcomeGuide::before, body.dark-mode .meowFairyHero .meowWelcomeGuide::before, [data-theme="dark"] .meowFairyHero .meowWelcomeGuide::before{color:#f0a8d5}
 @media(max-width:600px){.meowFairyHero .meowWelcomeGuide{padding:9px 10px;margin-top:8px;border-radius:13px;font-size:10px;line-height:1.6;border-width:1.5px}.meowFairyHero .meowWelcomeGuide::before{font-size:8px;margin-bottom:4px}}
 </style>
+
+<style id="meowNoteCollapseStyles">
+/* Nút thu gọn nhỏ xinh, chuyển động nhẹ để không làm khựng trang */
+.meowNoteToggle{display:inline-flex;align-items:center;justify-content:center;width:25px;height:22px;margin-top:5px;padding:0;border:1px solid #e8a5ce;border-radius:999px;background:#fff4fb;color:#9654c9;font:700 13px/1 Arial,sans-serif;cursor:pointer;box-shadow:0 2px 7px #c76ca51a;transition:background-color .16s ease;}
+.meowNoteToggle:hover{background:#ffe8f5}
+.meowNoteToggle:focus-visible{outline:2px solid #9654c9;outline-offset:2px}
+.meowNoteToggle .meowNoteIcon{font-size:13px;line-height:1}
+/* Danh sách thể loại có vùng cuộn riêng để không kéo dài trang */
+#meowGenrePanel{max-height:min(42vh,320px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#e6a4cf #fff0f8}
+#meowGenrePanel::-webkit-scrollbar{width:6px}
+#meowGenrePanel::-webkit-scrollbar-track{background:#fff0f8;border-radius:10px}
+#meowGenrePanel::-webkit-scrollbar-thumb{background:#e6a4cf;border-radius:10px}
+.meowWelcomeGuide.meowNoteCollapsed{max-height:112px;overflow:hidden;}
+.meowWelcomeGuide.meowNoteExpanded{max-height:600px;overflow:visible;}
+@media(prefers-reduced-motion:reduce){.meowNoteToggle{transition:none}}
+</style>
+<script id="meowNoteCollapseScript">
+(function(){
+  function setupMeowNote(){
+    var note=document.querySelector('.meowFairyHero .meowWelcomeGuide');
+    if(!note||note.dataset.collapseReady==='1')return;
+    note.dataset.collapseReady='1';
+    var toggle=document.createElement('button');
+    toggle.type='button';toggle.className='meowNoteToggle';
+    toggle.setAttribute('aria-expanded','false');
+    toggle.innerHTML='<span class="meowNoteIcon" aria-hidden="true">⌄</span>';
+    toggle.setAttribute('aria-label','Xem thêm ghi chú');
+    toggle.title='Xem thêm';
+    note.classList.add('meowNoteCollapsed');
+    note.insertAdjacentElement('afterend',toggle);
+    toggle.addEventListener('click',function(){
+      var expanded=toggle.getAttribute('aria-expanded')==='true';
+      toggle.setAttribute('aria-expanded',String(!expanded));
+      note.classList.toggle('meowNoteCollapsed',expanded);
+      note.classList.toggle('meowNoteExpanded',!expanded);
+      toggle.querySelector('.meowNoteIcon').textContent=expanded?'⌄':'⌃';
+      toggle.setAttribute('aria-label',expanded?'Xem thêm ghi chú':'Thu gọn ghi chú');
+      toggle.title=expanded?'Xem thêm':'Thu gọn';
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupMeowNote,{once:true});
+  else setupMeowNote();
+})();
+</script>
