@@ -2593,9 +2593,61 @@ body.meowSiteDark .meowProfileEmpty{background:#34283f;border-color:#755878}
 
 </style>
 
+<style>
 
-<style id="meow-remove-banner-flower-cluster">
-  .meowFairyHero .meowFairyFlower{display:none!important;}
+/* MEOW BANNER REFRESH — no flower cluster + wider mobile guide */
+.meowFairyHero{
+  min-height:clamp(300px,31vw,410px)!important;
+  padding:clamp(25px,4vw,52px)!important;
+  padding-bottom:clamp(132px,12vw,150px)!important;
+  border-radius:30px!important;
+  border:1px solid rgba(255,255,255,.96)!important;
+  background:
+    radial-gradient(ellipse at 12% 10%,rgba(255,255,255,.95) 0 2%,transparent 28%),
+    radial-gradient(ellipse at 78% 22%,rgba(255,255,255,.58),transparent 26%),
+    radial-gradient(ellipse at 48% 100%,rgba(255,255,255,.62),transparent 38%),
+    linear-gradient(120deg,#ffc5df 0%,#fbd8ef 45%,#e8d9ff 100%)!important;
+  box-shadow:0 18px 45px rgba(208,115,159,.18),inset 0 1px 0 #fff!important;
+}
+.meowFairyHero:before,.meowFairyHero:after{content:"";position:absolute;z-index:0;pointer-events:none;border-radius:50%;}
+.meowFairyHero:before{width:240px;height:240px;right:18%;top:-135px;background:rgba(255,255,255,.28);box-shadow:0 0 0 24px rgba(255,255,255,.10),0 0 0 50px rgba(255,255,255,.07)}
+.meowFairyHero:after{width:180px;height:180px;left:-90px;bottom:-105px;background:rgba(255,255,255,.3);box-shadow:0 0 0 20px rgba(255,255,255,.12)}
+.meowFairyHeroText{width:min(64%,720px)!important}
+.meowFairyEyebrow{padding:8px 13px;border:1px solid #ffffffc9;border-radius:999px;background:#fff8;color:#a34e7c;letter-spacing:.7px;font-size:11px!important;box-shadow:0 5px 16px #b55e8520}
+.meowFairyHero h1{font-size:clamp(30px,4.2vw,54px)!important;line-height:1.12!important;color:#fff!important;text-shadow:0 3px 0 #e99abe,0 7px 18px #a64c7b35!important;letter-spacing:-1px!important}
+.meowFairyHero h1:after{content:" ♡";font-size:.55em;color:#fff7fc}
+.meowFairyHero .meowWelcomeGuide{width:100%!important;max-width:650px!important;margin:13px 0 0!important;padding:13px 16px!important;border:1px solid #ffffffd9;border-radius:19px;background:rgba(255,250,254,.78);box-shadow:0 8px 22px #a64d7b14,inset 0 1px 0 white;color:#8d4c70!important;font-size:clamp(11px,1.1vw,13px)!important;line-height:1.8!important;text-shadow:none!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.meowFairyHero .meowWelcomeGuide b{color:#c34d88!important}
+.meowFairySpark{color:#fff!important;text-shadow:0 2px 12px #c45b9a80!important}
+.meowFairyFlower{display:none!important}
+.meowRecentUpdates{background:rgba(255,250,254,.88)!important;border-color:#fff!important;box-shadow:0 8px 24px #a64d7b1c!important}
+.meowRecentHeading{font-size:12px!important}
+.meowRecentItem{border-left-color:#f0c4dc!important}
+.meowRecentName{font-size:11px!important}
+.meowShelfNote{width:100%!important;max-width:none!important;display:block!important;margin:0 0 18px!important;padding:14px 18px!important;border:1px solid #ffd4e7!important;border-radius:18px!important;background:linear-gradient(120deg,#fffafd,#fff0f7 60%,#f7efff)!important;box-shadow:0 7px 20px #d77ba516!important;font-size:14px!important;line-height:1.7!important;color:#a45b80!important}
+@media(max-width:700px){
+ .meowFairyHero{min-height:0!important;padding:24px 16px 155px!important;margin-bottom:15px!important;border-radius:24px!important}
+ .meowFairyHeroText{width:100%!important;max-width:none!important;padding-right:0!important}
+ .meowFairyHero h1{font-size:clamp(25px,7vw,34px)!important;max-width:100%;overflow-wrap:anywhere}
+ .meowFairyHero .meowWelcomeGuide{width:100%!important;max-width:none!important;margin:12px 0 0!important;padding:13px 14px!important;font-size:12px!important;line-height:1.8!important}
+ .meowFairyHouse{right:0!important;bottom:125px!important;width:105px!important;height:120px!important;opacity:.48!important}
+ .meowFairySpark.spark-one{right:14%!important;top:8%!important}
+ .meowFairySpark.spark-two{right:6%!important;top:25%!important}
+ .meowRecentUpdates{left:9px!important;right:9px!important;bottom:9px!important;padding:9px 10px!important}
+ .meowRecentList{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:2px!important}
+ .meowRecentItem{padding:7px!important}
+ .meowRecentName{font-size:11px!important}
+ .meowShelfNote{width:100%!important;max-width:none!important;margin:0 0 15px!important;padding:14px 15px!important;font-size:14px!important;border-radius:17px!important}
+}
+@media(max-width:420px){
+ .meowFairyHero{padding:22px 13px 158px!important}
+ .meowFairyHeroText{width:100%!important;padding-right:0!important}
+ .meowFairyHero .meowWelcomeGuide{width:100%!important;margin-left:0!important;padding:12px!important;font-size:11.5px!important;line-height:1.8!important}
+ .meowFairyHouse{right:-2%!important;bottom:128px!important;width:88px!important;height:100px!important;opacity:.32!important}
+ .meowRecentUpdates{left:8px!important;right:8px!important}
+ .meowShelfNote{padding:13px!important;font-size:13px!important}
+}
+
 </style>
 </head>
 <body>
@@ -2719,8 +2771,8 @@ body.meowSiteDark .meowProfileEmpty{background:#34283f;border-color:#755878}
     <p class="meowWelcomeGuide">Bấm vào <b>THỂ LOẠI</b> và <b>Ô TÌM</b> để tìm truyện nàng yêu thích.<br>Bấm <b>HÌNH ĐẠI DIỆN</b> để vào trang <b>CÁ NHÂN</b> xem tủ truyện.<br>Bấm <b>VÍ</b> gần LOGO hoặc CÁ NHÂN để <b>NẠP TIỀN ĐỂ ĐỌC TRUYỆN</b>.<br>Web có chức năng theo dõi truyện + mua FULL BỘ + mua lẻ chương.<br><b>Đã mua rồi thì đọc vĩnh viễn.</b></p>
   </div>
   <div class="meowFairyHouse" id="meowFairyHouse" aria-hidden="true"><img id="meowFairyHouseImage" alt="" style="display:none"><span class="meowFairyWindow">♡</span><span class="meowFairyDoor"></span></div>
-  <span class="meowFairySpark spark-one">✿</span><span class="meowFairySpark spark-two">✧</span>
-  <span class="meowFairyFlower flower-one">🌷</span><span class="meowFairyFlower flower-two">🌸</span>
+  <span class="meowFairySpark spark-one">✧</span><span class="meowFairySpark spark-two">✦</span>
+
   <span class="meowFairyHearts" aria-hidden="true">♡　✧　♡</span>
 </div>
 
