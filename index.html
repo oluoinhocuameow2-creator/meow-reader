@@ -2593,6 +2593,10 @@ body.meowSiteDark .meowProfileEmpty{background:#34283f;border-color:#755878}
 
 </style>
 
+
+<style id="meow-remove-banner-flower-cluster">
+  .meowFairyHero .meowFairyFlower{display:none!important;}
+</style>
 </head>
 <body>
 <div id="meowReaderApp">
@@ -3290,6 +3294,7 @@ let currentGenreFilter = "";
 let meowFollowedStories = {};
 let meowCloudReadingHistory = {};
 let meowReadingHistoryUnsubscribe = null;
+let meowReadingHistorySignature = "";
 
 /* =========================================================
    ⚡ MEOW FAST DATA LAYER
@@ -4185,6 +4190,8 @@ function logout(){
 
   if (typeof meowReadingHistoryUnsubscribe === "function") meowReadingHistoryUnsubscribe();
   meowReadingHistoryUnsubscribe = null;
+  if (typeof meowFollowListenerUnsubscribe === "function") meowFollowListenerUnsubscribe();
+  meowFollowListenerUnsubscribe = null;
   meowCloudReadingHistory = {};
   meowFollowedStories = {};
   if(typeof meowAvatarUnsubscribe==="function"){meowAvatarUnsubscribe();meowAvatarUnsubscribe=null}
@@ -4458,6 +4465,30 @@ function meowGetRecentReads() {
     .map(row => ({...row, story:allStories[row.storyId]})).sort((a,b)=>(b.readAt||0)-(a.readAt||0));
 }
 
+function meowRefreshRecentReadsSection() {
+  if (currentShelf !== "personal") return;
+  const section = document.querySelector('[data-shelf-section="recent"]');
+  if (!section) return;
+  const body = section.querySelector(".meowShelfSectionBody");
+  if (!body) return;
+  const recent = meowGetRecentReads();
+  const recentHtml = recent.slice(0, 12).map(({storyId,chapterId,story}) => {
+    const info=story.info||{}, ch=story.chapters?.[chapterId]||{};
+    return `<button type="button" class="meowShelfRecentItem" data-continue-story="${escapeHTML(storyId)}" data-continue-chapter="${escapeHTML(chapterId)}">
+      ${info.cover?`<img class="meowShelfRecentCover" src="${escapeHTML(info.cover)}" alt="" loading="lazy" decoding="async" fetchpriority="low">`:`<span class="meowShelfRecentCover" style="display:grid;place-items:center">🐱</span>`}
+      <span class="meowShelfRecentText"><strong>${escapeHTML(info.name||storyId)}</strong><span>📖 Chương ${escapeHTML(chapterId)}${ch.title?" - "+escapeHTML(ch.title):""}</span><span>Nhấn để đọc tiếp ngay →</span></span></button>`;
+  }).join("");
+  body.innerHTML = `<div class="meowShelfRecent">${recentHtml}</div>`;
+  body.querySelectorAll("[data-continue-story]").forEach(btn=>btn.onclick=()=>{
+    const story=allStories[btn.dataset.continueStory];
+    if(!story)return;
+    openStory(btn.dataset.continueStory);
+    requestAnimationFrame(()=>{
+      const chapterList=document.getElementById("chapterList");
+      if(chapterList) chapterList.scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  });
+}
 async function meowLoadReadingHistory(customerId = currentCustomer?.id) {
   if (typeof meowReadingHistoryUnsubscribe === "function") meowReadingHistoryUnsubscribe();
   meowReadingHistoryUnsubscribe = null;
@@ -4471,9 +4502,16 @@ async function meowLoadReadingHistory(customerId = currentCustomer?.id) {
   // Giữ các thiết bị đang mở được cập nhật khi cùng ID đọc ở thiết bị khác.
   try {
     meowReadingHistoryUnsubscribe = onValue(ref(db, path), snap => {
-      meowCloudReadingHistory = snap.exists() ? (snap.val() || {}) : {};
+      const nextHistory = snap.exists() ? (snap.val() || {}) : {};
+      const nextSignature = JSON.stringify(nextHistory);
+      if (nextSignature === meowReadingHistorySignature) return;
+      meowReadingHistorySignature = nextSignature;
+      meowCloudReadingHistory = nextHistory;
       if (currentCustomer?.id && String(currentCustomer.id) === String(customerId)) {
-        if (typeof renderStories === "function" && currentShelf === "personal") renderStories();
+        if (typeof renderStories === "function" && currentShelf === "personal") {
+          // Refresh only the reading-history section rather than rebuilding every story card.
+          meowRefreshRecentReadsSection();
+        }
       }
     }, err => console.warn("Không thể nghe đồng bộ lịch sử đọc:", err));
   } catch (err) { console.warn("Không thể bật đồng bộ lịch sử đọc:", err); }
@@ -4481,14 +4519,63 @@ async function meowLoadReadingHistory(customerId = currentCustomer?.id) {
 
 
 
+let meowFollowListenerUnsubscribe = null;
+const meowFollowBusyIds = new Set();
+function meowNormalizeFollowData(saved) {
+  return Object.fromEntries(Object.entries(saved || {}).filter(([storyId,value]) =>
+    !!storyId && (value === true || (value && typeof value === "object" && value.followed !== false))
+  ));
+}
+function meowFollowSignature(data) {
+  return Object.keys(data || {}).sort().join("\u0000");
+}
+function meowPaintFollowButtons(root = document) {
+  root.querySelectorAll("[data-follow-story]").forEach(btn => {
+    const id = String(btn.dataset.followStory || "");
+    const followed = !!meowFollowedStories[id];
+    btn.classList.toggle("is-following", followed);
+    btn.textContent = followed ? "♥ Đang theo dõi" : "♡ Theo dõi";
+    btn.setAttribute("aria-pressed", String(followed));
+    btn.disabled = meowFollowBusyIds.has(id);
+    if (meowFollowBusyIds.has(id)) btn.setAttribute("aria-busy","true");
+    else btn.removeAttribute("aria-busy");
+  });
+  meowUpdateDetailFollowButton();
+}
+function meowRefreshFollowedShelf() {
+  if (currentShelf !== "personal") return;
+  const section = document.querySelector('[data-shelf-section="followed"]');
+  if (!section) return;
+  const body = section.querySelector(".meowShelfSectionBody");
+  if (!body) return;
+  const followed = Object.keys(meowFollowedStories || {})
+    .map(id => [String(id), allStories[id]])
+    .filter(([id, story]) => !!story);
+  body.innerHTML = `<div class="meowShelfCards">${meowRenderLimitedCards(followed, "followed", {personal:true})}</div>`;
+  body.querySelectorAll(".meowOpenStory").forEach(btn => {
+    btn.onclick = () => openStory(btn.dataset.storyId);
+  });
+  meowPaintFollowButtons(body);
+}
 async function meowLoadFollowedStories(customerId = currentCustomer?.id) {
-  if (!customerId) { meowFollowedStories = {}; return; }
+  if (typeof meowFollowListenerUnsubscribe === "function") meowFollowListenerUnsubscribe();
+  meowFollowListenerUnsubscribe = null;
+  meowFollowedStories = {};
+  if (!customerId) { meowPaintFollowButtons(); return; }
+  const normalizedCustomerId = String(customerId);
+  const path = "meowFollows/" + encodeURIComponent(normalizedCustomerId);
   try {
-    const snap = await get(ref(db, "meowFollows/" + String(customerId)));
-    const saved = snap.exists() ? (snap.val() || {}) : {};
-    meowFollowedStories = Object.fromEntries(Object.entries(saved).filter(([storyId,value]) =>
-      !!storyId && (value === true || (value && typeof value === "object" && value.followed !== false))
-    ));
+    // Chỉ dùng một realtime listener: nó cũng phát snapshot đầu tiên,
+    // không cần get() rồi nhận thêm cùng một snapshot lần nữa.
+    meowFollowListenerUnsubscribe = onValue(ref(db, path), liveSnap => {
+      if (String(currentCustomer?.id || "") !== normalizedCustomerId) return;
+      const next = meowNormalizeFollowData(liveSnap.exists() ? liveSnap.val() : {});
+      const changed = meowFollowSignature(next) !== meowFollowSignature(meowFollowedStories);
+      meowFollowedStories = next;
+      meowPaintFollowButtons();
+      // Khi dữ liệu thật sự đổi, chỉ cập nhật mục theo dõi, không dựng lại cả catalog.
+      if (changed) meowRefreshFollowedShelf();
+    }, error => console.warn("Không thể nghe đồng bộ theo dõi realtime:", error));
   } catch (error) {
     console.warn("Chưa tải được danh sách theo dõi:", error);
   }
@@ -4499,24 +4586,27 @@ async function meowToggleFollow(storyId) {
     return false;
   }
   const id = String(storyId || "");
-  if (!id) return false;
-  const wasFollowing = !!meowFollowedStories[id];
+  if (!id || [...id].some(ch => ".#$[]/".includes(ch)) || meowFollowBusyIds.has(id)) return false;
+  const customerId = String(currentCustomer.id);
+  meowFollowBusyIds.add(id);
+  meowPaintFollowButtons();
   try {
-    const followRef = ref(db, "meowFollows/" + String(currentCustomer.id) + "/" + id);
+    const followRef = ref(db, "meowFollows/" + encodeURIComponent(customerId) + "/" + id);
+    const wasFollowing = !!meowFollowedStories[id];
     if (wasFollowing) {
       await remove(followRef);
-      delete meowFollowedStories[id];
+      // Snapshot realtime sẽ là nguồn sự thật cuối cùng.
     } else {
       await set(followRef, { followed:true, storyId:id, followedAt:Date.now() });
-      meowFollowedStories[id] = { followed:true, storyId:id, followedAt:Date.now() };
     }
-    renderStories();
-    meowUpdateDetailFollowButton();
     return true;
   } catch (error) {
     console.error("Không lưu được truyện theo dõi:", error);
-    alert("Chưa đồng bộ được truyện theo dõi. Bà kiểm tra quyền ghi Firebase rồi thử lại nha 💗");
+    alert("Chưa đồng bộ được truyện theo dõi. Bà kiểm tra mạng và quyền đọc/ghi Firebase rồi thử lại nha 💗");
     return false;
+  } finally {
+    meowFollowBusyIds.delete(id);
+    meowPaintFollowButtons();
   }
 }
 function meowUpdateDetailFollowButton() {
@@ -4526,6 +4616,9 @@ function meowUpdateDetailFollowButton() {
   btn.classList.toggle("is-following", followed);
   btn.textContent = followed ? "♥ Đang theo dõi" : "♡ Theo dõi truyện";
   btn.setAttribute("aria-pressed", String(followed));
+  btn.disabled = !!(currentStoryId && meowFollowBusyIds.has(String(currentStoryId)));
+  if (btn.disabled) btn.setAttribute("aria-busy","true");
+  else btn.removeAttribute("aria-busy");
 }
 document.getElementById("meowDetailFollowBtn")?.addEventListener("click", async event => {
   event.preventDefault();
@@ -4533,12 +4626,21 @@ document.getElementById("meowDetailFollowBtn")?.addEventListener("click", async 
   if (currentStoryId) await meowToggleFollow(currentStoryId);
 });
 
+// 🐾 Bộ lọc danh sách công khai: tất cả / FULL / đang ra.
+let meowPublicStatusFilter = "all";
+
 // 🐾 Giới hạn số thẻ được dựng cùng lúc để tránh Chrome hết bộ nhớ.
 const MEOW_STORY_PAGE_SIZE = 12;
 const meowVisibleStoryCounts = Object.create(null);
 
 function meowRenderLimitedCards(entries, sectionKey, options = {}) {
-  return entries.map(([id, st]) => meowStoryCardHTML(id, st, options)).join("");
+  const limit = Math.max(MEOW_STORY_PAGE_SIZE, Number(meowVisibleStoryCounts[sectionKey] || MEOW_STORY_PAGE_SIZE));
+  const visible = entries.slice(0, limit);
+  const cards = visible.map(([id, st]) => meowStoryCardHTML(id, st, options)).join("");
+  const more = entries.length > limit
+    ? `<button type="button" class="meowShowMoreStories" data-show-more-stories="${escapeHTML(sectionKey)}">🎀 Xem thêm ${Math.min(MEOW_STORY_PAGE_SIZE, entries.length-limit)} truyện (${limit}/${entries.length})</button>`
+    : "";
+  return cards + more;
 }
 
 function renderStories() {
@@ -4550,6 +4652,7 @@ function renderStories() {
     const name = info.name || storyId, author = info.author || "", tags = getStoryTags(info);
     const haystack = (name + " " + author + " " + tags.join(" ")).toLocaleLowerCase("vi");
     if (keyword && !haystack.includes(keyword)) return false;
+    if (currentShelf === "public" && meowPublicStatusFilter !== "all" && meowStatusType(info) !== meowPublicStatusFilter) return false;
     if (currentShelf === "public" && currentGenreFilter && !tags.some(t => t.toLocaleLowerCase("vi") === currentGenreFilter.toLocaleLowerCase("vi"))) return false;
     return true;
   });
@@ -4569,25 +4672,35 @@ function renderStories() {
     }).join("");
     html += meowShelfSection("📚 Những chương đang đọc", "recent", `<div class="meowShelfRecent">${recentHtml}</div>`);
   } else {
-    const full = entries.filter(([id,st])=>meowStatusType(st?.info)==="full");
-    const ongoing = entries.filter(([id,st])=>meowStatusType(st?.info)==="ongoing");
-    const upcoming = entries.filter(([id,st])=>meowGetStoryChapterCount(st) === 0);
-    html += meowShelfSection("🎠 Tất cả truyện - Vuốt ngang để xem", "all", `<div class="meowShelfSlider">${meowRenderLimitedCards(entries, "all")}</div>`);
-    html += meowShelfSection("🌸 Truyện Full", "full", `<div class="meowShelfCards">${meowRenderLimitedCards(full, "full")}</div>`);
-    html += meowShelfSection("📝 Truyện đang ra", "ongoing", `<div class="meowShelfCards">${meowRenderLimitedCards(ongoing, "ongoing")}</div>`);
-    html += meowShelfSection("🎀 Truyện sắp ra", "upcoming", `<div class="meowShelfCards">${meowRenderLimitedCards(upcoming, "upcoming")}</div>`);
+    // Chỉ dựng một danh sách truyện, không tạo lại cùng một truyện ở nhiều mục.
+    // Dựng theo từng đợt để thao tác tìm kiếm/theo dõi không phải xử lý hàng nghìn node cùng lúc.
+    const statusPicker = `<div class="meowStoryStatusPickerWrap"><label for="meowStoryStatusPicker">🐾 Chọn danh sách</label><select id="meowStoryStatusPicker" class="meowStoryStatusPicker"><option value="all" ${meowPublicStatusFilter === "all" ? "selected" : ""}>🎀 Tất cả truyện</option><option value="full" ${meowPublicStatusFilter === "full" ? "selected" : ""}>💚 Truyện FULL</option><option value="ongoing" ${meowPublicStatusFilter === "ongoing" ? "selected" : ""}>🌷 Truyện đang ra</option></select></div>`;
+    html += meowShelfSection("🎀 Tất cả truyện", "all", `${statusPicker}<div class="meowShelfCards">${meowRenderLimitedCards(entries, "all")}</div>`);
   }
   grid.innerHTML = html || `<div class="meowShelfEmpty">🔍 Không tìm thấy truyện phù hợp.</div>`;
+  const statusPicker = grid.querySelector("#meowStoryStatusPicker");
+  if (statusPicker) statusPicker.onchange = () => {
+    meowPublicStatusFilter = statusPicker.value || "all";
+    meowVisibleStoryCounts.all = MEOW_STORY_PAGE_SIZE;
+    renderStories();
+  };
   grid.querySelectorAll("[data-show-more-stories]").forEach(btn => btn.onclick = () => {
     const key = btn.dataset.showMoreStories;
     meowVisibleStoryCounts[key] = (meowVisibleStoryCounts[key] || MEOW_STORY_PAGE_SIZE) + MEOW_STORY_PAGE_SIZE;
     renderStories();
   });
   grid.querySelectorAll(".meowOpenStory").forEach(btn=>btn.onclick=()=>openStory(btn.dataset.storyId));
-  grid.querySelectorAll("[data-follow-story]").forEach(btn=>btn.onclick=async event=>{
-    event.preventDefault(); event.stopPropagation();
-    await meowToggleFollow(btn.dataset.followStory);
-  });
+  // Delegated handler: one listener for all follow buttons, including cards added later.
+  if (!grid.dataset.meowFollowDelegated) {
+    grid.dataset.meowFollowDelegated = "1";
+    grid.addEventListener("click", event => {
+      const btn = event.target.closest("[data-follow-story]");
+      if (!btn || !grid.contains(btn)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      meowToggleFollow(btn.dataset.followStory);
+    });
+  }
   grid.querySelectorAll(".meowShelfCollapse").forEach(btn=>btn.onclick=()=>{
     const section=btn.closest(".meowShelfSection"); if(!section)return;
     section.classList.toggle("is-collapsed"); const collapsed=section.classList.contains("is-collapsed");
@@ -7729,6 +7842,7 @@ body.meowSiteDark .meowCommentReplyBtn{background:linear-gradient(135deg,#66405f
 .meowProfileSection [data-profile-more]{display:inline-flex!important;float:right;margin:0 0 8px 8px}
 @media(max-width:520px){.meowCommentAvatar{width:28px!important;height:28px!important;flex-basis:28px!important}}
 </style>
+
 </body>
 
 
@@ -8066,6 +8180,30 @@ const MEOW_WALLET_ICON_IMAGE_URL = "https://blogger.googleusercontent.com/img/b/
 .meowWelcomeGuide.meowNoteCollapsed{max-height:112px;overflow:hidden;}
 .meowWelcomeGuide.meowNoteExpanded{max-height:600px;overflow:visible;}
 @media(prefers-reduced-motion:reduce){.meowNoteToggle{transition:none}}
+/* MEOW FOLLOW SYNC — trạng thái rõ ràng, thao tác không giật */
+.meowFollowBtn{position:absolute;right:9px;bottom:9px;z-index:4;max-width:calc(100% - 18px);padding:8px 11px;border:1px solid #ffffffd9;border-radius:999px;background:#fff8fcf2;color:#c05283;font-size:11px;font-weight:800;box-shadow:0 4px 14px #7b35521c;backdrop-filter:blur(8px);transition:background .16s ease,color .16s ease,transform .16s ease;touch-action:manipulation}
+.meowFollowBtn.is-following{background:linear-gradient(135deg,#ff78a9,#c69bff);color:#fff;border-color:#ffffffaa}
+.meowFollowBtn:disabled{opacity:.7;cursor:wait;transform:none}
+.meowFollowBtn:active{transform:scale(.97)}
+.meowDetailFollowBtn.is-following{background:linear-gradient(135deg,#ff78a9,#c69bff)!important;color:#fff!important}
+@media(prefers-reduced-motion:reduce){.meowFollowBtn{transition:none}}
+
+/* Dropdown lọc FULL / đang ra — gọn nhẹ, không cần tải lại trang */
+.meowStoryStatusPickerWrap{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:4px auto 16px;padding:12px 14px;width:min(100%,520px);border:1px solid #ffd0e4;border-radius:18px;background:linear-gradient(135deg,#fff8fc,#f8f1ff);box-shadow:0 5px 16px #d98ab51a;color:#a64b7d;font-weight:800}
+.meowStoryStatusPickerWrap label{font-size:14px}
+.meowStoryStatusPicker{max-width:100%;min-width:190px;padding:11px 38px 11px 14px;border:1px solid #f0b6d4;border-radius:14px;background:#fff;color:#a44378;font:700 14px/1.3 inherit;cursor:pointer;outline-offset:3px;touch-action:manipulation}
+.meowStoryStatusPicker:focus-visible{outline:2px solid #d875aa}
+@media(max-width:480px){.meowStoryStatusPickerWrap{align-items:stretch;flex-direction:column;gap:8px}.meowStoryStatusPicker{width:100%;min-width:0}}
+
+/* Hiển thị nút phân trang danh sách truyện; tránh dựng hàng nghìn thẻ cùng lúc */
+#storyGrid .meowShowMoreStories,
+#storyGrid [data-show-more-stories]{
+  display:flex!important;align-items:center;justify-content:center;
+  width:min(100%,360px);margin:18px auto;padding:12px 18px;
+  border:1px solid #ffc1dc;border-radius:999px;
+  background:linear-gradient(135deg,#fff0f7,#f1e7ff);
+  color:#a84479;font-weight:800;cursor:pointer;touch-action:manipulation;
+}
 </style>
 <script id="meowNoteCollapseScript">
 (function(){
