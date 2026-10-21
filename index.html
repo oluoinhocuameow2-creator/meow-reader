@@ -2268,6 +2268,163 @@ img[loading="lazy"] { height: auto; }
 #readerPage .meowReaderBottom{z-index:22}
 @media(max-width:600px){#meowWatermarkOverlay{background-size:270px 175px;opacity:.38}}
 @media(prefers-reduced-motion:reduce){.meowStoryCard,.meowCover img{transition:none!important;}}
+
+/* MEOW — fairy-house welcome banner inspired by the floral reference */
+.meowFairyHero{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:flex;align-items:center;min-height:210px;
+  margin:0 0 20px;padding:27px clamp(20px,3.2vw,42px);
+  border:1px solid rgba(255,255,255,.9);border-radius:27px;
+  background:linear-gradient(112deg,#ffb8d0 0%,#f8c4dc 46%,#f2d8fa 100%);
+  box-shadow:0 14px 36px rgba(208,115,159,.16),inset 0 1px 0 #ffffffb8;
+}
+.meowFairyHeroText{position:relative;z-index:2;width:min(62%,540px)}
+.meowFairyEyebrow{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;color:#a44f7a;font-size:10px;font-weight:900;letter-spacing:1.2px}
+.meowFairyHero h1{margin:0 0 9px;color:#fff;font-size:clamp(22px,3vw,35px);line-height:1.18;letter-spacing:-.7px;text-shadow:0 2px 12px rgba(177,83,127,.12)}
+.meowFairyHero h1 em{font-style:normal;color:#fff8fc}
+.meowFairyHero p{max-width:390px;margin:0 0 16px;color:#89536e;font-size:12px;line-height:1.7}
+.meowFairyStart{display:inline-flex;align-items:center;gap:13px;padding:10px 16px;border:1px solid #fff;border-radius:999px;background:rgba(255,255,255,.9);color:#c15e8e;text-decoration:none;font-size:11px;font-weight:800;box-shadow:0 5px 15px rgba(174,84,128,.12);transition:transform .2s,box-shadow .2s}
+.meowFairyStart:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(174,84,128,.2)}
+.meowFairyHouse{position:absolute;z-index:1;right:1.5%;bottom:-2px;width:43%;height:100%;background-image:url("data:image/jpeg;base64,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");background-repeat:no-repeat;background-position:center bottom;background-size:contain;pointer-events:none;filter:drop-shadow(0 5px 9px rgba(164,91,126,.08))}
+.meowFairySpark{position:absolute;z-index:1;color:#fff8fd;text-shadow:0 2px 8px #e78ebc;font-size:23px}
+.meowFairySpark.spark-one{right:43%;top:20%}.meowFairySpark.spark-two{right:8%;top:19%;font-size:30px}
+@media(max-width:600px){
+ .meowFairyHero{min-height:190px;padding:22px 17px;border-radius:22px;margin-bottom:16px}
+ .meowFairyHeroText{width:70%}
+ .meowFairyHero h1{font-size:clamp(19px,5.2vw,27px);line-height:1.2}
+ .meowFairyHero p{max-width:220px;font-size:10px;margin-bottom:12px}
+ .meowFairyEyebrow{font-size:8px;letter-spacing:.6px}
+ .meowFairyStart{font-size:10px;padding:9px 12px;gap:7px}
+ .meowFairyHouse{right:-5%;width:49%;opacity:.95}
+ .meowFairySpark.spark-one{right:42%;top:13%}
+}
+@media(max-width:380px){
+ .meowFairyHeroText{width:73%}
+ .meowFairyHouse{right:-10%;width:51%;opacity:.82}
+ .meowFairyHero h1{font-size:18px}
+ .meowFairyHero p{font-size:9px}
+}
+
+
+/* 🏡 MEOW STORY HOUSE — bố cục bám sát ảnh mẫu người dùng gửi */
+.meowFairyHero{
+  position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;
+  min-height:294px;padding:clamp(28px,4.2vw,54px) clamp(28px,3.4vw,44px);
+  margin:0 0 20px;border:1px solid rgba(255,255,255,.94);border-radius:28px;
+  background:radial-gradient(circle at 79% -2%,rgba(255,255,255,.22) 0 120px,transparent 121px),
+    radial-gradient(circle at 95% 105%,rgba(255,255,255,.25) 0 82px,transparent 83px),
+    linear-gradient(112deg,#f7a5c7 0%,#fac3dc 48%,#f4d5f5 100%);
+  box-shadow:0 14px 36px rgba(208,115,159,.14),inset 0 1px 0 #ffffffb8;
+}
+.meowFairyHeroText{position:relative;z-index:3;width:min(57%,650px)}
+.meowFairyEyebrow{display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;color:#fff;font-size:10px;font-weight:900;letter-spacing:1.35px}
+.meowFairyHero h1{margin:0 0 9px;color:#fff;font-size:clamp(30px,3.3vw,45px);line-height:1.18;letter-spacing:-.8px;text-shadow:0 2px 12px rgba(177,83,127,.08)}
+.meowFairyHero h1 em{font-style:normal;color:#fff}
+.meowFairyHero p{max-width:420px;margin:13px 0 20px;color:#fff;font-size:13px;line-height:1.7}
+.meowFairyStart{display:none}
+.meowFairyHouse{position:absolute;z-index:2;right:5%;bottom:5%;width:clamp(240px,27vw,360px);height:clamp(220px,24vw,300px);pointer-events:none;filter:drop-shadow(0 12px 18px rgba(170,87,133,.18));display:flex;align-items:center;justify-content:center}
+.meowFairyHouse:before{content:"";position:absolute;z-index:2;left:-12px;right:-12px;top:-42px;height:0;border-left:84px solid transparent;border-right:84px solid transparent;border-bottom:90px solid #fce4f1;filter:drop-shadow(0 2px 0 rgba(255,255,255,.75))}
+.meowFairyHouse:after{content:"";position:absolute;z-index:1;left:0;right:0;top:0;height:120px;border:5px solid rgba(255,255,255,.86);border-radius:3px;background:linear-gradient(90deg,#fff5fa,#ffedf6);box-shadow:inset 0 0 0 1px #f8d5e6}
+.meowFairyDoor{position:absolute;z-index:3;left:56px;bottom:0;width:44px;height:76px;border:3px solid #eab0cc;border-bottom:0;border-radius:24px 24px 0 0;background:linear-gradient(90deg,#ffe5f1,#fff4fa)}
+.meowFairyWindow{position:absolute;z-index:4;left:53px;top:12px;width:49px;height:43px;display:grid;place-items:center;border:3px solid #eab0cc;border-radius:24px 24px 15px 15px;background:#fff4fa;color:#f18bb8;font-size:15px}
+.meowFairySpark{position:absolute;z-index:3;color:#fff8fd;text-shadow:0 2px 8px #e78ebc;font-size:23px}
+.meowFairySpark.spark-one{right:29%;top:24%;font-size:27px}
+.meowFairySpark.spark-two{right:7.5%;top:29%;font-size:30px}
+.meowFairyFlower{position:absolute;z-index:3;font-size:23px;filter:drop-shadow(0 3px 4px #bf679044)}
+.meowFairyFlower.flower-one{right:30%;bottom:20%}.meowFairyFlower.flower-two{right:7%;bottom:18%}
+.meowFairyHearts{position:absolute;z-index:3;left:clamp(28px,3.4vw,44px);bottom:24%;display:flex;gap:18px;color:#fff;font-size:15px}
+@media(max-width:700px){
+ .meowFairyHero{min-height:220px;padding:25px 20px;border-radius:23px}
+ .meowFairyHeroText{width:62%}.meowFairyHero h1{font-size:clamp(22px,5.5vw,32px)}
+ .meowFairyHero p{font-size:11px;max-width:260px;margin:10px 0 12px}
+ .meowFairyEyebrow{font-size:8px;letter-spacing:.6px}
+ .meowFairyHouse{right:2%;bottom:4%;width:clamp(125px,31vw,210px);height:clamp(145px,35vw,205px);transform:none}
+ .meowFairySpark.spark-one{right:34%;top:15%}.meowFairyFlower.flower-one{right:34%;bottom:15%}
+ .meowFairyHearts{left:20px;bottom:12%;font-size:12px;gap:12px}
+}
+@media(max-width:420px){
+ .meowFairyHero{min-height:195px;padding:22px 15px}
+ .meowFairyHeroText{width:60%}.meowFairyHero h1{font-size:20px}
+ .meowFairyHero p{font-size:10px;max-width:190px;margin:9px 0 13px}
+ .meowFairyHouse{right:0;bottom:3%;width:112px;height:132px;transform:none}
+ .meowFairySpark.spark-one{right:35%;top:12%}.meowFairySpark.spark-two{font-size:22px}
+ .meowFairyFlower{font-size:17px}.meowFairyHearts{left:15px;bottom:9%;gap:9px;font-size:11px}
+}
+/* Ảnh trang trí lớn bên phải banner; giữ vùng chữ thông thoáng */
+.meowFairyHouse{overflow:visible}
+.meowFairyHouse img{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;border:0;border-radius:14px;background:transparent}
+.meowFairyHouse.has-custom-image{background:transparent;filter:drop-shadow(0 10px 18px rgba(173,78,127,.16))}
+.meowFairyHouse.has-custom-image:before,.meowFairyHouse.has-custom-image:after{display:none!important}
+.meowFairyHouse img{display:block;width:100%;height:100%;object-fit:contain;position:relative;z-index:5}
+.meowSearchWrap{position:relative;display:flex;align-items:center;flex:1;min-width:0}
+.meowSearchWrap .meowSearch{width:100%;padding-right:48px}
+.meowSearchClear{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:0;border-radius:50%;background:#ffe4ef;color:#b85a86;font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer}
+.meowSearchClear[hidden]{display:none!important}
+@media(max-width:600px){.meowFairyHouse img{max-height:100%}}
+
+/* Banner welcome guide + recent system updates */
+.meowFairyHero{padding-bottom:142px;min-height:390px}
+.meowFairyHeroText{width:min(61%,690px)}
+.meowFairyHero .meowWelcomeGuide{max-width:620px;font-size:12px;line-height:1.55;margin:8px 0 0;color:#fff;font-weight:500;text-shadow:0 1px 4px #b85c8730}
+.meowFairyHero .meowWelcomeGuide b{font-weight:900;color:#fff;letter-spacing:.15px}
+.meowRecentUpdates{position:absolute;z-index:6;left:22px;right:22px;bottom:14px;padding:9px 12px 10px;border:1px solid #fff9;border-radius:17px;background:rgba(255,248,253,.84);box-shadow:0 5px 18px #a64d7b16;backdrop-filter:blur(9px);color:#88516f}
+.meowRecentHeading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;font-size:11px;font-weight:900;color:#a94e7d}
+.meowRecentHeading small{font-size:9px;font-weight:700;color:#bd82a2}
+.meowRecentList{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.meowRecentItem{min-width:0;padding:7px 8px;border-left:1px solid #e7b9d1;text-decoration:none;color:#80526c;display:flex;flex-direction:column;gap:3px;line-height:1.25}
+.meowRecentItem:first-child{border-left:0}
+.meowRecentType{font-size:9px;font-weight:900;color:#d45c98}
+.meowRecentName{font-size:10px;font-weight:800;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.meowRecentMeta{font-size:9px;color:#a77a95}
+.meowRecentEmpty{font-size:10px;color:#a77a95;padding:4px 2px}
+body.meowSiteDark .meowRecentUpdates{background:rgba(48,35,55,.91);border-color:#765778;color:#f5d7e9}
+body.meowSiteDark .meowRecentHeading,body.meowSiteDark .meowRecentType{color:#ffafd5}
+body.meowSiteDark .meowRecentHeading small,body.meowSiteDark .meowRecentMeta{color:#d4b0cd}
+body.meowSiteDark .meowRecentItem{color:#f2d8e9;border-left-color:#70516e}
+@media(max-width:700px){.meowFairyHero{min-height:440px;padding-bottom:154px}.meowFairyHeroText{width:70%}.meowFairyHero .meowWelcomeGuide{font-size:10px;line-height:1.5;max-width:95%}.meowRecentUpdates{left:10px;right:10px;bottom:9px;padding:8px}.meowRecentList{grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}.meowRecentItem{padding:5px 6px;border-left:0;border-top:1px solid #e7b9d1}.meowRecentItem:nth-child(-n+2){border-top:0}.meowRecentItem:nth-child(5){display:none}}
+@media(max-width:420px){.meowFairyHero{min-height:465px}.meowFairyHeroText{width:100%;padding-right:25px}.meowFairyHero h1{font-size:21px}.meowFairyHero .meowWelcomeGuide{max-width:100%;font-size:9px}.meowFairyHouse{opacity:.55;right:-4%;bottom:30%;width:105px;height:120px}.meowRecentList{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* === Meow profile refinements: dark matching background + open-book grid === */
+#meowProfileOverlay{background:#2b2233!important;color:#f5d9ea}
+.meowProfileShell{background:linear-gradient(145deg,#2b2233 0%,#38283f 55%,#28263c 100%)!important;color:#f5d9ea!important}
+.meowProfileTop h2{color:#ffc9e5!important}
+.meowProfileHero,.meowProfileStat,.meowProfileSection{background:linear-gradient(145deg,#514158,#44354d 58%,#3a3048)!important;border-color:#755a78!important;color:#f6ddeb!important}
+.meowProfileName,.meowProfileStat strong{color:#ffd5eb!important}
+.meowProfileId,.meowProfileStat span,.meowProfileEmpty{color:#e6c4dc!important}
+.meowProfileSection h3{color:#ffc9e5!important}
+.meowProfileCards{grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))!important;align-items:stretch;gap:13px}
+.meowProfileCards .meowProfileLimitItem{min-width:0}
+.meowProfileCards .meowStoryCard{display:grid!important;grid-template-columns:112px minmax(0,1fr)!important;align-items:stretch;min-height:160px;border-radius:18px!important;background:linear-gradient(135deg,#3b2c45,#30283c)!important;border:1px solid #765a7c!important;overflow:hidden}
+.meowProfileCards .meowCover{height:100%!important;min-height:160px;aspect-ratio:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.meowProfileCards .meowCover img{width:100%;height:100%;object-fit:cover}
+.meowProfileCards .meowStoryInfo{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;padding:13px!important;background:linear-gradient(135deg,#3d2e47,#30283d)!important;min-width:0}
+.meowProfileCards .meowStoryName{color:#ffd7ec!important;font-size:15px!important;line-height:1.35;text-shadow:none!important}
+.meowProfileCards .meowStoryAuthor,.meowProfileCards .meowStoryMeta{font-size:11px!important;color:#d7b9d3!important}
+.meowProfileCards .meowVipLabel{display:none}
+.meowProfileCards .meowOpenStory{margin-top:3px;border-radius:999px!important;padding:9px 15px!important;background:linear-gradient(135deg,#e991c0,#a88be2)!important;color:#fff!important;font-size:11px!important}
+.meowProfileCards .meowFollowBtn{font-size:9px;max-width:100%;padding:5px 7px}
+.meowProfileRecent .meowShelfRecentItem{background:#382b43;border-color:#725676;color:#f8dceb}
+.meowProfileRecent .meowShelfRecentText{color:#e4c4db}
+.meowProfileWalletLink,.meowProfileCopy,.meowProfileClose,.meowProfileTheme{background:#49374f!important;color:#ffd9ec!important;border-color:#795d7b!important}
+.meowProfileMore,.meowShowMoreStories,[data-show-more-stories]{display:none!important}
+[data-profile-more]{display:inline-flex!important;align-items:center;justify-content:center;gap:5px;border:1px solid #805c85!important;border-radius:999px!important;padding:7px 12px!important;background:linear-gradient(135deg,#f4b4d8,#c6a7f5)!important;color:#fff!important;font-size:11px!important;font-weight:800!important;cursor:pointer;box-shadow:0 4px 12px #e89ac733}
+@media(max-width:520px){.meowProfileCards{grid-template-columns:1fr!important}.meowProfileCards .meowStoryCard{grid-template-columns:96px minmax(0,1fr)!important;min-height:145px}.meowProfileCards .meowCover{min-height:145px}.meowProfileCards .meowStoryName{font-size:13px!important}}
+/* Comment avatars and threaded replies */
+.meowComment{background:#fff!important}
+.meowCommentIdentity{display:flex;align-items:center;gap:9px;min-width:0}
+.meowCommentAvatar{width:34px;height:34px;flex:0 0 34px;border-radius:50%;object-fit:cover;border:2px solid #f4c9df;background:#ffe7f2;display:grid;place-items:center;font-size:17px}
+.meowCommentAuthor{display:flex;flex-direction:column;gap:2px;min-width:0;overflow-wrap:anywhere}
+.meowCommentAuthor small{font-weight:400;color:#b29aaa;font-size:10px}
+.meowCommentActions{display:flex;gap:7px;margin-top:7px}
+.meowCommentReplyBtn{border:1px solid #f1c9dc;border-radius:999px;background:#fff2f8;color:#a34f79;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer}
+.meowCommentReplyForm{display:flex;gap:6px;margin-top:8px}
+.meowCommentReplyForm input{min-width:0;flex:1;border:1px solid #f1c9dc;border-radius:10px;padding:8px;font:inherit;font-size:12px}
+.meowCommentReplyForm button{border:0;border-radius:10px;background:#df8aba;color:white;padding:0 10px;font-weight:700}
+.meowCommentReplies{display:grid;gap:6px;margin:9px 0 0 17px;padding-left:10px;border-left:2px solid #f2c5dc}
+.meowCommentReply{font-size:12px;background:#fff4f9;border-radius:10px;padding:8px;color:#654c60}
+body.meowSiteDark .meowStoryCommentsCard{background:#3b2d46;color:#f5ddeb;border-color:#755878}
+body.meowSiteDark .meowComment{background:#30283c;color:#f5ddeb;border-color:#755878}
+body.meowSiteDark .meowCommentReply{background:#443149;color:#f5ddeb}
+
 </style>
 
 
@@ -2352,6 +2509,90 @@ img[loading="lazy"] { height: auto; }
  .meowTTSMainBtn{min-width:100%!important}
 }
 </style>
+
+<style>
+/* MEOW PERSONAL HUB — glass pastel */
+#meowWelcomeGlass,#meowWelcomeGlass+.meowWalletBar{display:none!important}
+#meowPersonalShelfBtn{display:none!important}
+.meowProfileTrigger{width:43px;height:43px;padding:0;border:2px solid #fff;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#ffb5d5,#d9b7ff);box-shadow:0 4px 14px #d77eaa55;display:grid;place-items:center;color:#a64e7b;font-size:19px;flex:none}
+.meowProfileTrigger img{width:100%;height:100%;object-fit:cover}
+.meowAvatarLogoutIcon{position:absolute;right:-1px;bottom:-1px;z-index:5;width:19px;height:19px;padding:0;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:linear-gradient(135deg,#39283f,#654568);color:#ffe5f1;font-size:12px;line-height:1;font-weight:900;box-shadow:0 2px 7px #2b1e344d;cursor:pointer;transition:transform .18s,background .18s}
+.meowAvatarLogoutIcon:hover{transform:scale(1.1);background:linear-gradient(135deg,#ff79ad,#c36de5)}
+.meowAvatarLogoutIcon:focus-visible{outline:2px solid #ff91c3;outline-offset:2px}
+.meowProfileMenu{position:absolute;right:12px;top:calc(100% + 8px);z-index:1200;width:205px;padding:9px;border:1px solid #ffffffd9;border-radius:20px;background:#fffafceF;box-shadow:0 14px 38px #8b557033;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:none}
+.meowProfileMenu.show{display:grid;gap:7px}
+.meowProfileMenu button{border:1px solid #ffffffd9;border-radius:13px;padding:11px;text-align:left;background:#ffffffa6;color:#9d5a7b;font:700 12px inherit}
+.meowProfileMenu .logout{color:#c63e68;background:#ff55751a;border-color:#ffb4c6}
+#meowProfileOverlay{position:fixed;inset:0;z-index:99999;display:none;overflow-y:auto;overflow-x:hidden;padding:0;background:linear-gradient(145deg,#cfeaff 0%,#f8dff0 45%,#e9e1ff 100%);background-attachment:fixed;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#meowProfileOverlay.show{display:block}
+.meowProfileShell{width:100%;min-height:100%;margin:0 auto;border:0;border-radius:0;padding:clamp(14px,3vw,30px);padding-bottom:calc(28px + env(safe-area-inset-bottom));background:linear-gradient(145deg,#ffffff55,#fff5fc42 55%,#eee8ff55);box-shadow:none;color:#76546b;position:relative}
+.meowProfileShell:before{content:"✧ ･ﾟ: *✧ ･ﾟ:*";display:block;text-align:center;color:#fff;font-size:13px;letter-spacing:5px;text-shadow:0 1px 8px #c67eb5;margin:0 0 8px}
+.meowProfileShell:after{content:"୨୧  Sakura Memory  ୨୧";display:block;text-align:center;color:#b875a0;font-size:11px;letter-spacing:2px;margin-top:16px;opacity:.8}
+.meowProfileTop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}.meowProfileTopActions{display:flex;align-items:center;gap:8px}.meowProfileTheme{width:38px;height:38px;border:1px solid #ffffffd9;border-radius:50%;background:linear-gradient(135deg,#ffffffbd,#fce8f6a8);color:#a65383;font-size:17px;box-shadow:0 5px 15px #b879a31c}
+.meowProfileTop h2{margin:0;color:#a84e82;font-size:clamp(18px,4vw,25px);text-shadow:0 1px 0 #fff,0 4px 15px #e4a8d5a0}
+.meowProfileClose{width:auto;min-width:88px;height:37px;padding:0 13px;border:1px solid #ffffffd9;border-radius:999px;background:linear-gradient(135deg,#ffffffbd,#fce8f6a8);color:#a65383;font-size:12px;font-weight:800;box-shadow:0 5px 15px #b879a31c}
+.meowProfileHero{display:grid;grid-template-columns:90px minmax(0,1fr) auto;align-items:center;gap:14px;padding:16px;border:1px solid #ffffffed;border-radius:26px;background:linear-gradient(120deg,#ffffff91,#ffe5f382,#e9e2ff91);box-shadow:0 10px 28px #9d7eb01a,inset 0 1px 0 #ffffff;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.meowProfileAvatarWrap{width:88px;height:88px;border-radius:25px;overflow:hidden;border:3px solid #fff;box-shadow:0 5px 18px #b978a544;background:#ffe4f1;position:relative}
+.meowProfileAvatarWrap img{width:100%;height:100%;object-fit:cover}
+.meowProfileAvatarWrap label{position:absolute;inset:auto 0 0;padding:5px 2px;text-align:center;background:#8f628c99;color:#fff;font-size:10px;cursor:pointer}
+.meowProfileAvatarWrap input{display:none}
+.meowProfileName{font-size:clamp(16px,3vw,21px);font-weight:900;color:#8d4f77;overflow-wrap:anywhere}
+.meowProfileId{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:7px;font-size:12px;color:#a87998}
+.meowProfileCopy{width:27px;height:27px;border:1px solid #fff;border-radius:9px;background:#ffffffa8;color:#b65e91}
+.meowProfileWalletLink{display:inline-flex;align-items:center;gap:6px;margin-top:9px;padding:8px 11px;border:1px solid #fff;border-radius:12px;background:#ffffffa6;color:#a64f83;text-decoration:none;font-size:11px;font-weight:800}
+.meowProfileStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:13px 0 20px}
+.meowProfileStat{min-height:86px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:12px 7px;border:1px solid #ffffffed;border-radius:21px;background:linear-gradient(145deg,#ffffff9c,#ffe9f38a 55%,#eee7ff8a);box-shadow:0 8px 20px #bd88b51a,inset 0 1px 0 #fff;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.meowProfileStat span{font-size:11px;color:#a56e91;font-weight:700}.meowProfileStat strong{font-size:clamp(16px,3vw,22px);color:#b74c86;overflow-wrap:anywhere}
+.meowProfileSection{margin-top:17px;padding:14px;border:1px solid #ffffffd9;border-radius:24px;background:linear-gradient(145deg,#ffffff65,#fff7fc52);box-shadow:0 8px 25px #a47ab015,inset 0 1px 0 #ffffff;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.meowProfileSection h3{margin:0 0 12px;color:#ad5687;font-size:15px}
+.meowProfileCards{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:11px}
+.meowProfileCards .meowStoryCard{min-width:0;border:1px solid #ffffffed!important;border-radius:20px!important;background:linear-gradient(145deg,#ffffff85,#fbeaf780,#eae5ff75)!important;box-shadow:0 8px 22px #9677a51f,inset 0 1px 0 #fff!important;overflow:hidden;backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);transition:transform .2s ease,box-shadow .2s ease}
+.meowProfileCards .meowStoryCard:active{transform:scale(.98)}
+.meowProfileCards .meowCover{position:relative;overflow:hidden;border:3px solid #ffffffb8;box-shadow:0 4px 13px #9975a41f}
+.meowProfileCards .meowCover img{filter:saturate(.92);transition:transform .35s ease}
+.meowProfileCards .meowStoryCard:hover .meowCover img{transform:scale(1.035)}
+.meowProfileCards .meowStoryInfo{background:linear-gradient(180deg,#ffffffa6,#fff8fcbf)}
+.meowProfileCards .meowStoryName{color:#98537f;text-shadow:0 1px 0 #fff}
+.meowProfileCards .meowOpenStory{border:1px solid #ffffffd9!important;border-radius:999px!important;background:linear-gradient(135deg,#f5c9e2,#e5d8ff)!important;color:#8e527d!important;box-shadow:0 4px 12px #c99ac51c}
+.meowProfileCards .meowCover{aspect-ratio:3/4;border-radius:16px 16px 10px 10px}
+.meowProfileCards .meowStoryInfo{padding:9px}
+.meowProfileCards .meowStoryName{font-size:12px}
+.meowProfileCards .meowStoryAuthor,.meowProfileCards .meowStoryMeta{font-size:10px}
+.meowProfileCards .meowOpenStory{font-size:10px;padding:8px}
+.meowProfileRecent{display:grid;gap:8px}
+.meowProfileLogout{display:block;width:fit-content;margin:20px auto 2px;padding:10px 20px;border:1px solid #ffb9c9;border-radius:999px;background:#ff58751c;color:#c83e68;font-size:12px;font-weight:900;box-shadow:0 4px 14px #f36d8a20}
+.meowProfileEmpty{padding:16px;border:1px dashed #edc6dc;border-radius:15px;text-align:center;color:#b0829b;font-size:12px;background:#ffffff70}
+@media(max-width:520px){.meowProfileHero{grid-template-columns:68px minmax(0,1fr);gap:11px;padding:12px}.meowProfileAvatarWrap{width:66px;height:66px;border-radius:20px}.meowProfileHero>div:last-child{grid-column:1/-1}.meowProfileStats{gap:6px}.meowProfileStat{min-height:78px;border-radius:15px}.meowProfileStat span{font-size:10px}.meowProfileSection{padding:10px}.meowProfileCards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
+/* Tiny expand controls + Sakura-inspired personal calendar */
+.meowProfileLimitItem[hidden]{display:none!important}
+.meowProfileCards{align-items:start}
+.meowProfileMore{grid-column:1/-1;justify-self:center;display:inline-flex;align-items:center;gap:6px;margin:3px auto 0;padding:7px 12px;border:1px solid #ffffffde;border-radius:999px;background:linear-gradient(135deg,#ffffffa8,#f8dff2b8,#e8e2ffb8);color:#a45c88;font-size:11px;font-weight:800;box-shadow:0 4px 12px #c58eb522;cursor:pointer}
+.meowProfileMore:first-letter{font-size:15px}
+.meowProfileRecent .meowProfileMore{grid-column:auto}
+.meowCuteCalendar{max-width:720px;margin:20px auto 4px;padding:16px 14px 13px;border:2px solid #efb4d0;border-radius:28px;background:linear-gradient(145deg,#fffafdF2,#fff0f7e8 60%,#f4edffe8);box-shadow:0 9px 26px #b7799c1b,inset 0 1px 0 #fff;color:#4c3d49;overflow:hidden}
+.meowCalendarHead{display:flex;justify-content:center;align-items:center;gap:12px;text-align:center;color:#ba648f;margin-bottom:13px}.meowCalendarHead strong{display:block;font-size:clamp(17px,4vw,25px);font-weight:950;letter-spacing:.3px}.meowCalendarHead small{display:block;font-size:10px;color:#c48aa9;margin-top:3px}.meowCalendarFlower{font-size:28px;color:#e6a4c8;text-shadow:0 2px 8px #eabbd4}
+.meowCalendarPickers{display:flex;justify-content:center;align-items:center;gap:7px;margin-bottom:12px}.meowCalendarPickers select{max-width:42%;padding:8px 10px;border:1px solid #f0c6dc;border-radius:12px;background:#fff9fd;color:#a45a82;font-size:12px;font-weight:800;outline:none}.meowCalendarArrow{width:30px;height:30px;border:1px solid #f0c6dc;border-radius:50%;background:#fff9fd;color:#b05c8b;font-size:22px;line-height:1;cursor:pointer}
+.meowCalendarWeek,.meowCalendarDays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;text-align:center}.meowCalendarWeek{padding:8px 4px;border:1px solid #e9aac8;border-radius:15px;background:linear-gradient(100deg,#e8a9c9,#dca5c5);color:#fff;font-size:11px;font-weight:900;text-shadow:0 1px 2px #9c5276}.meowCalendarDays{padding:11px 2px 6px;row-gap:7px}.meowCalendarBlank{min-height:36px}.meowCalendarDay{justify-self:center;display:grid;place-items:center;width:min(36px,9vw);height:min(36px,9vw);min-width:27px;min-height:27px;border:1px solid transparent;border-radius:50%;background:transparent;color:#403641;font-size:13px;font-weight:750;cursor:pointer;transition:transform .15s,background .15s}.meowCalendarDay.is-weekend{color:#c66c99}.meowCalendarDay.is-today{border:2px solid #e58bb7;background:linear-gradient(145deg,#f8c5df,#ed9dc6);color:#fff;box-shadow:0 0 0 4px #f6c7df55,0 3px 10px #dc7fac55;font-weight:950}.meowCalendarDay:active{transform:scale(.9)}.meowCalendarFoot{display:flex;justify-content:center;align-items:center;gap:7px;margin-top:8px;color:#b47a9a;font-size:10px}.meowCalendarTodayDot{width:8px;height:8px;border-radius:50%;background:#e58bb7;box-shadow:0 0 0 3px #f6c7df}
+body.meowSiteDark .meowProfileMore{background:linear-gradient(135deg,#49374f,#44324e);color:#ffd9ec;border-color:#795d7b}
+body.meowSiteDark .meowCuteCalendar{background:linear-gradient(145deg,#30283b,#35283f 60%,#302d49);border-color:#805a79;color:#f7ddec;box-shadow:0 9px 26px #0002,inset 0 1px 0 #ffffff18}
+body.meowSiteDark .meowCalendarHead strong,body.meowSiteDark .meowCalendarFlower{color:#ffd0e9}body.meowSiteDark .meowCalendarHead small,body.meowSiteDark .meowCalendarFoot{color:#e1bfd9}
+body.meowSiteDark .meowCalendarPickers select,body.meowSiteDark .meowCalendarArrow{background:#49374f;color:#ffd9ec;border-color:#795d7b}body.meowSiteDark .meowCalendarDay{color:#f7eaf4}body.meowSiteDark .meowCalendarDay.is-weekend{color:#f4a9cf}body.meowSiteDark .meowCalendarDay.is-today{background:linear-gradient(145deg,#b96998,#8e5eaa);color:#fff;border-color:#f4b6d6}
+@media(max-width:520px){.meowCuteCalendar{padding:13px 9px 11px;border-radius:23px}.meowCalendarWeek,.meowCalendarDays{gap:3px}.meowCalendarDay{font-size:12px}.meowCalendarBlank{min-height:31px}.meowCalendarDays{row-gap:5px}}
+
+body.meowSiteDark #meowProfileOverlay{background:linear-gradient(145deg,#211f2c 0%,#302538 48%,#25243a 100%)}
+body.meowSiteDark .meowProfileShell{background:linear-gradient(145deg,#211f2caa,#302538a8 55%,#25243aaa);color:#f3ddeb}
+body.meowSiteDark .meowProfileTop h2,body.meowSiteDark .meowProfileSection h3{color:#ffd0e9;text-shadow:none}
+body.meowSiteDark .meowProfileHero,body.meowSiteDark .meowProfileStat,body.meowSiteDark .meowProfileSection{background:linear-gradient(145deg,#3b2d46dd,#35283fdd,#2f2c49dd)!important;border-color:#745778!important;box-shadow:inset 0 1px 0 #ffffff18,0 8px 22px #00000018}
+body.meowSiteDark .meowProfileName,body.meowSiteDark .meowProfileStat strong,body.meowSiteDark .meowProfileCards .meowStoryName{color:#ffd5eb;text-shadow:none}
+body.meowSiteDark .meowProfileId,body.meowSiteDark .meowProfileStat span,body.meowSiteDark .meowProfileEmpty{color:#e1bfd9}
+body.meowSiteDark .meowProfileWalletLink,body.meowSiteDark .meowProfileCopy,body.meowSiteDark .meowProfileClose,body.meowSiteDark .meowProfileTheme{background:#49374f;color:#ffd9ec;border-color:#795d7b}
+body.meowSiteDark .meowProfileCards .meowStoryCard{background:linear-gradient(145deg,#3c2d46,#34283f,#302d49)!important;border-color:#755878!important}
+body.meowSiteDark .meowProfileCards .meowStoryInfo{background:linear-gradient(180deg,#392c45,#33283e)!important}
+body.meowSiteDark .meowProfileCards .meowOpenStory{background:linear-gradient(135deg,#8d5478,#68568f)!important;color:#fff!important}
+body.meowSiteDark .meowProfileEmpty{background:#34283f;border-color:#755878}
+
+</style>
+
 </head>
 <body>
 <div id="meowReaderApp">
@@ -2365,8 +2606,8 @@ img[loading="lazy"] { height: auto; }
 
     <div class="meowLoginBox">
 
-      <div class="meowLoginCat">
-        🐱
+      <div class="meowLoginCat" aria-label="Logo Mini Meow">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRpQvCHGkwn4PWOX1gnimfSlIRciK6PnwJ-oF7E-6HJT-RrY2SbpZF3pj1PrYgv8h3mDzfOo9FmbfHHvJZCE-umitAdWdDsi_PUgZNXn_yQZG6gqCCHvLlMxJT2bJhB8YEAoBfDqXqZ9_3nxqVPcDvdiB3a0WwIJWFzTT2m0iUhHid_cDNeYyvBoafzNxY/s442/t%E1%BA%A3i%20xu%E1%BB%91ng%20(8).png" alt="Logo Mini Meow" loading="eager" decoding="async">
       </div>
 
       <h1 class="meowLoginTitle">
@@ -2374,8 +2615,9 @@ img[loading="lazy"] { height: auto; }
       </h1>
 
       <div class="meowLoginSub">
-Trải nghiệm thử trước khi tạo ID nhập "1" 
-  Nếu muốn có tài khoản riêng mà chưa có ID để vào vui lòng nhấn TẠO ID bên dưới
+        <div class="meowLoginNoteLabel">♡ CHÀO MỪNG ĐẾN VỚI MINI MEOW ♡</div>
+        <p><strong>Vào đọc thử:</strong> nhập <code>1</code> để trải nghiệm trước khi tạo ID.</p>
+        <p><strong>Tài khoản riêng:</strong> nếu chưa có ID, hãy chọn <b>TẠO ID</b> ở phần bên dưới.</p>
       </div>
 
 
@@ -2410,6 +2652,14 @@ Trải nghiệm thử trước khi tạo ID nhập "1"
        APP CONTENT
   ====================================================== -->
 
+
+<div id="meowProfileOverlay" aria-hidden="true">
+ <div class="meowProfileShell">
+  <div class="meowProfileTop"><h2>🎀 Trang cá nhân</h2><div class="meowProfileTopActions"><button class="meowProfileTheme" id="meowProfileThemeToggle" type="button" aria-label="Đổi chế độ sáng tối" title="Sáng / tối">🌙</button><button class="meowProfileClose" id="meowProfileClose" type="button" aria-label="Quay lại">← Quay lại</button></div></div>
+  <div id="meowProfileContent"></div>
+ </div>
+</div>
+
   <div id="readerMain">
 
 
@@ -2418,27 +2668,27 @@ Trải nghiệm thử trước khi tạo ID nhập "1"
     <div class="meowTopbar">
 
       <!-- DÁN LINK LOGO GỘP (ẢNH ĐÃ CÓ CHỮ MINI MEOW) Ở MEOW_LOGO_IMAGE_URL -->
-      <div class="meowLogo meowUnifiedLogo" title="Mini Meow">
-        <div class="meowLogoCat" id="meowLogoCat"><span id="meowLogoFallback">🐱 MINI MEOW ✨</span><img id="meowLogoImage" alt="Mini Meow" style="display:none;width:100%;height:100%;object-fit:contain"></div>
+      <div class="meowTopBrandGroup">
+        <div class="meowLogo meowUnifiedLogo" title="Mini Meow">
+          <div class="meowLogoCat" id="meowLogoCat"><span id="meowLogoFallback">🐱 MINI MEOW ✨</span><img id="meowLogoImage" alt="Mini Meow" style="display:none;width:100%;height:100%;object-fit:contain"></div>
+        </div>
+        <div class="meowTopWalletMini" aria-label="Số dư và ví Meow">
+          <div class="meowTopWalletBalance"><span class="meowTopWalletCoin"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6Dbal86H5Kg6il8Zk1awo59llIzhROfKORKWG4dhfDG7A0zuCMKJ4eGP_ofSNCp4rUlTzka9JGPl3lo5pHu5mzJiNNo9vwZ3p5V59dosyv5a-bA6IfqujiIpHlZiUDNSKq8dKoCkjvAv7doAsvzTAySlLG5KNgCaCCFH81aOzyhTRyvajJrMebQM_Zv4/s215/t%E1%BA%A3i%20xu%E1%BB%91ng%20(2).png" alt="Biểu tượng số dư" loading="eager"></span><span><small>Số dư</small><strong id="meowTopPrepaidBalance">0đ</strong></span></div>
+          <a class="meowTopWalletLink" id="meowTopWalletLink" href="https://oluoinhocuameow-ops.github.io/nap-tien/" target="_blank" rel="noopener noreferrer" title="Mở Ví Meow"><span>👛</span><span>Ví</span></a>
+        </div>
       </div>
 
       <div class="meowTopActions">
         <button class="meowTopBtn meowThemeToggle" id="meowThemeToggle" type="button" aria-label="Đổi chế độ sáng tối" title="Sáng / tối">🌙</button>
 
-        <button
-          class="meowTopBtn"
-          id="readerHomeBtn"
-        >
-          🏠 Home
-        </button>
-
-
-        <button
-          class="meowTopBtn primary"
-          id="readerLogoutBtn"
-        >
-          🚪 Thoát
-        </button>
+        <div class="meowProfileMenuWrap" style="position:relative;display:inline-flex;align-items:center;justify-content:center">
+          <button class="meowProfileTrigger" id="meowProfileTrigger" type="button" onclick="meowOpenProfile(); return false;" aria-label="Mở hồ sơ cá nhân" title="Cá nhân"><span id="meowProfileAvatarFallback">🐱</span><img id="meowProfileAvatarTop" alt="Ảnh đại diện" style="display:none"></button>
+          <button type="button" class="meowAvatarLogoutIcon" id="meowAvatarLogoutIcon" aria-label="Đăng xuất" title="Đăng xuất">↪</button>
+          <div class="meowProfileMenu" id="meowProfileMenu">
+            <button type="button" id="meowOpenProfileMenuItem">👤 Trang cá nhân</button>
+            <button type="button" class="logout" id="meowLogoutMenuItem">↪ Đăng xuất</button>
+          </div>
+        </div>
 
       </div>
 
@@ -2457,6 +2707,18 @@ Trải nghiệm thử trước khi tạo ID nhập "1"
 
       <div class="meowHero">
 
+
+<div class="meowFairyHero" aria-label="Ngôi nhà truyện nhỏ của Meow">
+  <div class="meowFairyHeroText">
+    <span class="meowFairyEyebrow">✿ Ổ LƯỜI NHỎ CỦA MEOW ✿</span>
+    <h1>Ngôi nhà truyện nhỏ</h1>
+    <p class="meowWelcomeGuide">Bấm vào <b>THỂ LOẠI</b> và <b>Ô TÌM</b> để tìm truyện nàng yêu thích.<br>Bấm <b>HÌNH ĐẠI DIỆN</b> để vào trang <b>CÁ NHÂN</b> xem tủ truyện.<br>Bấm <b>VÍ</b> gần LOGO hoặc CÁ NHÂN để <b>NẠP TIỀN ĐỂ ĐỌC TRUYỆN</b>.<br>Web có chức năng theo dõi truyện + mua FULL BỘ + mua lẻ chương.<br><b>Đã mua rồi thì đọc vĩnh viễn.</b></p>
+  </div>
+  <div class="meowFairyHouse" id="meowFairyHouse" aria-hidden="true"><img id="meowFairyHouseImage" alt="" style="display:none"><span class="meowFairyWindow">♡</span><span class="meowFairyDoor"></span></div>
+  <span class="meowFairySpark spark-one">✿</span><span class="meowFairySpark spark-two">✧</span>
+  <span class="meowFairyFlower flower-one">🌷</span><span class="meowFairyFlower flower-two">🌸</span>
+  <span class="meowFairyHearts" aria-hidden="true">♡　✧　♡</span>
+</div>
 
 <div class="meowShelfTabs">
 
@@ -2532,14 +2794,18 @@ Trải nghiệm thử trước khi tạo ID nhập "1"
           </a>
         </div>
 
-        <div class="meowSearchRow">
-
-          <input
-            id="storySearch"
-            class="meowInput meowSearch"
-            placeholder="🔍 Tìm tên truyện, tác giả..."
-          >
-
+        <div class="meowSearchRow meowSearchRowCompact">
+          <button type="button" id="meowSearchToggle" class="meowSearchIconBtn" aria-label="Mở tìm kiếm" aria-expanded="false" title="Tìm kiếm">⌕</button>
+          <div class="meowSearchWrap meowSearchCollapsed" id="meowSearchWrap">
+            <input
+              id="storySearch"
+              class="meowInput meowSearch"
+              placeholder="Tìm tên truyện, tác giả..."
+              autocomplete="off"
+              tabindex="-1"
+            >
+            <button type="button" id="meowClearStorySearch" class="meowSearchClear" aria-label="Xóa nội dung tìm kiếm" title="Xóa tìm kiếm" hidden>×</button>
+          </div>
         </div>
 
       </div>
@@ -3194,6 +3460,55 @@ function meowNormalizeCatalog(raw) {
   });
   return result;
 }
+// Banner activity feed: only use catalog metadata (never download chapter bodies).
+const MEOW_RECENT_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+let meowRecentPreviousCounts = {};
+function meowRecentTimestamp(info) {
+  const raw = meowPickStoryField(info, ["publishedAt","publishDate","createdAt","created_at","date","updatedAt","updated_at","postedAt","timestamp","lastUpdated"]);
+  if (raw === "") return 0;
+  if (typeof raw === "number" || /^\d{10,13}$/.test(String(raw))) {
+    const n = Number(raw); return n < 1e12 ? n * 1000 : n;
+  }
+  const parsed = Date.parse(String(raw)); return Number.isFinite(parsed) ? parsed : 0;
+}
+function meowRenderRecentUpdates(catalog) {
+  const list = document.getElementById("meowRecentList");
+  if (!list) return;
+  const now = Date.now(), entries = [];
+  Object.entries(catalog || {}).forEach(([id, story]) => {
+    const info = meowNormalizeStoryInfo(story?.info || story || {});
+    const name = String(info.name || info.title || "Truyện mới");
+    const count = Number(story?.chapterCount || 0);
+    const stamp = meowRecentTimestamp({ publishedAt: info.publishedAt || info.publishDate || info.createdAt || info.created_at || info.date || info.postedAt || info.timestamp });
+    const prev = meowRecentPreviousCounts[id];
+    const chapterStamp = meowRecentTimestamp({
+      updatedAt: info.lastChapterAt || info.latestChapterAt || info.chapterUpdatedAt || info.lastUpdatedChapterAt
+    });
+    if (chapterStamp && now - chapterStamp <= MEOW_RECENT_WINDOW_MS && chapterStamp <= now + 86400000) {
+      entries.push({id,name,type:"📖 Chương mới",time:chapterStamp,meta:count ? `${count} chương` : "Vừa cập nhật"});
+    } else if (prev !== undefined && count > prev) {
+      entries.push({id,name,type:"📖 Chương mới",time:now,meta:`${count} chương`});
+    }
+    if (stamp && now - stamp <= MEOW_RECENT_WINDOW_MS && stamp <= now + 86400000) {
+      entries.push({id,name,type:"🌷 Truyện mới",time:stamp,meta:info.author ? `Tác giả: ${info.author}` : "Mới trong thư viện"});
+    }
+    meowRecentPreviousCounts[id] = count;
+  });
+  entries.sort((a,b)=>b.time-a.time);
+  const unique = [];
+  const seen = new Set();
+  for (const item of entries) {
+    const key = item.id + "|" + item.type;
+    if (seen.has(key)) continue; seen.add(key); unique.push(item);
+    if (unique.length >= 5) break;
+  }
+  if (!unique.length) {
+    list.innerHTML = '<div class="meowRecentEmpty">🐾 Chưa có tin mới trong 30 ngày gần đây.</div>';
+    return;
+  }
+  list.innerHTML = unique.map(item => `<a class="meowRecentItem" href="?story=${encodeURIComponent(item.id)}"><span class="meowRecentType">${item.type}</span><span class="meowRecentName">${String(item.name).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</span><span class="meowRecentMeta">${item.meta}</span></a>`).join('');
+}
+
 function meowGetStoryChapterCount(story) {
   if (Number.isFinite(Number(story?.chapterCount)) && Number(story?.chapterCount) > 0) return Number(story.chapterCount);
   return Object.keys(story?.chapters || {}).length;
@@ -3773,6 +4088,8 @@ async function loginCustomer(){
     meowWriteLoginGuard({ attempts: 0, lockedUntil: 0 });
     const data = snap.val();
     currentCustomer = { id, ...data };
+    if(data.profileAvatar){try{localStorage.setItem(MEOW_PROFILE_AVATAR_KEY+id,String(data.profileAvatar))}catch(e){}}
+    meowStartAvatarSync();
 
     await meowLoadFollowedStories(id);
     await meowLoadReadingHistory(id);
@@ -3870,6 +4187,7 @@ function logout(){
   meowReadingHistoryUnsubscribe = null;
   meowCloudReadingHistory = {};
   meowFollowedStories = {};
+  if(typeof meowAvatarUnsubscribe==="function"){meowAvatarUnsubscribe();meowAvatarUnsubscribe=null}
   currentCustomer = null;
 
   currentStoryId = null;
@@ -3944,6 +4262,7 @@ async function loadStories(){
     if (catalogSnap.exists()) {
       const catalog = meowNormalizeCatalog(catalogSnap.val());
       if (Object.keys(catalog).length) {
+        meowRenderRecentUpdates(catalog);
         allStories = catalog;
         meowCatalogMode = true;
         meowSaveCatalogCache(catalog);
@@ -3992,6 +4311,7 @@ function meowStartLiveCatalogSync() {
     if (!snap.exists()) return;
     const freshCatalog = meowNormalizeCatalog(snap.val());
     if (!Object.keys(freshCatalog).length) return;
+    meowRenderRecentUpdates(freshCatalog);
     // Keep full story objects already loaded in memory; only refresh lightweight catalog metadata.
     for (const [id, entry] of Object.entries(freshCatalog)) {
       const existing = allStories[id];
@@ -4018,7 +4338,7 @@ meowStartLiveCatalogSync();
 ========================================================= */
 function showStoriesByAuthor(authorName) {
   const search = document.getElementById("storySearch");
-  if (search) search.value = String(authorName || "").trim();
+  if (search) { search.value = String(authorName || "").trim(); search.dispatchEvent(new Event("input", {bubbles:true})); }
 
   currentShelf = "public";
   currentGenreFilter = "";
@@ -4218,13 +4538,7 @@ const MEOW_STORY_PAGE_SIZE = 12;
 const meowVisibleStoryCounts = Object.create(null);
 
 function meowRenderLimitedCards(entries, sectionKey, options = {}) {
-  const visibleCount = meowVisibleStoryCounts[sectionKey] || MEOW_STORY_PAGE_SIZE;
-  const shown = entries.slice(0, visibleCount);
-  const cards = shown.map(([id, st]) => meowStoryCardHTML(id, st, options)).join("");
-  const more = entries.length > shown.length
-    ? `<button type="button" class="meowShowMoreStories" data-show-more-stories="${escapeHTML(sectionKey)}">🐾 Xem thêm (${entries.length - shown.length} truyện)</button>`
-    : "";
-  return cards + more;
+  return entries.map(([id, st]) => meowStoryCardHTML(id, st, options)).join("");
 }
 
 function renderStories() {
@@ -5355,16 +5669,32 @@ function renderMeowStoryComments(data){
   const list=document.getElementById('meowStoryCommentList'); if(!list)return;
   const entries=Object.entries(data||{}).sort((a,b)=>(Number(a[1]?.createdAt)||0)-(Number(b[1]?.createdAt)||0));
   if(!entries.length){list.innerHTML='<div class="meowCommentHint">Chưa có bình luận nào. Bà mở hàng nha 🌷</div>';return;}
+  const avatarFor=c=>String(c?.avatar|| (currentCustomer && String(c?.customerId||'')===String(currentCustomer.id||'') ? currentCustomer.profileAvatar||'' : ''));
   list.innerHTML=entries.map(([key,c])=>{
     const own=currentCustomer && String(c?.customerId||'')===String(currentCustomer.id||'');
     const date=c?.createdAt?new Date(Number(c.createdAt)).toLocaleString('vi-VN',{dateStyle:'short',timeStyle:'short'}):'';
-    return `<article class="meowComment"><div class="meowCommentTop"><span>🐾 ${escapeHTML(c?.name||'Độc giả')} <small style="font-weight:400;color:#b29aaa">${escapeHTML(date)}</small></span>${own?`<button type="button" class="meowCommentDelete" data-delete-story-comment="${escapeHTML(key)}">Xóa</button>`:''}</div><div>${escapeHTML(c?.text||'')}</div></article>`;
+    const replies=Object.entries(c?.replies||{}).sort((a,b)=>(Number(a[1]?.createdAt)||0)-(Number(b[1]?.createdAt)||0));
+    const replyHTML=replies.map(([rk,r])=>`<div class="meowCommentReply"><div class="meowCommentIdentity"><img class="meowCommentAvatar" src="${escapeHTML(avatarFor(r)||'')}" alt="" onerror="this.style.display='none'"><span class="meowCommentAuthor"><b>${escapeHTML(r?.name||'Độc giả')}</b><small>${escapeHTML(r?.createdAt?new Date(Number(r.createdAt)).toLocaleString('vi-VN',{dateStyle:'short',timeStyle:'short'}):'')}</small></span></div><div>${escapeHTML(r?.text||'')}</div></div>`).join('');
+    return `<article class="meowComment" data-comment-key="${escapeHTML(key)}"><div class="meowCommentTop"><span class="meowCommentIdentity"><img class="meowCommentAvatar" src="${escapeHTML(avatarFor(c)||'')}" alt="" onerror="this.style.display='none'"><span class="meowCommentAuthor"><b>${escapeHTML(c?.name||'Độc giả')}</b><small>${escapeHTML(date)}</small></span></span>${own?`<button type="button" class="meowCommentDelete" data-delete-story-comment="${escapeHTML(key)}">Xóa</button>`:''}</div><div>${escapeHTML(c?.text||'')}</div><div class="meowCommentActions"><button type="button" class="meowCommentReplyBtn" data-reply-to="${escapeHTML(key)}">↩ Trả lời</button></div><div class="meowCommentReplies">${replyHTML}</div></article>`;
   }).join('');
+  // Fill missing legacy avatars from the shared customer profile records.
+  entries.forEach(async ([key,c])=>{
+    if(c?.avatar||!c?.customerId)return;
+    try{const snap=await get(ref(db,`customers/${String(c.customerId)}/profileAvatar`));const avatar=String(snap.val()||'');if(!avatar)return;const el=list.querySelector(`[data-comment-key="${CSS.escape(key)}"] .meowCommentAvatar`);if(el){el.src=avatar;el.style.display='';}}catch(e){}
+  });
   list.querySelectorAll('[data-delete-story-comment]').forEach(btn=>btn.onclick=async()=>{
     const key=btn.dataset.deleteStoryComment;
     if(!currentCustomer?.id||!confirm('Xóa bình luận của bà nha?'))return;
     try{const snap=await get(ref(db,`${meowCommentPath()}/${key}`));if(String(snap.val()?.customerId||'')!==String(currentCustomer.id)){alert('Bà chỉ xóa được bình luận của chính mình nha.');return;}await remove(ref(db,`${meowCommentPath()}/${key}`));}
     catch(error){console.error(error);alert('Chưa xóa được bình luận, bà thử lại nha.');}
+  });
+  list.querySelectorAll('[data-reply-to]').forEach(btn=>btn.onclick=()=>{
+    const article=btn.closest('[data-comment-key]');if(!article)return;
+    let form=article.querySelector('.meowCommentReplyForm');
+    if(form){form.remove();return;}
+    form=document.createElement('form');form.className='meowCommentReplyForm';form.innerHTML='<input name="reply" maxlength="700" placeholder="Viết câu trả lời..." required><button type="submit">Gửi</button>';
+    article.querySelector('.meowCommentActions').after(form);form.elements.reply.focus();
+    form.onsubmit=async ev=>{ev.preventDefault();if(!currentCustomer?.id){alert('Bà đăng nhập trước khi trả lời nha 💗');return;}const textValue=String(form.elements.reply.value||'').trim();if(!textValue)return;const submit=form.querySelector('button');submit.disabled=true;try{const cid=article.dataset.commentKey;const avatar=meowProfileAvatarData()||'';await set(push(ref(db,`${meowCommentPath()}/${cid}/replies`)),{customerId:String(currentCustomer.id),name:String(currentCustomer.name||currentCustomer.displayName||currentCustomer.username||currentCustomer.id),text:textValue,avatar,createdAt:Date.now()});const snap=await get(ref(db,meowCommentPath()));renderMeowStoryComments(snap.val());}catch(error){console.error(error);alert('Chưa gửi được câu trả lời, bà thử lại nha.');}finally{submit.disabled=false;}};
   });
 }
 (function bindMeowStoryComments(){
@@ -5378,7 +5708,7 @@ function renderMeowStoryComments(data){
     event.preventDefault(); if(!currentCustomer?.id){alert('Bà đăng nhập tài khoản độc giả trước khi bình luận nha 💗');return;}
     const input=form.elements.comment, textValue=String(input.value||'').trim(); if(!textValue)return;
     const submit=form.querySelector('button[type="submit"]');submit.disabled=true;
-    try{await set(push(ref(db,meowCommentPath())),{customerId:String(currentCustomer.id),name:String(currentCustomer.name||currentCustomer.displayName||currentCustomer.username||currentCustomer.id),text:textValue,createdAt:Date.now()});input.value='';if(meowStoryCommentsLoadedFor===String(currentStoryId)){const snap=await get(ref(db,meowCommentPath()));renderMeowStoryComments(snap.val());}}
+    try{await set(push(ref(db,meowCommentPath())),{customerId:String(currentCustomer.id),name:String(currentCustomer.name||currentCustomer.displayName||currentCustomer.username||currentCustomer.id),text:textValue,avatar:meowProfileAvatarData()||'',createdAt:Date.now()});input.value='';if(meowStoryCommentsLoadedFor===String(currentStoryId)){const snap=await get(ref(db,meowCommentPath()));renderMeowStoryComments(snap.val());}}
     catch(error){console.error(error);alert('Chưa gửi được bình luận, bà thử lại nha.');}finally{submit.disabled=false;}
   };
 })();
@@ -5906,11 +6236,7 @@ document.getElementById("readerSettingsReset")?.addEventListener("click", () => 
 ========================================================= */
 
 document
-  .getElementById(
-    "readerHomeBtn"
-  )
-  .onclick =
-    ()=>{
+  .getElementById("readerHomeBtn")?.addEventListener("click", ()=>{
 
       readerPage.style.display =
         "none";
@@ -5925,12 +6251,8 @@ document
 
       meowSetHomeShareLink();
 
-      window.scrollTo(
-        0,
-        0
-      );
-
-    };
+      window.scrollTo(0, 0);
+    });
 
 
 /* =========================================================
@@ -5965,15 +6287,45 @@ document
    SEARCH
 ========================================================= */
 
-document
-  .getElementById(
-    "storySearch"
-  )
-  .addEventListener(
-    "input",
-    renderStories
-  );
+const meowStorySearchInput = document.getElementById("storySearch");
+const meowClearStorySearchBtn = document.getElementById("meowClearStorySearch");
+function meowSyncSearchClearButton(){
+  if (meowClearStorySearchBtn && meowStorySearchInput) meowClearStorySearchBtn.hidden = !meowStorySearchInput.value;
+}
+meowStorySearchInput?.addEventListener("input", () => { renderStories(); meowSyncSearchClearButton(); });
+meowClearStorySearchBtn?.addEventListener("click", () => {
+  if (!meowStorySearchInput) return;
+  meowStorySearchInput.value = "";
+  meowStorySearchInput.focus();
+  meowSyncSearchClearButton();
+  renderStories();
+});
+meowSyncSearchClearButton();
 
+// 🏡 DÁN LINK ẢNH CĂN NHÀ NGAY TẠI ĐÂY:
+// Thay URL bên dưới bằng link ảnh trực tiếp (https://...). Để "" sẽ dùng căn nhà CSS mặc định.
+const MEOW_FAIRY_HOUSE_IMAGE_URL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGTl4PfC__eiuTWwayOL9o2LwusgiZ7tSajB_alLNHCOtzQ5G1lnMuJGQJCZ7iRqJUB02fHE6w20tgF1LKBWQWN8xVRUdNPIEp_BH_sI9koijLgEmZAK-QjA8Pbj7gx7LBxawT2V8o2BvN4M3IPwWTY10YaKv0iXtY8Z7YFKktnUBt-3XEx6WCnHmGea4/s215/t%E1%BA%A3i%20xu%E1%BB%91ng%20(1).png";
+(function meowInitCustomHouseImage(){
+  const house = document.getElementById("meowFairyHouse");
+  const image = document.getElementById("meowFairyHouseImage");
+  if (!house || !image) return;
+  const url = String(MEOW_FAIRY_HOUSE_IMAGE_URL || "").trim();
+  if (!url || url === "DAN_LINK_ANH_CAN_NHA_VAO_DAY") return;
+  try {
+    const parsed = new URL(url, window.location.href);
+    if (!/^https?:$/.test(parsed.protocol)) throw new Error("invalid URL");
+    image.src = parsed.href;
+    image.style.display = "block";
+    house.classList.add("has-custom-image");
+    image.addEventListener("error", () => {
+      image.style.display = "none";
+      house.classList.remove("has-custom-image");
+      console.warn("Meow: Không tải được ảnh căn nhà. Hãy kiểm tra lại MEOW_FAIRY_HOUSE_IMAGE_URL.");
+    }, { once:true });
+  } catch(e) {
+    console.warn("Meow: Link ảnh căn nhà không hợp lệ. Hãy kiểm tra MEOW_FAIRY_HOUSE_IMAGE_URL.");
+  }
+})();
 
 /* =========================================================
    LOGIN EVENTS
@@ -6008,12 +6360,12 @@ document
   );
 
 
-document
-  .getElementById(
-    "readerLogoutBtn"
-  )
-  .onclick =
-    logout;
+// Nút đăng xuất cũ có thể đã được ẩn/xóa khi gộp vào menu avatar.
+// Kiểm tra phần tử tồn tại trước khi gắn sự kiện để tránh dừng toàn bộ JavaScript.
+const meowLegacyLogoutButton = document.getElementById("readerLogoutBtn");
+if (meowLegacyLogoutButton) {
+  meowLegacyLogoutButton.onclick = logout;
+}
 
 // Hiển thị trạng thái khóa nếu người dùng tải lại trang trong thời gian khóa.
 meowCheckLoginLock();
@@ -6376,7 +6728,9 @@ function meowTTSSpeakChunk(start, token){
   meowTTSChunkEnd = end;
   const utterance = new SpeechSynthesisUtterance(meowTTSFullText.slice(start, end));
   utterance.lang = "vi-VN";
-  utterance.rate = Number(meowTTSSpeed?.value || 1);
+  utterance.rate = Number
+
+(meowTTSSpeed?.value || 1);
   utterance.pitch = 1;
   const voice = meowTTSChooseVoice();
   if (voice) utterance.voice = voice;
@@ -6510,6 +6864,183 @@ meowTTSProgress?.addEventListener("input", () => {
 meowTTSProgress?.addEventListener("change", () => {
   if ("speechSynthesis" in window && (window.speechSynthesis.speaking || window.speechSynthesis.paused)) meowTTSSpeakFrom(meowTTSCurrentOffset);
 });
+
+/* ===== MEOW PERSONAL HUB: profile, purchases, follows, reading history ===== */
+const MEOW_PROFILE_AVATAR_KEY = "MEOW_PROFILE_AVATAR_";
+function meowProfileAvatarKey(){ return MEOW_PROFILE_AVATAR_KEY + String(currentCustomer?.id || "guest"); }
+function meowProfileAvatarData(){
+ try{return String(currentCustomer?.profileAvatar || localStorage.getItem(meowProfileAvatarKey()) || "")}catch(e){return String(currentCustomer?.profileAvatar||"")}
+}
+let meowAvatarUnsubscribe = null;
+function meowApplyProfileAvatar(){
+ const data=meowProfileAvatarData();
+ const profileOverlay=document.getElementById("meowProfileOverlay");
+ if(profileOverlay){
+   if(data) profileOverlay.style.setProperty("--meow-profile-avatar-bg", `url("${data}")`);
+   else profileOverlay.style.removeProperty("--meow-profile-avatar-bg");
+ }
+ const top=document.getElementById("meowProfileAvatarTop"), fallback=document.getElementById("meowProfileAvatarFallback");
+ if(top){if(data)top.src=data;top.style.display=data?"block":"none"}
+ if(fallback)fallback.style.display=data?"none":"inline";
+}
+function meowStartAvatarSync(){
+ if(typeof meowAvatarUnsubscribe==="function"){meowAvatarUnsubscribe();meowAvatarUnsubscribe=null}
+ const id=String(currentCustomer?.id||""); if(!id)return;
+ const avatarRef=ref(db,"customers/"+id+"/profileAvatar");
+ meowAvatarUnsubscribe=onValue(avatarRef,snap=>{
+   if(!currentCustomer||String(currentCustomer.id)!==id)return;
+   const data=String(snap.val()||"");
+   currentCustomer.profileAvatar=data;
+   try{if(data)localStorage.setItem(meowProfileAvatarKey(),data);else localStorage.removeItem(meowProfileAvatarKey())}catch(e){}
+   meowApplyProfileAvatar();
+   const large=document.getElementById("meowProfileAvatarLarge");
+   if(large){if(data)large.src=data;else large.removeAttribute("src")}
+ },err=>console.warn("Meow avatar sync:",err));
+}
+function meowProfileCopy(value, button){
+ const done=()=>{if(button){button.textContent="✓";setTimeout(()=>button.textContent="⧉",1200)}};
+ const fallback=()=>{const t=document.createElement("textarea");t.value=value;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();try{document.execCommand("copy");done()}catch(e){}t.remove()};
+ if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(value).then(done).catch(fallback);else fallback();
+}
+function meowProfileRender(){
+ const root=document.getElementById("meowProfileContent"); if(!root||!currentCustomer)return;
+ const id=String(currentCustomer.id||"");
+ const name=String(currentCustomer.name||currentCustomer.displayName||currentCustomer.nickname||("Khách "+id));
+ const avatar=meowProfileAvatarData();
+ const profileOverlay=document.getElementById("meowProfileOverlay");
+ if(profileOverlay){if(avatar)profileOverlay.style.setProperty("--meow-profile-avatar-bg", `url("${avatar}")`);else profileOverlay.style.removeProperty("--meow-profile-avatar-bg");}
+ const purchasedIds=meowGetPurchasedStoryIds();
+ const boughtFull=new Set((meowPurchasedRecords||[]).filter(p=>(p.type||p.purchaseType)==="full"||p.full===true).map(p=>String(p.storyId||"")));
+ Object.entries(currentCustomer.books||{}).forEach(([sid,b])=>{if(b&&(b.full===true||b.vip===true||b.access==="full"))boughtFull.add(String(sid))});
+ const bought=[...purchasedIds].map(sid=>[sid,allStories[sid]]).filter(x=>x[1]);
+ const followed=Object.keys(meowFollowedStories||{}).map(sid=>[sid,allStories[sid]]).filter(x=>x[1]);
+ const recent=meowGetRecentReads();
+ const wallet=currentCustomer._meowWallet||{};
+ const profileMoreButton=(count)=>count>4?`<button type="button" class="meowProfileMoreIcon" data-profile-more aria-expanded="false" aria-label="Hiện thêm" title="Hiện thêm">⌄</button>`:"";
+ const cardList=(entries,key)=>entries.length?entries.map(([sid,st],index)=>`<div class="meowProfileLimitItem${index>=4?" is-extra":""}"${index>=4?' hidden':''}>${meowStoryCardHTML(sid,st,{personal:true})}</div>`).join("")+profileMoreButton(entries.length):`<div class="meowProfileEmpty">🌸 Chưa có truyện ở mục này nè.</div>`;
+ const recentHTML=recent.length?recent.map(({storyId,chapterId,story},index)=>{const info=story.info||{},ch=story.chapters?.[chapterId]||{};return `<div class="meowProfileLimitItem${index>=4?" is-extra":""}"${index>=4?' hidden':''}><button type="button" class="meowShelfRecentItem" data-continue-story="${escapeHTML(storyId)}" data-continue-chapter="${escapeHTML(chapterId)}">${info.cover?`<img class="meowShelfRecentCover" src="${escapeHTML(info.cover)}" alt="" loading="lazy">`:`<span class="meowShelfRecentCover">🐱</span>`}<span class="meowShelfRecentText"><strong>${escapeHTML(info.name||storyId)}</strong><span>📖 Chương ${escapeHTML(chapterId)}${ch.title?" · "+escapeHTML(ch.title):""}</span><span>Chạm để đọc tiếp →</span></span></button></div>`}).join("")+profileMoreButton(recent.length):`<div class="meowProfileEmpty">📖 Chưa có chương đang đọc.</div>`;
+ root.innerHTML=`<div class="meowProfileHero">
+  <div class="meowProfileAvatarWrap"><img id="meowProfileAvatarLarge" alt="Ảnh đại diện" src="${avatar}" style="${avatar?'':'display:none'}"><label for="meowProfileAvatarUpload">✦ Đổi ảnh</label><input id="meowProfileAvatarUpload" type="file" accept="image/*"></div>
+  <div><div class="meowProfileName">${escapeHTML(name)}</div><div class="meowProfileId"><span>ID: <b id="meowProfileIdText">${escapeHTML(id)}</b></span><button type="button" class="meowProfileCopy" id="meowProfileCopyId" aria-label="Copy ID">⧉</button></div><a class="meowProfileWalletLink" href="${escapeHTML(MEOW_WALLET_URL)}" target="_blank" rel="noopener noreferrer">👛 Ví nạp tiền ↗</a></div>
+  <div></div>
+ </div>
+ <div class="meowProfileStats">
+  <div class="meowProfileStat"><span>💗 SỐ DƯ HIỆN TẠI</span><strong>${escapeHTML(meowFormatMoney(wallet.balance||0,"0đ"))}</strong></div>
+  <div class="meowProfileStat"><span>📚 TRUYỆN ĐÃ MUA FULL</span><strong>${boughtFull.size}</strong></div>
+  <div class="meowProfileStat"><span>🎀 ĐANG THEO DÕI</span><strong>${followed.length}</strong></div>
+ </div>
+ <section class="meowProfileSection"><h3>🛍️ Truyện đã mua</h3><div class="meowProfileCards">${cardList(bought,"bought")}</div></section>
+ <section class="meowProfileSection"><h3>💗 Truyện theo dõi</h3><div class="meowProfileCards">${cardList(followed,"followed")}</div></section>
+ <section class="meowProfileSection"><h3>📖 Chương đang đọc</h3><div class="meowProfileRecent">${recentHTML}</div></section>
+ <button type="button" class="meowProfileLogout" id="meowProfileLogoutBottom">↪ Đăng xuất</button>
+ <section class="meowCuteCalendar" aria-label="Lịch cá nhân"><div class="meowCalendarHead"><span class="meowCalendarFlower">✿</span><div><strong>My Little Calendar</strong><small>୨୧ những ngày dịu dàng ୨୧</small></div><span class="meowCalendarFlower">✧</span></div><div class="meowCalendarPickers"><button type="button" class="meowCalendarArrow" data-cal-shift="-1" aria-label="Tháng trước">‹</button><select id="meowCalendarMonth" aria-label="Chọn tháng"></select><select id="meowCalendarYear" aria-label="Chọn năm"></select><button type="button" class="meowCalendarArrow" data-cal-shift="1" aria-label="Tháng sau">›</button></div><div class="meowCalendarWeek">${['CN','T2','T3','T4','T5','T6','T7'].map(d=>`<span>${d}</span>`).join('')}</div><div class="meowCalendarDays" id="meowCalendarDays"></div><div class="meowCalendarFoot"><span class="meowCalendarTodayDot"></span> Hôm nay là một ngày thật xinh ✿</div></section>`;
+ root.querySelectorAll("[data-profile-more]").forEach(btn=>btn.addEventListener("click",()=>{const section=btn.closest(".meowProfileSection");if(!section)return;const expanded=btn.getAttribute("aria-expanded")==="true";section.querySelectorAll(".meowProfileLimitItem.is-extra").forEach(item=>item.hidden=expanded);btn.setAttribute("aria-expanded",String(!expanded));btn.innerHTML=expanded?'⌄':'⌃';btn.setAttribute("aria-label",expanded?"Hiện thêm":"Thu gọn");btn.title=expanded?"Hiện thêm":"Thu gọn"}));
+ meowCalendarInit();
+ root.querySelector("#meowProfileCopyId")?.addEventListener("click",e=>meowProfileCopy(id,e.currentTarget));
+ root.querySelector("#meowProfileAvatarUpload")?.addEventListener("change",async e=>{
+  const file=e.target.files?.[0]; if(!file)return;
+  if(!file.type.startsWith("image/"))return alert("Bà chọn file ảnh nha 💗");
+  if(file.size>8*1024*1024)return alert("Ảnh tối đa 8 MB nha 💗");
+  if(!currentCustomer?.id)return alert("Bà đăng nhập trước nha 💗");
+  try{
+   // Nén ảnh trước khi lưu để đồng bộ qua Firebase nhẹ và ổn định hơn.
+   const data=await new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error("Không đọc được ảnh"));
+    reader.onload=()=>{
+     const img=new Image();
+     img.onerror=()=>reject(new Error("Ảnh không hợp lệ"));
+     img.onload=()=>{
+      const max=320, scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+      const canvas=document.createElement("canvas");
+      canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));
+      canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+      const ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      resolve(canvas.toDataURL("image/jpeg",.78));
+     };
+     img.src=String(reader.result);
+    };
+    reader.readAsDataURL(file);
+   });
+   // Lưu trên cloud theo ID tài khoản; các thiết bị đăng nhập cùng ID sẽ dùng chung ảnh.
+   await set(ref(db,"customers/"+String(currentCustomer.id)+"/profileAvatar"),data);
+   currentCustomer.profileAvatar=data;
+   try{localStorage.setItem(meowProfileAvatarKey(),data)}catch(e){}
+   meowProfileRender();meowApplyProfileAvatar();
+  }catch(err){
+   console.error("Meow avatar upload/sync failed:",err);
+   alert("Chưa đồng bộ được ảnh lên máy chủ. Bà kiểm tra kết nối hoặc quyền ghi Firebase rồi thử lại nha 💗");
+  }
+ });
+ root.querySelector("#meowProfileLogoutBottom")?.addEventListener("click",()=>{meowCloseProfile();logout()});
+ root.querySelectorAll("[data-story-id]").forEach(btn=>btn.addEventListener("click",async e=>{
+  e.preventDefault(); e.stopPropagation();
+  const sid=String(btn.getAttribute("data-story-id")||"").trim();
+  if(!sid)return;
+  meowCloseProfile();
+  await openStory(sid);
+ }));
+ root.querySelectorAll("[data-continue-story]").forEach(btn=>btn.addEventListener("click",async e=>{
+  e.preventDefault(); e.stopPropagation();
+  const sid=String(btn.getAttribute("data-continue-story")||"").trim();
+  const cid=String(btn.getAttribute("data-continue-chapter")||"").trim();
+  if(!sid)return;
+  meowCloseProfile();
+  await openStory(sid);
+  if(String(currentStoryId)===sid && cid && currentChapters && currentChapters[cid]) openChapter(cid);
+ }));
+}
+function meowCalendarInit(){
+ const monthSel=document.getElementById("meowCalendarMonth"),yearSel=document.getElementById("meowCalendarYear");
+ if(!monthSel||!yearSel)return;
+ const now=new Date();
+ monthSel.innerHTML=Array.from({length:12},(_,i)=>`<option value="${i}">${['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'][i]}</option>`).join("");
+ const y0=now.getFullYear();yearSel.innerHTML=Array.from({length:11},(_,i)=>y0-5+i).map(y=>`<option value="${y}">${y}</option>`).join("");
+ monthSel.value=String(now.getMonth());yearSel.value=String(y0);
+ const draw=()=>{const m=Number(monthSel.value),y=Number(yearSel.value),days=document.getElementById("meowCalendarDays");if(!days)return;const first=new Date(y,m,1).getDay(),count=new Date(y,m+1,0).getDate(),today=new Date();let html='';for(let i=0;i<first;i++)html+='<span class="meowCalendarBlank"></span>';for(let d=1;d<=count;d++){const isToday=y===today.getFullYear()&&m===today.getMonth()&&d===today.getDate();html+=`<button type="button" class="meowCalendarDay ${isToday?'is-today':''} ${[0,6].includes(new Date(y,m,d).getDay())?'is-weekend':''}" ${isToday?'aria-current="date"':''} data-calendar-day="${d}">${d}</button>`}days.innerHTML=html;};
+ if(!monthSel.dataset.bound){monthSel.addEventListener('change',draw);yearSel.addEventListener('change',draw);document.querySelectorAll('[data-cal-shift]').forEach(b=>b.addEventListener('click',()=>{let m=Number(monthSel.value)+Number(b.dataset.calShift),y=Number(yearSel.value);if(m<0){m=11;y--}if(m>11){m=0;y++}if([...yearSel.options].some(o=>Number(o.value)===y))yearSel.value=String(y);else {const opt=document.createElement('option');opt.value=String(y);opt.textContent=String(y);yearSel.appendChild(opt);yearSel.value=String(y)}monthSel.value=String(m);draw()}));monthSel.dataset.bound='1';}
+ draw();
+}
+
+function meowOpenProfile(){const o=document.getElementById("meowProfileOverlay");document.getElementById("meowProfileMenu")?.classList.remove("show");if(!currentCustomer){alert("Bà đăng nhập trước nha 💗");return}meowProfileRender();meowApplyProfileAvatar();if(o){o.classList.add("show");o.setAttribute("aria-hidden","false");o.scrollTop=0;}document.body.style.overflow="hidden";document.body.classList.add("meowProfilePageOpen")}
+function meowCloseProfile(){const o=document.getElementById("meowProfileOverlay");o?.classList.remove("show");o?.setAttribute("aria-hidden","true");document.body.style.overflow="";document.body.classList.remove("meowProfilePageOpen")}
+// Delegated click handlers: still work if the header/avatar is re-rendered later.
+document.addEventListener("click",e=>{
+ const avatarLogout=e.target.closest("#meowAvatarLogoutIcon");
+ if(avatarLogout){e.preventDefault();e.stopPropagation();document.getElementById("meowProfileMenu")?.classList.remove("show");logout();return;}
+ const trigger=e.target.closest("#meowProfileTrigger");
+ if(trigger){
+   e.preventDefault(); e.stopPropagation();
+   meowOpenProfile();
+   return;
+ }
+ const profileItem=e.target.closest("#meowOpenProfileMenuItem");
+ if(profileItem){e.preventDefault();e.stopPropagation();meowOpenProfile();return;}
+ const logoutItem=e.target.closest("#meowLogoutMenuItem");
+ if(logoutItem){e.preventDefault();e.stopPropagation();document.getElementById("meowProfileMenu")?.classList.remove("show");logout();return;}
+});
+document.getElementById("meowProfileClose")?.addEventListener("click",meowCloseProfile);
+(function bindMeowProfileTheme(){
+ const profileBtn=document.getElementById("meowProfileThemeToggle");
+ const mainBtn=document.getElementById("meowThemeToggle");
+ const sync=()=>{const dark=document.body.classList.contains("meowSiteDark");if(profileBtn)profileBtn.textContent=dark?"☀️":"🌙";if(mainBtn)mainBtn.textContent=dark?"☀️":"🌙"};
+ sync();
+ profileBtn?.addEventListener("click",()=>{
+  const dark=!document.body.classList.contains("meowSiteDark");
+  document.body.classList.toggle("meowSiteDark",dark);
+  try{localStorage.setItem("MEOW_SITE_THEME",dark?"dark":"light")}catch(e){}
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content",dark?"#251e31":"#fff0f7");
+  sync();
+ });
+ document.getElementById("meowProfileTrigger")?.addEventListener("click",sync);
+})();
+document.getElementById("meowProfileOverlay")?.addEventListener("click",e=>{if(e.target.id==="meowProfileOverlay")meowCloseProfile()});
+document.addEventListener("click",e=>{if(e.target.closest("#meowProfileTrigger")||e.target.closest("#meowProfileMenu"))return;if(!e.target.closest(".meowProfileMenuWrap"))document.getElementById("meowProfileMenu")?.classList.remove("show")});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")meowCloseProfile()});
+const meowOldLogout=document.getElementById("readerLogoutBtn"); if(meowOldLogout)meowOldLogout.style.display="none";
+const meowProfileObserver=new MutationObserver(()=>{if(currentCustomer)meowApplyProfileAvatar()});
+meowProfileObserver.observe(document.getElementById("meowProfileTrigger")||document.body,{childList:true,subtree:true});
+
 </script>
 
 
@@ -6982,7 +7513,237 @@ body:has(#readerPage.reader-theme-night) .meow-wm-cell{color:rgba(255,205,232,.2
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
 </script>
+
+<style id="meow-pink-login-profile-polish">
+/* Mini Meow — pink retro login, light CSS effects to keep the page responsive */
+#loginPage{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:radial-gradient(ellipse at 15% 10%,#fff 0,transparent 38%),linear-gradient(145deg,#fbe3ee 0%,#f6c9dc 48%,#ead8f3 100%);
+}
+#loginPage:before,#loginPage:after{content:"♡  ✦  ♡  ✧  ♡";position:absolute;z-index:-1;color:#d981a8;opacity:.38;letter-spacing:12px;font-size:20px;pointer-events:none}
+#loginPage:before{top:8%;left:5%;transform:rotate(-8deg)}
+#loginPage:after{right:4%;bottom:8%;transform:rotate(7deg)}
+.meowLoginBox{
+  position:relative;isolation:isolate;width:min(460px,100%);padding:30px 28px 26px;
+  border:2px solid #eaa8c5;border-radius:25px;
+  background:linear-gradient(155deg,#fffafcF5,#ffeaf3F2 62%,#f8eaffF0);
+  box-shadow:0 0 0 6px #ffffff70,0 18px 45px #b85c8440,inset 0 0 0 1px #fff;
+}
+.meowLoginBox:before{content:"";position:absolute;left:12px;right:12px;top:10px;height:5px;border-radius:8px;background:linear-gradient(90deg,#f8a6c9,#e6b5f4,#f8a6c9);opacity:.85;z-index:-1}
+.meowLoginCat{width:94px;height:94px;margin:0 auto 13px;padding:12px;display:grid;place-items:center;border:2px solid #f1b4ce;border-radius:27px;background:linear-gradient(145deg,#fff,#ffe5f1);box-shadow:0 5px 0 #e8a4c4,0 9px 20px #c26c9630;overflow:hidden}
+.meowLoginCat img{display:block;width:100%;height:100%;object-fit:contain}
+.meowLoginTitle{font-size:28px;letter-spacing:1px;text-shadow:0 2px 0 #fff,0 4px 12px #eea8ca55}
+.meowLoginSub{margin:12px 0 20px;padding:13px 14px;border:1px solid #f4c3d9;border-radius:15px;background:linear-gradient(135deg,#fff9fc,#ffedf5);color:#91617a;text-align:left;font-size:12px;line-height:1.75;box-shadow:inset 0 1px 0 #fff}
+.meowLoginNoteLabel{margin-bottom:7px;color:#c05285;font-size:10px;font-weight:900;letter-spacing:1.1px;text-align:center}
+.meowLoginSub p{margin:5px 0}.meowLoginSub strong,.meowLoginSub b{color:#b94f81}.meowLoginSub code{padding:2px 7px;border:1px solid #f0b7d1;border-radius:7px;background:#fff;color:#c34e88;font-weight:900}
+.meowInput{border-color:#efbdd3!important;border-radius:13px!important;background:#fffafd!important;box-shadow:inset 0 2px 5px #b65d8010}
+.meowInput:focus{border-color:#e77fac!important;box-shadow:0 0 0 3px #f7c9df!important}
+.meowLoginBtn{border-radius:13px!important;background:linear-gradient(180deg,#f58ab7,#dc6da4)!important;box-shadow:0 4px 0 #bd5c8c,0 8px 16px #d86d9c35!important;transition:transform .15s,box-shadow .15s}
+.meowLoginBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #bd5c8c!important}
+.meowMsg{padding-top:3px}
+/* The active avatar becomes a soft, blurred wallpaper behind the profile page. */
+#meowProfileOverlay{isolation:isolate;background:linear-gradient(145deg,#f7d7e7 0%,#f6e5f1 48%,#e6dcf7 100%)!important}
+#meowProfileOverlay:before{content:"";position:fixed;inset:-18px;z-index:-1;pointer-events:none;background-image:var(--meow-profile-avatar-bg);background-position:center;background-size:cover;background-repeat:no-repeat;filter:blur(20px);opacity:.28;transform:scale(1.04)}
+.meowProfileShell{background:linear-gradient(145deg,#fff9fcae,#fff0f79c 55%,#f0e9ff9c)!important}
+.meowProfileSection h3{display:flex;align-items:center;gap:8px;padding:0 0 9px;border-bottom:1px dashed #edbad4}
+.meowProfileEmpty{line-height:1.75;background:linear-gradient(135deg,#fffafcdd,#fff0f8d9,#f4edffdb)!important;border-color:#eabbd5!important}
+.meowShelfNote{position:relative;margin:0 0 17px!important;padding:12px 15px 12px 43px!important;border:1px solid #f3c5db;border-radius:16px!important;background:linear-gradient(110deg,#fffafd,#fff0f7 62%,#f6efff)!important;color:#a15d81!important;font-size:12px!important;line-height:1.7!important;box-shadow:0 5px 16px #cb83a51a,inset 0 1px 0 #fff}
+.meowShelfNote:before{content:"✿";position:absolute;left:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;display:grid;place-items:center;border-radius:8px;background:#ffe0ed;color:#ce6597;font-size:15px}
+@media(max-width:520px){.meowLoginBox{padding:25px 18px 22px;border-radius:22px}.meowLoginCat{width:78px;height:78px;border-radius:23px}.meowLoginTitle{font-size:24px}.meowLoginSub{font-size:11px;padding:11px}.meowShelfNote{padding-left:39px!important}}
+@media(prefers-reduced-motion:reduce){.meowLoginBtn{transition:none}}
+</style>
+
+
+<style id="meow-reference-banner-search-profile-fix">
+/* Banner phong cách dashboard pastel trong ảnh tham khảo */
+.meowFairyHero{
+  min-height:clamp(190px,24vw,270px)!important;
+  padding:clamp(22px,3.2vw,42px)!important;
+  margin:0 0 22px!important;
+  border-radius:30px!important;
+  overflow:hidden!important;
+  position:relative!important;
+  isolation:isolate;
+  background:linear-gradient(112deg,#f6a9c7 0%,#f8bfd5 47%,#f7d7e8 100%)!important;
+  box-shadow:0 16px 38px #d77da52a,inset 0 1px 0 #ffffffa8!important;
+}
+.meowFairyHero:after{content:"";position:absolute;z-index:-1;right:-7%;top:-65%;width:53%;height:210%;border-radius:50%;background:radial-gradient(ellipse,#fff8fc8c 0%,#fff0f700 70%);pointer-events:none}
+.meowFairyHeroText{width:min(58%,620px)!important;max-width:620px}
+.meowFairyEyebrow{display:inline-block;margin-bottom:12px;padding:6px 11px;border:1px solid #ffffffa6;border-radius:999px;background:#ffffff36;color:#fff;font-size:10px;font-weight:900;letter-spacing:1.5px}
+.meowFairyHero h1{max-width:520px!important;color:#fff!important;font-size:clamp(25px,3.4vw,43px)!important;line-height:1.12!important;text-shadow:0 2px 12px #c46e9340!important}
+.meowFairyHero p{max-width:360px!important;color:#fff!important;font-size:clamp(11px,1.2vw,14px)!important;line-height:1.7!important}
+.meowFairyHouse{right:2%!important;width:42%!important;height:100%!important;max-height:270px;bottom:0!important;top:auto!important}
+.meowFairyHouse img{filter:drop-shadow(0 10px 12px #b95f8c25)}
+.meowFairySpark,.meowFairyFlower{filter:drop-shadow(0 2px 5px #d875a540)}
+.meowSearchRowCompact{display:flex!important;justify-content:flex-end!important;align-items:center!important;gap:10px!important;margin-top:18px!important;min-height:46px}
+.meowSearchIconBtn{width:46px;height:46px;flex:0 0 46px;border:1px solid #fff;border-radius:16px;background:linear-gradient(135deg,#fff,#ffe9f3);color:#d76d9e;font-size:29px;line-height:1;box-shadow:0 7px 18px #d78eaf24;transition:transform .2s,box-shadow .2s}
+.meowSearchIconBtn:hover{transform:translateY(-2px);box-shadow:0 10px 22px #d78eaf38}
+.meowSearchRowCompact .meowSearchWrap{flex:0 1 0;width:0;max-width:0;opacity:0;overflow:hidden;pointer-events:none;transition:max-width .32s ease,flex-basis .32s ease,opacity .2s ease}
+.meowSearchRowCompact.is-open .meowSearchWrap{flex:1 1 360px;width:auto;max-width:520px;opacity:1;pointer-events:auto}
+.meowSearchRowCompact .meowSearch{min-width:0;min-height:46px;border-radius:16px!important;background:#ffffffed!important;box-shadow:0 7px 18px #d78eaf1c}
+.meowSearchRowCompact .meowSearchWrap:not(.meowSearchCollapsed){overflow:visible}
+.meowProfileCards .meowStoryCard{display:flex;flex-direction:column;height:100%;}
+.meowProfileCards .meowCover{width:100%;aspect-ratio:3/4;flex:0 0 auto}
+.meowProfileCards .meowStoryInfo{display:flex;flex:1;flex-direction:column;align-items:stretch;gap:4px}
+.meowProfileCards .meowStoryName{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.8em;line-height:1.4}
+.meowProfileCards .meowOpenStory{width:100%;margin-top:auto!important;padding:9px 7px!important;font-size:11px!important;font-weight:800}
+#meowProfileOverlay:before{opacity:.34!important;filter:blur(24px)!important}
+.meowProfileShell{background:linear-gradient(145deg,#fffafc9e,#fff0f785 55%,#f0e9ff82)!important;backdrop-filter:blur(2px)}
+@media(max-width:600px){
+ .meowFairyHero{min-height:190px!important;padding:23px 17px!important;border-radius:23px!important}
+ .meowFairyHeroText{width:68%!important}
+ .meowFairyHero h1{font-size:clamp(21px,6vw,29px)!important}
+ .meowFairyHero p{font-size:10px!important;max-width:220px!important}
+ .meowFairyHouse{width:43%!important;right:-3%!important;opacity:.96}
+ .meowSearchIconBtn{width:43px;height:43px;flex-basis:43px;border-radius:14px}
+ .meowSearchRowCompact .meowSearch{min-height:43px;font-size:12px}
+ .meowProfileCards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(prefers-reduced-motion:reduce){.meowSearchRowCompact .meowSearchWrap,.meowSearchIconBtn{transition:none}}
+</style>
+<script>
+(function(){
+ const row=document.querySelector('.meowSearchRowCompact');
+ const toggle=document.getElementById('meowSearchToggle');
+ const wrap=document.getElementById('meowSearchWrap');
+ const input=document.getElementById('storySearch');
+ if(!row||!toggle||!wrap||!input)return;
+ function setOpen(open){
+   row.classList.toggle('is-open',open);
+   wrap.classList.toggle('meowSearchCollapsed',!open);
+   toggle.setAttribute('aria-expanded',String(open));
+   toggle.setAttribute('aria-label',open?'Đóng tìm kiếm':'Mở tìm kiếm');
+   toggle.title=open?'Đóng tìm kiếm':'Tìm kiếm';
+   toggle.textContent=open?'×':'⌕';
+   input.tabIndex=open?0:-1;
+   if(open){setTimeout(()=>input.focus(),180)}
+   else if(!input.value.trim()){input.blur()}
+ }
+ toggle.addEventListener('click',()=>setOpen(!row.classList.contains('is-open')));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&row.classList.contains('is-open'))setOpen(false)});
+})();
+</script>
+
+
+<style id="meow-user-revision-2">
+/* Banner lớn gom toàn bộ cụm điều khiển vào trong; nội dung chữ và minh hoạ nằm đối diện nhau */
+.meowFairyHero{display:flex!important;flex-wrap:wrap!important;align-items:stretch!important;gap:0!important;padding:0!important;min-height:0!important;background:linear-gradient(112deg,#f6a9c7 0%,#f8bfd5 48%,#f8dced 100%)!important;border-radius:30px!important;overflow:hidden!important}
+.meowFairyHeroMain{position:relative;isolation:isolate;display:flex;align-items:center;width:100%;min-height:245px;padding:clamp(22px,3.2vw,42px);overflow:hidden}
+.meowFairyHeroText{width:56%!important;max-width:620px!important;z-index:3!important}
+.meowFairyHero h1{max-width:560px!important;font-size:clamp(27px,3.5vw,46px)!important}
+.meowFairyHero p{max-width:390px!important}
+.meowFairyHouse{right:2%!important;left:auto!important;top:0!important;bottom:0!important;width:40%!important;height:100%!important;max-height:none!important;z-index:2!important}
+.meowFairyHeroControls{position:relative;z-index:5;width:100%;padding:0 clamp(14px,2.4vw,30px) 20px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 12px;align-items:center}
+.meowFairyHeroControls .meowShelfTabs{grid-column:1/-1;margin:0!important;display:flex!important;gap:9px!important;flex-wrap:wrap}
+.meowFairyHeroControls .meowShelfTab{min-height:43px;border-radius:15px!important}
+.meowFairyHeroControls .meowShelfTab#meowPublicShelfBtn{flex:1 1 220px}
+.meowFairyHeroControls .meowShelfNote{grid-column:1/-1;margin:0!important;background:#fff7fcf2!important}
+.meowFairyHeroControls #meowGenrePanel,.meowFairyHeroControls #meowActiveFilter{grid-column:1/-1}
+.meowFairyHeroControls .meowSearchRowCompact{grid-column:1/-1;margin:0!important;min-height:43px}
+.meowFairyHeroControls .meowSearchRowCompact.is-open{width:100%}
+.meowFairyHeroControls .meowSearchRowCompact .meowSearchWrap{max-width:0}
+.meowFairyHeroControls .meowSearchRowCompact.is-open .meowSearchWrap{max-width:100%;flex:1 1 360px}
+/* Trang cá nhân trở về nền bình thường, không lấy avatar làm nền */
+#meowProfileOverlay{background:linear-gradient(145deg,#fff7fb 0%,#f8f0ff 55%,#f1f6ff 100%)!important}
+#meowProfileOverlay:before{display:none!important;background-image:none!important;opacity:0!important}
+.meowProfileShell{background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* Tủ truyện cá nhân như quyển sách mở: bìa trái, thông tin phải */
+.meowProfileCards{display:flex!important;flex-direction:column!important;gap:13px!important}
+.meowProfileCards .meowProfileLimitItem{width:100%;min-width:0}
+.meowProfileCards .meowStoryCard{display:grid!important;grid-template-columns:112px minmax(0,1fr)!important;grid-template-rows:1fr!important;align-items:stretch!important;min-height:150px;height:auto!important;overflow:hidden;border:1px solid #edc3d7!important;border-radius:8px 19px 19px 8px!important;background:linear-gradient(90deg,#f8dce9 0,#fffafc 12%,#fff 100%)!important;box-shadow:0 7px 18px #a56d8c15, inset 5px 0 0 #e8b5ce!important;position:relative}
+.meowProfileCards .meowStoryCard:after{content:"";position:absolute;left:112px;top:0;bottom:0;width:1px;background:linear-gradient(#f4d9e6,#d9bfdc,#f4d9e6);pointer-events:none}
+.meowProfileCards .meowCover{width:100%!important;aspect-ratio:auto!important;height:100%!important;min-height:150px;flex:none!important;border-radius:0!important;overflow:hidden}
+.meowProfileCards .meowCover img{width:100%;height:100%;min-height:150px;object-fit:cover}
+.meowProfileCards .meowCoverPlaceholder{height:100%;min-height:150px;display:grid;place-items:center}
+.meowProfileCards .meowStoryInfo{padding:14px 16px!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:7px!important;min-width:0}
+.meowProfileCards .meowStoryName{min-height:0!important;margin:0!important;font-size:16px!important;line-height:1.4!important;-webkit-line-clamp:2}
+.meowProfileCards .meowStoryAuthor{font-size:12px!important;color:#9a6c86!important}
+.meowProfileCards .meowStoryMeta{font-size:11px!important}
+.meowProfileCards .meowOpenStory{width:auto!important;align-self:flex-start;margin-top:4px!important;padding:9px 17px!important;border-radius:999px!important}
+@media(max-width:600px){
+ .meowFairyHero{border-radius:22px!important}
+ .meowFairyHeroMain{min-height:205px;padding:22px 16px 18px}
+ .meowFairyHeroText{width:62%!important}
+ .meowFairyHero h1{font-size:clamp(22px,6vw,30px)!important}
+ .meowFairyHero p{font-size:10px!important;max-width:200px!important}
+ .meowFairyHouse{width:42%!important;right:-2%!important;opacity:.98}
+ .meowFairyHeroControls{padding:0 12px 14px;gap:8px}
+ .meowFairyHeroControls .meowShelfTab{flex:1 1 auto!important;padding:10px 12px!important;font-size:11px!important}
+ .meowProfileCards .meowStoryCard{grid-template-columns:88px minmax(0,1fr)!important;min-height:132px}
+ .meowProfileCards .meowStoryCard:after{left:88px}
+ .meowProfileCards .meowCover,.meowProfileCards .meowCover img,.meowProfileCards .meowCoverPlaceholder{min-height:132px}
+ .meowProfileCards .meowStoryInfo{padding:10px 11px!important;gap:5px!important}
+ .meowProfileCards .meowStoryName{font-size:13px!important}
+ .meowProfileCards .meowOpenStory{font-size:10px!important;padding:8px 12px!important}
+}
+</style>
+<script id="meow-user-revision-2-script">
+(function(){
+ function arrangeMeowBanner(){
+  const hero=document.querySelector('.meowFairyHero');
+  if(!hero||hero.dataset.revision2==='1')return;
+  hero.dataset.revision2='1';
+  const main=document.createElement('div');main.className='meowFairyHeroMain';
+  const text=hero.querySelector('.meowFairyHeroText');
+  const house=hero.querySelector('.meowFairyHouse');
+  const decorations=[...hero.querySelectorAll('.meowFairySpark,.meowFairyFlower,.meowFairyHearts')];
+  if(text)main.appendChild(text);if(house)main.appendChild(house);decorations.forEach(el=>main.appendChild(el));
+  const controls=document.createElement('div');controls.className='meowFairyHeroControls';
+  const selectors=['.meowShelfTabs','#meowGenrePanel','#meowShelfNote','#meowActiveFilter'];
+  selectors.forEach(sel=>{const el=document.querySelector(sel);if(el)controls.appendChild(el)});
+  /* Tìm kiếm nằm cùng hàng với nút Thể loại */
+  const tabs=controls.querySelector('.meowShelfTabs');
+  const searchRow=document.querySelector('.meowSearchRowCompact');
+  if(tabs&&searchRow){tabs.appendChild(searchRow)}
+  hero.append(main,controls);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',arrangeMeowBanner,{once:true});else arrangeMeowBanner();
+})();
+</script>
+
+
+<style id="meow-final-user-tweaks">
+/* Bà yêu cầu: bỏ nút Tủ truyện Meow, giữ icon hiện thêm/thu gọn */
+#meowPublicShelfBtn{display:none!important}
+.meowShelfTabs{gap:9px!important}
+/* Ảnh banner/căn nhà nhún nhảy nhẹ */
+.meowFairyHouse img{transform-origin:50% 100%;animation:meowBannerBounce 2.8s ease-in-out infinite;will-change:transform}
+.meowFairyHouse.has-custom-image{overflow:visible}
+@keyframes meowBannerBounce{0%,100%{transform:translateY(0) scale(1)}35%{transform:translateY(-5px) scale(1.015)}55%{transform:translateY(0) scale(.995)}72%{transform:translateY(-2px) scale(1.005)}}
+@media(prefers-reduced-motion:reduce){.meowFairyHouse img{animation:none!important}}
+/* Avatar bình luận nhỏ, tròn xinh; nút trả lời pastel */
+.meowCommentAvatar{width:30px!important;height:30px!important;flex:0 0 30px!important;border-radius:50%!important;object-fit:cover!important;border:2px solid #ffd4e8!important;box-shadow:0 2px 7px #e89ac733!important;background:linear-gradient(135deg,#ffe0ef,#e8dcff)!important}
+.meowCommentReplyBtn{display:inline-flex!important;align-items:center;gap:5px;border:1px solid #f2b8d8!important;border-radius:999px!important;background:linear-gradient(135deg,#ffe4f1,#eee3ff)!important;color:#a34f83!important;padding:6px 12px!important;font-size:11px!important;font-weight:800!important;box-shadow:0 3px 8px #df9fc51c!important;transition:transform .16s ease,box-shadow .16s ease}
+.meowCommentReplyBtn:hover{transform:translateY(-1px);box-shadow:0 5px 12px #df9fc544!important}
+.meowCommentReplyForm input{border-radius:999px!important;background:#fff8fc!important}
+.meowCommentReplyForm button{border-radius:999px!important;background:linear-gradient(135deg,#f39bc9,#b59ae8)!important;padding:8px 13px!important}
+.meowCommentReplies{border-left-color:#efb8d8!important}
+.meowCommentReply{border:1px solid #f4d4e6!important;border-radius:14px!important;background:#fff4fa!important}
+body.meowSiteDark .meowCommentReply{background:#443149!important;border-color:#755878!important;color:#f5ddeb!important}
+body.meowSiteDark .meowCommentReplyBtn{background:linear-gradient(135deg,#66405f,#55476d)!important;color:#ffe1f1!important;border-color:#916a91!important}
+/* Icon thu gọn/hiện thêm trong trang cá nhân luôn thấy được */
+.meowProfileSection [data-profile-more]{display:inline-flex!important;float:right;margin:0 0 8px 8px}
+@media(max-width:520px){.meowCommentAvatar{width:28px!important;height:28px!important;flex-basis:28px!important}}
+</style>
 </body>
+
+
+<style id="meow-search-genre-inline-fix">
+/* Nút tìm kiếm và Thể loại luôn nằm ngang hàng */
+.meowFairyHeroControls .meowShelfTabs{display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:9px!important;width:100%;min-width:0}
+.meowFairyHeroControls .meowShelfTabs #meowGenreToggle{flex:0 0 auto!important;white-space:nowrap}
+.meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact{order:3;display:flex!important;flex:0 0 auto!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important;margin:0!important;min-height:43px!important;width:auto!important;min-width:43px}
+.meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact.is-open{flex:1 1 240px!important;min-width:0!important}
+.meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact .meowSearchIconBtn{width:43px;height:43px;flex:0 0 43px}
+.meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact .meowSearchWrap{flex:0 0 0;width:0;max-width:0}
+.meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact.is-open .meowSearchWrap{flex:1 1 240px;width:auto;max-width:360px;min-width:0}
+@media(max-width:600px){
+ .meowFairyHeroControls .meowShelfTabs{gap:7px!important}
+ .meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact.is-open{flex:1 1 140px!important}
+ .meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact.is-open .meowSearchWrap{flex:1 1 120px;max-width:220px}
+ .meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact .meowSearchIconBtn{width:41px;height:41px;flex-basis:41px}
+}
+</style>
 </html>
 
 <script>
@@ -7211,6 +7972,20 @@ body.meowSiteDark .meowStoryName,body.meowSiteDark .meowDetailTitle,body.meowSit
 body.meowSiteDark #readerPage:not(.reader-theme-white):not(.reader-theme-cream):not(.reader-theme-pink):not(.reader-theme-blue){background:#211f29}
 body.meowSiteDark #readerPage:not(.reader-theme-white):not(.reader-theme-cream):not(.reader-theme-pink):not(.reader-theme-blue) #readerContent{color:#eee0ed}
 @media(max-width:500px){.meowUnifiedLogo .meowLogoCat{width:120px!important;height:49px!important;padding:3px!important;font-size:12px!important}.meowTopActions{gap:4px}.meowTopBtn{padding:8px!important}.meowWelcomeGlass{padding:11px}.meowWelcomeField{gap:6px}.meowCopyBtn{padding:7px}}
+/* Ví nhỏ xinh nằm ngay cạnh logo Mini Meow */
+.meowTopBrandGroup{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.meowTopWalletMini{display:flex;align-items:center;gap:6px;min-width:0}
+.meowTopWalletBalance{display:flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid #f4c6df;border-radius:13px;background:linear-gradient(135deg,#fff8fc,#ffe6f2);box-shadow:0 3px 10px #e98fbc20;white-space:nowrap}
+.meowTopWalletCoin{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;overflow:hidden;border-radius:9px;background:#ffd8e9}.meowTopWalletCoin img{display:block;width:100%;height:100%;object-fit:contain;border-radius:inherit}
+.meowTopWalletBalance small{display:block;font-size:9px;line-height:1.1;color:#ad6687;font-weight:800}
+.meowTopWalletBalance strong{display:block;margin-top:2px;color:#c43d7b;font-size:12px;line-height:1.2;font-weight:900}
+.meowTopWalletLink{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:8px 10px;border:1px solid #ffc0dc;border-radius:12px;background:linear-gradient(135deg,#ff91bf,#e9a3f4);color:#fff;text-decoration:none;font-size:11px;font-weight:900;white-space:nowrap;box-shadow:0 4px 11px #e84e9226;transition:transform .18s,filter .18s}
+.meowTopWalletLink:hover{transform:translateY(-1px);filter:saturate(1.08)}
+body.meowSiteDark .meowTopWalletBalance{background:linear-gradient(135deg,#34283e,#453047);border-color:#74516f}
+body.meowSiteDark .meowTopWalletBalance small{color:#e6b5d4}body.meowSiteDark .meowTopWalletBalance strong{color:#ffd0e9}
+body.meowSiteDark .meowTopWalletLink{border-color:#795777;background:linear-gradient(135deg,#87517d,#6c4a86)}
+@media(max-width:560px){.meowTopbar{padding:8px 9px;gap:7px}.meowTopBrandGroup{gap:6px}.meowTopWalletMini{gap:4px}.meowTopWalletBalance{padding:5px 6px;gap:4px;border-radius:11px}.meowTopWalletCoin{width:21px;height:21px;font-size:12px}.meowTopWalletBalance small{font-size:8px}.meowTopWalletBalance strong{font-size:10px}.meowTopWalletLink{padding:7px 8px;font-size:10px;gap:3px}.meowUnifiedLogo .meowLogoCat{width:clamp(86px,27vw,120px)!important;height:45px!important}.meowTopActions{gap:3px}}
+@media(max-width:370px){.meowTopWalletBalance{padding:4px}.meowTopWalletCoin{display:none}.meowTopWalletLink{padding:7px 6px}.meowUnifiedLogo .meowLogoCat{width:84px!important;height:42px!important}}
 </style>
 <script>
 /* DÁN LINK ẢNH ICON SỐ DƯ NẠP VÀO ĐÂY */
@@ -7219,6 +7994,13 @@ const MEOW_WALLET_ICON_IMAGE_URL = "https://blogger.googleusercontent.com/img/b/
  const apply=()=>{
   const img=document.getElementById('meowWalletCustomIcon'),fb=document.getElementById('meowWalletIconFallback');
   if(img && MEOW_WALLET_ICON_IMAGE_URL.trim()){img.onload=()=>{img.style.display='block';fb.style.display='none'};img.onerror=()=>{img.style.display='none';fb.style.display='inline'};img.src=MEOW_WALLET_ICON_IMAGE_URL.trim()}
+  const topWalletLink=document.getElementById('meowTopWalletLink');
+  if(topWalletLink)topWalletLink.href=(typeof MEOW_WALLET_URL!=='undefined'&&MEOW_WALLET_URL)?MEOW_WALLET_URL:'https://oluoinhocuameow-ops.github.io/nap-tien/';
+  const sourceBalance=document.getElementById('meowPrepaidBalance');
+  const topBalance=document.getElementById('meowTopPrepaidBalance');
+  const syncTopBalance=()=>{if(sourceBalance&&topBalance)topBalance.textContent=sourceBalance.textContent||'0đ'};
+  syncTopBalance();
+  if(sourceBalance&&topBalance&&'MutationObserver' in window){new MutationObserver(syncTopBalance).observe(sourceBalance,{childList:true,characterData:true,subtree:true})}
   const btn=document.getElementById('meowThemeToggle');
   const setTheme=(dark)=>{document.body.classList.toggle('meowSiteDark',dark);if(btn)btn.textContent=dark?'☀️':'🌙';document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#251e31':'#fff0f7')};
   setTheme(localStorage.getItem('MEOW_SITE_THEME')==='dark');
@@ -7231,3 +8013,37 @@ const MEOW_WALLET_ICON_IMAGE_URL = "https://blogger.googleusercontent.com/img/b/
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
 </script>
+
+<style id="meowProfileFourItemToggleStyle">
+.meowProfileSection .meowProfileLimitItem[hidden]{display:none!important}
+.meowProfileMoreIcon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;margin:12px auto 2px;border:1px solid #e9a9d0;border-radius:50%;background:linear-gradient(145deg,#ffe4f2,#e9d9ff);color:#8b4d83;font-size:23px;font-weight:900;line-height:1;cursor:pointer;box-shadow:0 4px 12px #a75f8b22;transition:transform .2s,box-shadow .2s}
+.meowProfileMoreIcon:hover{transform:translateY(-2px);box-shadow:0 6px 16px #a75f8b35}
+.meowProfileMoreIcon:focus-visible{outline:2px solid #d878b5;outline-offset:3px}
+</style>
+
+<style id="meowRemoveRecentBannerFeed">
+/* Khung banner không còn chứa tin mới / trạng thái đang tìm truyện */
+.meowFairyHero{padding-bottom:30px!important;min-height:300px!important}
+@media(max-width:700px){.meowFairyHero{padding-bottom:24px!important;min-height:330px!important}}
+@media(max-width:420px){.meowFairyHero{padding-bottom:22px!important;min-height:350px!important}}
+
+/* V7 — khung ghi chú nổi bật kiểu nét đứt, cute pastel */
+.meowFairyHero .meowWelcomeGuide{
+  position:relative; max-width:440px; margin:12px 0 0; padding:13px 15px;
+  border:2px dashed #df78ae; border-radius:17px;
+  background:rgba(255,250,255,.88); color:#8050b8 !important;
+  box-shadow:0 5px 16px rgba(191,91,145,.12), inset 0 0 0 3px rgba(255,255,255,.42);
+  font-size:12px; line-height:1.75; backdrop-filter:blur(5px);
+}
+.meowFairyHero .meowWelcomeGuide::before{
+  content:'✿ GHI CHÚ NHỎ CỦA MEOW ✿'; display:block; margin:0 0 6px;
+  color:#bd548b; font-size:10px; font-weight:900; letter-spacing:.55px;
+}
+.meowFairyHero .meowWelcomeGuide b{color:#9654d6 !important;font-weight:900}
+#meowApp.dark .meowFairyHero .meowWelcomeGuide, body.dark-mode .meowFairyHero .meowWelcomeGuide, [data-theme="dark"] .meowFairyHero .meowWelcomeGuide{
+  background:rgba(39,27,48,.88); border-color:#c77bb5; color:#f4ddec;
+  box-shadow:0 5px 18px rgba(0,0,0,.2),inset 0 0 0 3px rgba(255,255,255,.025);
+}
+#meowApp.dark .meowFairyHero .meowWelcomeGuide::before, body.dark-mode .meowFairyHero .meowWelcomeGuide::before, [data-theme="dark"] .meowFairyHero .meowWelcomeGuide::before{color:#f0a8d5}
+@media(max-width:600px){.meowFairyHero .meowWelcomeGuide{padding:9px 10px;margin-top:8px;border-radius:13px;font-size:10px;line-height:1.6;border-width:1.5px}.meowFairyHero .meowWelcomeGuide::before{font-size:8px;margin-bottom:4px}}
+</style>
