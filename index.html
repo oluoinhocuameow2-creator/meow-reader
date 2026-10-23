@@ -9197,3 +9197,57 @@ body.meowSiteDark .meowTouchControls button{background:#49374f;color:#ffd9ec;bor
 })();
 document.getElementById("meowStorySearchQuick")?.addEventListener("click",()=>{document.getElementById("backHomeBtn")?.click();setTimeout(()=>{document.getElementById("meowSearchToggle")?.click();const input=document.getElementById("storySearch");input?.focus();input?.scrollIntoView({behavior:"smooth",block:"center"})},120)});
 </script>
+<script>
+/* 🚫 BLOCK */
+
+document.addEventListener("keydown",e=>{
+
+  let k=e.key.toLowerCase();
+
+  if(e.ctrlKey && ["s","p","u","c","x"].includes(k)){
+
+    e.preventDefault();
+
+    alert("⛔ Bị chặn!");
+
+  }
+
+  if(e.ctrlKey && e.shiftKey) e.preventDefault();
+
+  if(e.key==="F12") e.preventDefault();
+
+});
+
+["copy","cut","contextmenu","selectstart","dragstart"]
+
+.forEach(evt=>document.addEventListener(evt,e=>e.preventDefault()));
+
+window.print=()=>alert("⛔ Không được in!");
+
+/* 📸 BLUR */
+
+window.addEventListener("blur",()=>{
+
+  document.body.style.filter="blur(10px)";
+
+});
+
+window.addEventListener("focus",()=>{
+
+  document.body.style.filter="none";
+
+});
+
+/* 🔍 DEVTOOLS */
+
+setInterval(()=>{
+
+  if(window.outerWidth-window.innerWidth>160){
+
+    document.body.style.filter="blur(12px)";
+
+  }
+
+},500);
+
+</script>
