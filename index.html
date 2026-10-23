@@ -2902,12 +2902,10 @@ body.meowSiteDark .meowProfileEmpty{background:#34283f;border-color:#755878}
       class="meowPage"
     >
 
-      <button
-        class="meowBackBtn"
-        id="backHomeBtn"
-      >
-        ← Về trang chủ
-      </button>
+      <div class="meowStoryTopActions">
+        <button type="button" class="meowBackBtn" id="backHomeBtn" aria-label="Về trang chủ">⌂ <span>Về trang chủ</span></button>
+        <button type="button" class="meowStorySearchQuick" id="meowStorySearchQuick" aria-label="Tìm truyện" title="Tìm truyện">⌕</button>
+      </div>
 
 
       <div class="meowStoryDetail">
@@ -3014,6 +3012,7 @@ body.meowSiteDark .meowProfileEmpty{background:#34283f;border-color:#755878}
           class="meowChapterList"
         ></div>
 
+        <div class="meowCommentLinkDivider" aria-label="Bình luận và link truyện"><span>💬 BÌNH LUẬN VÀ LINK TRUYỆN 🎀</span></div>
         <section class="meowStoryCommentsCard" aria-label="Bình luận truyện">
           <div class="meowStoryCommentsHeading"><span class="meowCommentBubble">💬</span><div><h3>Góc nhỏ tâm sự</h3><p>Cùng nhau chia sẻ cảm nhận về truyện nha 🌷</p></div></div>
           <div class="meowCommentList" id="meowStoryCommentList"><div class="meowCommentHint">Bấm mở bình luận để xem mọi người nói gì nhé 💗</div></div>
@@ -3242,6 +3241,13 @@ body.meowSiteDark .meowProfileEmpty{background:#34283f;border-color:#755878}
 .meowChapterComments{display:none;background:#fff8fc;border:1px solid #ffe0ec;border-radius:14px;padding:12px;margin:-5px 0 14px;box-shadow:0 4px 14px #d86c9810}
 .meowChapterComments.is-open{display:block}.meowCommentList{display:grid;gap:8px;margin:8px 0}.meowComment{background:#fff;border:1px solid #ffe5ef;border-radius:12px;padding:9px 11px;color:#59475a;font-size:13px;overflow-wrap:anywhere}.meowCommentTop{display:flex;justify-content:space-between;gap:8px;color:#a34f79;font-weight:700;margin-bottom:4px}.meowCommentDelete{border:0;background:#fff0f5;color:#b84c75;border-radius:8px;padding:3px 7px;cursor:pointer}.meowCommentForm{display:flex;gap:7px;margin-top:8px}.meowCommentForm input{min-width:0;flex:1;border:1px solid #f5c8dc;border-radius:10px;padding:10px;font:inherit;background:white}.meowCommentForm button{border:0;border-radius:10px;padding:0 12px;background:linear-gradient(135deg,#ff9fc4,#dc80c7);color:white;font-weight:700;cursor:pointer}.meowCommentHint{font-size:11px;color:#a18a9b;margin-top:6px}
 #readerPage img{max-width:100%;height:auto}
+
+/* MEOW: nút quay về + tìm truyện nhỏ gọn, cute */
+.meowStoryTopActions{display:flex;align-items:center;gap:7px;margin:0 0 12px}
+.meowStoryTopActions .meowBackBtn{display:inline-flex;align-items:center;justify-content:center;gap:5px;margin:0;padding:7px 11px;min-height:34px;border:1px solid #fff;background:linear-gradient(135deg,#fff7fb,#f4eaff);border-radius:12px;color:#ad6b8d;font-size:12px;font-weight:800;box-shadow:0 3px 10px #d58bb51c;transition:transform .18s,box-shadow .18s}
+.meowStoryTopActions .meowBackBtn:hover,.meowStorySearchQuick:hover{transform:translateY(-1px);box-shadow:0 5px 13px #d58bb52c}
+.meowStorySearchQuick{width:34px;height:34px;display:inline-grid;place-items:center;border:1px solid #fff;border-radius:12px;background:linear-gradient(135deg,#ffe6f1,#eee4ff);color:#b55f8d;font-size:22px;line-height:1;box-shadow:0 3px 10px #d58bb51c;transition:transform .18s,box-shadow .18s;cursor:pointer}
+@media(max-width:600px){.meowStoryTopActions{gap:6px;margin-bottom:10px}.meowStoryTopActions .meowBackBtn{padding:6px 9px;min-height:31px;font-size:11px;border-radius:10px}.meowStorySearchQuick{width:31px;height:31px;border-radius:10px;font-size:20px}}
 </style>
 <script type="module">
 
@@ -4139,6 +4145,23 @@ function meowRecordWrongLogin(){
   return { locked: false, message: `❌ ID khách không tồn tại. Bà còn ${MEOW_LOGIN_MAX_ATTEMPTS - attempts} lần nhập thử nha.` };
 }
 
+let meowCustomerLiveUnsubscribe = null;
+function meowStartCustomerLiveSync(customerId){
+  if(typeof meowCustomerLiveUnsubscribe==="function"){try{meowCustomerLiveUnsubscribe()}catch(e){}}
+  const id=String(customerId||""); if(!id)return;
+  meowCustomerLiveUnsubscribe=onValue(ref(db,"customers/"+id),snap=>{
+    if(!snap.exists() || String(currentCustomer?.id||"")!==id)return;
+    const fresh=snap.val()||{};
+    currentCustomer={...currentCustomer,...fresh,id};
+    // VIP/full-book/chapter grants and wallet balance are applied immediately without re-login.
+    if(typeof updateMeowReadingActions==="function" && currentStoryId){updateMeowReadingActions();}
+    if(typeof renderStoryInfo==="function" && currentStoryId && document.getElementById("storyPage")?.style.display!=="none")renderStoryInfo();
+    if(typeof meowNotifyScheduleRefresh==="function")meowNotifyScheduleRefresh();
+    const bal=document.getElementById("meowPrepaidBalance");
+    if(bal){const amount=Number(fresh.balance??fresh.walletBalance??fresh._meowWallet?.balance??0);bal.textContent=amount.toLocaleString("vi-VN")+"đ";}
+  },err=>console.warn("Meow: chưa đồng bộ quyền khách trực tiếp",err));
+}
+
 async function loginCustomer(){
   const msg = document.getElementById("readerLoginMsg");
   if (meowCheckLoginLock()) return;
@@ -4165,6 +4188,7 @@ async function loginCustomer(){
     meowWriteLoginGuard({ attempts: 0, lockedUntil: 0 });
     const data = snap.val();
     currentCustomer = { id, ...data };
+    meowStartCustomerLiveSync(id);
     if(data.profileAvatar){try{localStorage.setItem(MEOW_PROFILE_AVATAR_KEY+id,String(data.profileAvatar))}catch(e){}}
     meowStartAvatarSync();
 
@@ -4255,6 +4279,7 @@ setupMeowPurchaseButtons();
 
 function logout(){
 
+  if(typeof meowCustomerLiveUnsubscribe==="function"){try{meowCustomerLiveUnsubscribe()}catch(e){}meowCustomerLiveUnsubscribe=null;}
   localStorage.removeItem(
     "MEOW_READER_ID"
   );
@@ -4428,8 +4453,18 @@ meowStartLiveCatalogSync();
    LỌC TRUYỆN THEO TÁC GIẢ
 ========================================================= */
 function showStoriesByAuthor(authorName) {
+  const searchRow = document.querySelector("#homePage .meowSearchRowCompact");
   const search = document.getElementById("storySearch");
-  if (search) { search.value = String(authorName || "").trim(); search.dispatchEvent(new Event("input", {bubbles:true})); }
+  // Open the compact search row exactly like tapping the home search control.
+  if (searchRow) {
+    searchRow.classList.add("is-open");
+    const searchButton = searchRow.querySelector(".meowSearchIconBtn");
+    if (searchButton) { searchButton.setAttribute("aria-expanded", "true"); searchButton.setAttribute("aria-label", "Đóng tìm kiếm"); }
+  }
+  if (search) {
+    search.value = String(authorName || "").trim();
+    search.dispatchEvent(new Event("input", {bubbles:true}));
+  }
 
   currentShelf = "public";
   currentGenreFilter = "";
@@ -4751,7 +4786,9 @@ async function meowFetchRecentChapterEntries() {
       const info=story.info||{}; let candidates=[];
       if(story.chapters && Object.keys(story.chapters).length){
         candidates=Object.entries(story.chapters).map(([cid,ch])=>({cid,ch,ts:meowChapterStamp(ch,info)}));
-        candidates.forEach(row=>entries.push({storyId:String(sid),storyName:String(info.name||info.title||sid),cover:String(info.cover||info.coverUrl||""),chapterId:String(row.cid),chapterTitle:String(row.ch?.title||row.ch?.name||""),ts:Number(row.ts)||0}));
+        candidates.sort((a,b)=>{const t=(Number(b.ts)||0)-(Number(a.ts)||0);return t||meowChapterKeySort([a.cid,b.cid]).indexOf(a.cid)-meowChapterKeySort([a.cid,b.cid]).indexOf(b.cid)});
+        const latest=candidates[0];
+        if(latest)entries.push({storyId:String(sid),storyName:String(info.name||info.title||sid),cover:String(info.cover||info.coverUrl||""),chapterId:String(latest.cid),chapterTitle:String(latest.ch?.title||latest.ch?.name||""),ts:Number(latest.ts)||0});
         continue;
       } else if(base) {
         const keyUrl=base+"/stories/"+encodeURIComponent(sid)+"/chapters.json?shallow=true";
@@ -4776,12 +4813,26 @@ async function meowFetchRecentChapterEntries() {
 }
 async function meowRenderRecentChapters(force=false) {
   const root=document.getElementById("meowRecentChaptersList"); if(!root)return;
-  if(!force && Date.now()-meowRecentChapterCache.at<120000 && meowRecentChapterCache.entries.length){meowPaintRecentChapters(root,meowRecentChapterCache.entries);return;}
-  if(meowRecentChapterLoading){try{const rows=await meowRecentChapterLoading;const live=document.getElementById("meowRecentChaptersList");if(live)meowPaintRecentChapters(live,rows)}catch(e){}return;}
-  root.innerHTML='<div class="meowRecentChaptersEmpty">🐱 Meow đang tìm chương mới nhất…</div>';
+  // Paint saved results first; network refresh happens quietly and won't flash old entries.
+  if(!meowRecentChapterCache.entries.length){
+    try{const saved=JSON.parse(localStorage.getItem("MEOW_RECENT_CHAPTERS_CACHE")||"null");if(saved&&Array.isArray(saved.entries)){meowRecentChapterCache={at:Number(saved.at)||0,entries:saved.entries};}}
+    catch(e){}
+  }
+  if(meowRecentChapterCache.entries.length)meowPaintRecentChapters(root,meowRecentChapterCache.entries);
+  else root.innerHTML='<div class="meowRecentChaptersEmpty">🐱 Meow đang tìm chương mới nhất…</div>';
+  if(meowRecentChapterLoading)return;
+  // Refresh on request or whenever cache is stale; the cache is not a reason to miss new updates.
+  if(!force && meowRecentChapterCache.at && Date.now()-meowRecentChapterCache.at<45000)return;
   meowRecentChapterLoading=meowFetchRecentChapterEntries();
-  try{const rows=await meowRecentChapterLoading;meowRecentChapterCache={at:Date.now(),entries:rows};const live=document.getElementById("meowRecentChaptersList");if(live)meowPaintRecentChapters(live,rows)}
-  catch(e){root.innerHTML='<div class="meowRecentChaptersEmpty">🌷 Chưa tải được danh sách chương mới. Bà thử tải lại trang nha.</div>'}
+  try{
+    const rows=await meowRecentChapterLoading;
+    const signature=a=>JSON.stringify((a||[]).map(x=>[x.storyId,x.chapterId,x.chapterTitle,x.ts]));
+    const changed=signature(rows)!==signature(meowRecentChapterCache.entries);
+    meowRecentChapterCache={at:Date.now(),entries:rows};
+    try{localStorage.setItem("MEOW_RECENT_CHAPTERS_CACHE",JSON.stringify(meowRecentChapterCache));}catch(e){}
+    const live=document.getElementById("meowRecentChaptersList");
+    if(live && (changed || !live.children.length))meowPaintRecentChapters(live,rows);
+  }catch(e){if(!meowRecentChapterCache.entries.length)root.innerHTML='<div class="meowRecentChaptersEmpty">🌷 Chưa tải được danh sách chương mới. Bà thử tải lại trang nha.</div>'}
   finally{meowRecentChapterLoading=null}
 }
 function meowPaintRecentChapters(root,rows){
@@ -4820,7 +4871,7 @@ function renderStories() {
   } else {
     // Chỉ dựng một danh sách truyện, không tạo lại cùng một truyện ở nhiều mục.
     // Dựng theo từng đợt để thao tác tìm kiếm/theo dõi không phải xử lý hàng nghìn node cùng lúc.
-    const statusPicker = `<div class="meowStoryStatusPickerWrap"><label for="meowStoryStatusPicker">🐾 Chọn danh sách</label><select id="meowStoryStatusPicker" class="meowStoryStatusPicker"><option value="all" ${meowPublicStatusFilter === "all" ? "selected" : ""}>🎀 Tất cả truyện</option><option value="full" ${meowPublicStatusFilter === "full" ? "selected" : ""}>💚 Truyện FULL</option><option value="ongoing" ${meowPublicStatusFilter === "ongoing" ? "selected" : ""}>🌷 Truyện đang ra</option></select></div>`;
+    const statusPicker = `<div class="meowStoryStatusPickerWrap"><label for="meowStoryStatusPicker">🐾 Lọc truyện</label><select id="meowStoryStatusPicker" class="meowStoryStatusPicker"><option value="all" ${meowPublicStatusFilter === "all" ? "selected" : ""}>🎀 Tất cả truyện</option><option value="full" ${meowPublicStatusFilter === "full" ? "selected" : ""}>💚 Truyện FULL</option><option value="ongoing" ${meowPublicStatusFilter === "ongoing" ? "selected" : ""}>🌷 Truyện đang ra</option></select></div>`;
     html += meowShelfSection("🎀 Tất cả truyện", "all", `${statusPicker}<div class="meowShelfCards">${meowRenderLimitedCards(entries, "all")}</div>`);
     html += `<section class="meowRecentChaptersShelf"><div class="meowRecentChaptersHead"><h3>🌸 Chương mới cập nhật</h3><span>୨୧ mới nhất trước nha ୨୧</span></div><div id="meowRecentChaptersList" class="meowRecentChaptersList"><div class="meowRecentChaptersEmpty">🐱 Meow đang tìm chương mới nhất…</div></div></section>`;
   }
@@ -7208,7 +7259,7 @@ function meowProfileRender(){
  <section class="meowProfileSection meowProfileLibraryPanel" data-profile-library-panel="followed" hidden><h3>💗 Truyện theo dõi</h3><div class="meowProfileCards">${cardList(followed,"followed")}</div></section>
  <section class="meowProfileSection"><h3>📖 Chương đang đọc</h3><div class="meowProfileRecent">${recentHTML}</div></section>
  <button type="button" class="meowProfileLogout" id="meowProfileLogoutBottom">↪ Đăng xuất</button>
- <section class="meowCuteCalendar" aria-label="Lịch cá nhân"><div class="meowCalendarHead"><span class="meowCalendarFlower">✿</span><div><strong>My Little Calendar</strong><small>୨୧ những ngày dịu dàng ୨୧</small></div><span class="meowCalendarFlower">✧</span></div><div class="meowCalendarPickers"><button type="button" class="meowCalendarArrow" data-cal-shift="-1" aria-label="Tháng trước">‹</button><select id="meowCalendarMonth" aria-label="Chọn tháng"></select><select id="meowCalendarYear" aria-label="Chọn năm"></select><button type="button" class="meowCalendarArrow" data-cal-shift="1" aria-label="Tháng sau">›</button></div><div class="meowCalendarWeek">${['CN','T2','T3','T4','T5','T6','T7'].map(d=>`<span>${d}</span>`).join('')}</div><div class="meowCalendarDays" id="meowCalendarDays"></div><div class="meowCalendarFoot"><span class="meowCalendarTodayDot"></span> Hôm nay là một ngày thật xinh ✿</div></section>`;
+ <section class="meowCuteCalendar" aria-label="Lịch cá nhân"><div class="meowCalendarHead"><span class="meowCalendarFlower">✿</span><div><strong>My Little Calendar</strong><small>୨୧ những ngày dịu dàng ୨୧</small></div><span class="meowCalendarFlower">✧</span></div><div class="meowCalendarPickers"><button type="button" class="meowCalendarArrow" data-cal-shift="-1" aria-label="Tháng trước">‹</button><select id="meowCalendarMonth" aria-label="Chọn tháng"></select><select id="meowCalendarYear" aria-label="Chọn năm"></select><button type="button" class="meowCalendarArrow" data-cal-shift="1" aria-label="Tháng sau">›</button></div><div class="meowCalendarWeek">${['CN','T2','T3','T4','T5','T6','T7'].map(d=>`<span>${d}</span>`).join('')}</div><div class="meowCalendarDays" id="meowCalendarDays"></div><div class="meowCalendarFoot"><span class="meowCalendarTodayDot"></span> Hôm nay là một ngày thật xinh ✿</div></section><div class="meowGameDivider" aria-hidden="true"><span>✧･ﾟ: GAME :･ﾟ✧</span></div><section class="meowGameHub" id="meowGameHub"><header class="meowGameHead"><div><h3>🎮 Góc game Meow</h3><small>Chơi vui · lưu điểm · đồng bộ tài khoản</small></div><button type="button" id="meowGameSave" class="meowGameSave">💾 Lưu bàn</button></header><div class="meowGameTabs" role="tablist"><button type="button" data-meow-game="snake" class="active">🐍 Rắn săn mồi</button><button type="button" data-meow-game="plane">✈️ Né bom</button><button type="button" data-meow-game="match">🧩 Tìm hình</button></div><div class="meowGameModes"><label>Chế độ <select id="meowGameMode"><option value="easy">🌷 Dễ</option><option value="normal" selected>🎀 Bình thường</option><option value="hard">🔥 Khó</option><option value="zen">🫧 Thư giãn</option></select></label><span id="meowGameScore">Điểm: 0</span></div><div class="meowGameStage" id="meowGameStage"><div class="meowGameWelcome">Chọn game để bắt đầu nha 🐱</div></div><div class="meowGameControls"><button type="button" id="meowGameStart">▶ Bắt đầu</button><button type="button" id="meowGamePause">⏸ Tạm dừng</button><button type="button" id="meowGameReset">↻ Chơi lại</button></div><p class="meowGameHint" id="meowGameHint">Dùng phím mũi tên hoặc nút điều khiển trong game.</p></section>`;
  root.querySelectorAll("[data-profile-library-tab]").forEach(tab=>tab.addEventListener("click",()=>{
   const selected=tab.getAttribute("data-profile-library-tab");
   root.querySelectorAll("[data-profile-library-tab]").forEach(button=>{
@@ -7438,7 +7489,20 @@ document.getElementById("meowProfileClose")?.addEventListener("click",meowCloseP
    if(!currentCustomer)return;
    if(meowNotifyBadgeLoading){meowNotifyRefreshPending=true;return}
    meowNotifyBadgeLoading=true;
-   try{meowNotifyCache=await meowNotifyBuild();meowNotifyUpdateBadge()}
+   try{
+     meowNotifyCache=await meowNotifyBuild();
+     // Lần đầu đăng nhập trên thiết bị này: lấy trạng thái hiện có làm mốc,
+     // không biến toàn bộ truyện/chương cũ thành thông báo mới cùng lúc.
+     const uid=String(currentCustomer?.id||"");
+     const baselineKey="MEOW_NOTIFY_BASELINE_"+uid;
+     if(uid && !localStorage.getItem(baselineKey)){
+       const seen=meowNotifyReadSet();
+       meowNotifyCache.forEach(n=>seen.add(n.id));
+       meowNotifySaveRead(seen);
+       localStorage.setItem(baselineKey,"1");
+     }
+     meowNotifyUpdateBadge();
+   }
    catch(e){console.warn("Không cập nhật được số thông báo",e)}
    finally{
      meowNotifyBadgeLoading=false;
@@ -8187,6 +8251,94 @@ body.meowSiteDark .meowCommentReplyBtn{background:linear-gradient(135deg,#66405f
 @media(max-width:520px){.meowCommentAvatar{width:28px!important;height:28px!important;flex-basis:28px!important}}
 </style>
 
+
+<style id="meowAllStoriesCuteCompactSecurityUI">
+/* Mini Meow — khung tất cả truyện gọn, viền nét đứt và bóng pastel */
+#storyGrid .meowShelfSection[data-shelf-section="all"]{
+  border:1.5px dashed #e9a7ca!important;border-radius:18px!important;
+  background:linear-gradient(145deg,#fffafd 0%,#fff5fb 55%,#f9f4ff 100%)!important;
+  box-shadow:0 7px 20px rgba(193,119,164,.15),inset 0 1px 0 #fff!important;
+  padding:10px!important;margin:8px 0 16px!important;overflow:hidden
+}
+#storyGrid .meowShelfSection[data-shelf-section="all"] .meowShelfSectionHead{gap:7px!important;min-height:0!important;margin:0 0 7px!important;padding:2px 3px!important}
+#storyGrid .meowShelfSection[data-shelf-section="all"] .meowShelfSectionTitle{font-size:clamp(13px,3.5vw,16px)!important;line-height:1.25!important;margin:0!important;font-weight:850!important;letter-spacing:.1px}
+#storyGrid .meowShelfSection[data-shelf-section="all"] .meowShelfCollapse{width:25px!important;height:25px!important;min-width:25px!important;border-radius:9px!important;font-size:14px!important;box-shadow:0 2px 6px #d78ab51c!important}
+#storyGrid .meowShelfSection[data-shelf-section="all"] .meowShelfSectionBody{padding:0!important}
+#storyGrid .meowStoryStatusPickerWrap{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:6px!important;width:max-content!important;max-width:100%!important;margin:2px 0 10px!important;padding:5px 7px!important;border:1px dashed #edb8d4!important;border-radius:12px!important;background:#fff9fd!important;box-shadow:0 2px 7px #ce8bb11a!important;font-size:10px!important}
+#storyGrid .meowStoryStatusPickerWrap label{font-size:10px!important;white-space:nowrap!important;color:#b45c8c!important}
+#storyGrid .meowStoryStatusPicker{min-width:0!important;width:auto!important;max-width:190px!important;padding:5px 24px 5px 8px!important;border-radius:9px!important;border:1px solid #eab9d5!important;font-size:11px!important;line-height:1.2!important;background-color:#fff!important;color:#a44a7c!important}
+@media(max-width:480px){#storyGrid .meowStoryStatusPickerWrap{flex-direction:row!important;align-items:center!important;gap:5px!important;margin-bottom:8px!important;padding:4px 6px!important}#storyGrid .meowStoryStatusPicker{width:auto!important;max-width:58vw!important}}
+@media(prefers-reduced-motion:reduce){#storyGrid .meowShelfSection[data-shelf-section="all"] *{transition:none!important;animation:none!important}}
+</style>
+<meta name="robots" content="noarchive">
+<script id="meowBasicBotAbuseGuard">
+/* Client-side friction only. Real bot/security enforcement must be configured on Firebase/server. */
+(function(){
+  if(window.__meowBotGuardInstalled)return;window.__meowBotGuardInstalled=true;
+  const bucket=new Map();
+  const protectedSelectors='[data-show-more-stories],.meowOpenStory,[data-recent-chapter-story],[data-continue-story]';
+  document.addEventListener('click',function(ev){
+    const target=ev.target&&ev.target.closest?ev.target.closest(protectedSelectors):null;if(!target)return;
+    const now=Date.now(),key=target.dataset.storyId||target.dataset.recentChapterStory||target.dataset.continueStory||target.dataset.showMoreStories||target.className;
+    const arr=(bucket.get(key)||[]).filter(t=>now-t<1800);arr.push(now);bucket.set(key,arr);
+    if(arr.length>12){ev.preventDefault();ev.stopImmediatePropagation();return;}
+  },true);
+  // Discourage browser auto-reader extraction; does not disable accessibility or guarantee protection.
+  try{document.documentElement.setAttribute('data-reader-mode','disabled');}catch(e){}
+})();
+</script>
+
+
+
+<!-- MEOW UI POLISH: comment divider, local light/dark story shelf, compact library tabs -->
+<style id="meow-ui-polish-20261023">
+.meowCommentLinkDivider{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:24px auto 14px;color:#d56fa5;font:900 12px/1.4 Comfortaa,'Be Vietnam Pro',sans-serif;letter-spacing:1.1px;text-align:center;text-shadow:0 0 8px #f5b5d9;}
+.meowCommentLinkDivider:before,.meowCommentLinkDivider:after{content:"";height:2px;flex:1;min-width:12px;border-radius:99px;background:linear-gradient(90deg,transparent,#f0a4cb,#fff,#d6adff,transparent);box-shadow:0 0 8px #e7a5d4;}
+.meowCommentLinkDivider span{display:inline-flex;align-items:center;justify-content:center;padding:9px 15px;border:1px solid #fff;border-radius:999px;background:linear-gradient(135deg,#fff8fd,#ffe6f2 55%,#f1e7ff);box-shadow:0 5px 16px #d98ab52b,inset 0 1px 0 #fff;white-space:normal;}
+body.meowSiteDark .meowCommentLinkDivider{color:#ffd5ed;text-shadow:0 0 8px #d59dff;}
+body.meowSiteDark .meowCommentLinkDivider:before,body.meowSiteDark .meowCommentLinkDivider:after{background:linear-gradient(90deg,transparent,#a96eaa,#fff,#9b82ce,transparent);}
+body.meowSiteDark .meowCommentLinkDivider span{background:linear-gradient(135deg,#392b45,#493149);border-color:#805b7b;box-shadow:0 5px 16px #0003,inset 0 1px 0 #ffffff12;}
+/* Light/dark mode belongs only to the All Stories panel */
+#storyGrid .meowShelfSection.meowShelfLocalDark{background:linear-gradient(145deg,#30263c,#392a44 60%,#302d47)!important;border-color:#805b7b!important;color:#f5ddec!important;box-shadow:0 10px 28px #0003,inset 0 1px 0 #ffffff12!important;}
+#storyGrid .meowShelfSection.meowShelfLocalDark .meowShelfSectionTitle{color:#ffd2e9!important;}
+#storyGrid .meowShelfSection.meowShelfLocalDark .meowStoryCard{background:linear-gradient(160deg,#382b43,#30263b)!important;border-color:#805b7b!important;}
+#storyGrid .meowShelfSection.meowShelfLocalDark .meowStoryName{color:#ffd4e8!important;}
+#storyGrid .meowShelfSection.meowShelfLocalDark .meowStoryAuthor,#storyGrid .meowShelfSection.meowShelfLocalDark .meowStoryStatusPicker{background:#49374f!important;border-color:#805b7b!important;color:#ffd9ec!important;}
+#storyGrid .meowShelfSection.meowShelfLocalDark .meowStoryMeta{color:#e1bfd9!important;}
+.meowShelfThemeToggle{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:0 0 auto;border:1px solid #f5c7dc;border-radius:999px;padding:7px 11px;background:linear-gradient(135deg,#fff,#ffeaf4);color:#a65380;font:800 11px/1.2 'Be Vietnam Pro',sans-serif;box-shadow:0 3px 10px #d98ab51c;cursor:pointer;}
+.meowShelfLocalDark .meowShelfThemeToggle{background:linear-gradient(135deg,#49374f,#5b4163);border-color:#805b7b;color:#ffe0f1;}
+.meowShelfSectionHead{flex-wrap:wrap;}
+/* Compact, same-row buttons in the personal cabinet */
+.meowProfileLibraryTabs{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:center!important;gap:8px!important;width:100%!important;margin:12px 0 15px!important;padding:5px!important;border:1px solid #f6d3e5!important;border-radius:17px!important;background:#fff5fa!important;}
+.meowProfileLibraryTab{min-width:0!important;width:100%!important;min-height:36px!important;padding:8px 9px!important;border:1px solid #f4c8de!important;border-radius:12px!important;background:linear-gradient(135deg,#fff,#fff0f7)!important;color:#ae5d86!important;font-size:12px!important;font-weight:800!important;line-height:1.35!important;white-space:normal!important;box-shadow:0 2px 7px #d98ab51a!important;}
+.meowProfileLibraryTab.is-active{background:linear-gradient(135deg,#f28db7,#c69af1)!important;border-color:transparent!important;color:#fff!important;box-shadow:0 4px 11px #d98ab53a!important;}
+body.meowSiteDark .meowProfileLibraryTabs{background:#30263c!important;border-color:#654a6b!important;}
+body.meowSiteDark .meowProfileLibraryTab{background:#403148!important;border-color:#70516f!important;color:#f5d9eb!important;}
+body.meowSiteDark .meowProfileLibraryTab.is-active{background:linear-gradient(135deg,#b96998,#8e5eaa)!important;color:#fff!important;}
+@media(max-width:420px){.meowCommentLinkDivider{font-size:10px;letter-spacing:.55px;gap:6px}.meowCommentLinkDivider span{padding:8px 9px}.meowProfileLibraryTabs{gap:6px!important;padding:4px!important}.meowProfileLibraryTab{font-size:11px!important;padding:8px 5px!important;min-height:34px!important}.meowShelfThemeToggle{font-size:10px;padding:6px 9px}}
+</style>
+<script id="meow-ui-polish-20261023-js">
+(function(){
+  const applyShelfTheme=()=>{
+    const section=document.querySelector('#storyGrid .meowShelfSection:has(.meowStoryStatusPickerWrap)');
+    if(!section)return;
+    const dark=localStorage.getItem('MEOW_ALL_STORIES_THEME')==='dark';
+    section.classList.toggle('meowShelfLocalDark',dark);
+    let head=section.querySelector('.meowShelfSectionHead');
+    if(!head)return;
+    let btn=head.querySelector('.meowShelfThemeToggle');
+    if(!btn){btn=document.createElement('button');btn.type='button';btn.className='meowShelfThemeToggle';btn.setAttribute('aria-label','Đổi giao diện sáng tối cho khung tất cả truyện');head.appendChild(btn);}
+    const label=dark?'☀️ Chế độ sáng':'🌙 Chế độ tối';
+    if(btn.textContent!==label)btn.textContent=label;
+    btn.setAttribute('aria-pressed',String(dark));
+    btn.onclick=()=>{localStorage.setItem('MEOW_ALL_STORIES_THEME',dark?'light':'dark');applyShelfTheme();};
+  };
+  const observer=new MutationObserver(()=>applyShelfTheme());
+  const start=()=>{const grid=document.getElementById('storyGrid');if(grid){applyShelfTheme();observer.observe(grid,{childList:true,subtree:true});}};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
+
 </body>
 
 
@@ -8857,3 +9009,191 @@ body.meowSiteDark .meowStoryAuthor::before{background:#382b43!important;}
 @keyframes meowLibraryFadeIn{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:480px){.meowProfileLibraryTabs{gap:7px;padding:6px}.meowProfileLibraryTab{flex-basis:100%;min-height:40px}}
 </style>
+
+<style id="meow-games-theme-polish">
+/* home quick actions + story shelf: compact kawaii and theme-aware */
+#homePage .meowFairyHeroControls .meowShelfTabs .meowBannerAction,#homePage .meowFairyHeroControls .meowShelfTabs #meowGenreToggle,#homePage .meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact{border-radius:13px!important;min-height:36px!important;font-size:11px!important;box-shadow:0 4px 11px #d78eb51b!important;transition:background .2s,box-shadow .2s}
+.meowShelfSection:has(.meowStoryStatusPickerWrap){border:2px dashed #e8a6c8!important;border-radius:22px!important;background:linear-gradient(145deg,#fffafd,#fff2f8 58%,#f6efff)!important;box-shadow:0 10px 25px #c77fa51f,inset 0 1px 0 #fff!important;padding:13px!important}
+.meowShelfSection:has(.meowStoryStatusPickerWrap) .meowShelfHead{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin:0 0 11px!important}
+.meowShelfSection:has(.meowStoryStatusPickerWrap) .meowShelfHead h2,.meowShelfSection:has(.meowStoryStatusPickerWrap) .meowShelfHead h3{font-size:clamp(13px,3.5vw,17px)!important;line-height:1.25!important;margin:0!important;color:#b65e8d!important}
+.meowStoryStatusPickerWrap{display:flex!important;align-items:center!important;gap:5px!important;margin:0!important;padding:0!important;flex:none!important}
+.meowStoryStatusPickerWrap label{font-size:9px!important;color:#b47b9a!important;white-space:nowrap!important}
+.meowStoryStatusPicker{max-width:118px!important;width:auto!important;min-width:0!important;padding:6px 7px!important;border:1px dashed #e9b0ce!important;border-radius:10px!important;background:#fffaff!important;color:#a65d83!important;font-size:10px!important;font-weight:800!important}
+body.meowSiteDark .meowShelfSection:has(.meowStoryStatusPickerWrap){background:linear-gradient(145deg,#30263c,#392a44 60%,#302d47)!important;border-color:#875d80!important;box-shadow:0 10px 25px #0003,inset 0 1px 0 #ffffff12!important}
+body.meowSiteDark .meowShelfSection:has(.meowStoryStatusPickerWrap) .meowShelfHead h2,body.meowSiteDark .meowShelfSection:has(.meowStoryStatusPickerWrap) .meowShelfHead h3{color:#ffd2e9!important}
+body.meowSiteDark .meowStoryStatusPickerWrap label{color:#e5bfd9!important}body.meowSiteDark .meowStoryStatusPicker{background:#49374f!important;color:#ffd9ec!important;border-color:#805b7b!important}
+body.meowSiteDark #homePage .meowFairyHeroControls .meowShelfTabs .meowBannerAction,body.meowSiteDark #homePage .meowFairyHeroControls .meowShelfTabs #meowGenreToggle,body.meowSiteDark #homePage .meowFairyHeroControls .meowShelfTabs .meowSearchRowCompact{background:linear-gradient(135deg,#49354d,#3d3049)!important;color:#ffd8eb!important;border-color:#805b7b!important;box-shadow:0 4px 12px #0002!important}
+.meowGameDivider{display:flex;align-items:center;justify-content:center;gap:10px;margin:23px auto 16px;max-width:760px;color:#d77bb0;font:900 13px 'Comfortaa','Quicksand',sans-serif;letter-spacing:2px;text-shadow:0 0 5px #f6b2d8,0 0 12px #dba4ff}
+.meowGameDivider:before,.meowGameDivider:after{content:"";height:2px;flex:1;border-radius:99px;background:linear-gradient(90deg,transparent,#eaa3ce,#fff,#c8a2ff,transparent);box-shadow:0 0 5px #e6a0d2,0 0 12px #d7a6ff}
+.meowGameDivider span{padding:7px 13px;border:1px dashed #e8a6ca;border-radius:999px;background:#fff8fd;box-shadow:0 0 12px #e8a4d533;white-space:nowrap}
+.meowGameHub{max-width:760px;margin:0 auto 18px;padding:14px;border:2px dashed #e5a4c8;border-radius:24px;background:linear-gradient(145deg,#fffafd,#fff1f8 60%,#f4efff);box-shadow:0 12px 28px #c77fa522;color:#78546c}
+.meowGameHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.meowGameHead h3{margin:0;color:#b65e8d;font-size:18px}.meowGameHead small{display:block;margin-top:4px;color:#b77f9d;font-size:10px}.meowGameSave,.meowGameControls button{border:1px dashed #e5a2c6;border-radius:12px;padding:8px 11px;background:#fff8fd;color:#a95b83;font-weight:800;font-size:11px;cursor:pointer}
+.meowGameTabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:13px 0 9px}.meowGameTabs button{border:1px dashed #e8a8c9;border-radius:12px;padding:9px 4px;background:#fff8fd;color:#a75b83;font-size:11px;font-weight:800;cursor:pointer}.meowGameTabs button.active{background:linear-gradient(135deg,#f39cc4,#c5a4ed);color:white;border-color:white;box-shadow:0 0 11px #e6a4ce66}
+.meowGameModes{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 10px;font-size:11px;font-weight:800}.meowGameModes label{display:flex;align-items:center;gap:6px}.meowGameModes select{max-width:145px;padding:6px 8px;border:1px dashed #e5a7c7;border-radius:10px;background:#fffaff;color:#a65b83;font-size:10px;font-weight:800}
+.meowGameStage{min-height:220px;display:grid;place-items:center;position:relative;overflow:hidden;border:1px solid #f0c6dc;border-radius:17px;background:linear-gradient(145deg,#fff,#fff6fb);padding:8px}.meowGameStage canvas{display:block;max-width:100%;border-radius:12px;touch-action: manipulation}.meowGameWelcome{color:#bd7aa0;font-size:12px;text-align:center;padding:25px}.meowGameControls{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin:11px 0 5px}.meowGameHint{text-align:center;color:#b47b9a;font-size:10px;margin:7px 0 0}
+body.meowSiteDark .meowGameDivider{color:#ffd3eb;text-shadow:0 0 6px #f1a6d4,0 0 14px #b995ff}body.meowSiteDark .meowGameDivider span{background:#392a44;border-color:#805b7b}body.meowSiteDark .meowGameHub{background:linear-gradient(145deg,#30263c,#392a44 60%,#302d47);border-color:#805b7b;color:#f5ddec;box-shadow:0 12px 28px #0003}body.meowSiteDark .meowGameHead h3{color:#ffd0e8}body.meowSiteDark .meowGameHead small,body.meowSiteDark .meowGameHint{color:#e2bfd9}body.meowSiteDark .meowGameSave,body.meowSiteDark .meowGameControls button,body.meowSiteDark .meowGameTabs button,body.meowSiteDark .meowGameModes select{background:#49374f;color:#ffd9ec;border-color:#805b7b}body.meowSiteDark .meowGameTabs button.active{background:linear-gradient(135deg,#b96998,#8e5eaa);color:#fff}body.meowSiteDark .meowGameStage{background:linear-gradient(145deg,#241d2e,#30243a);border-color:#805b7b}
+@media(max-width:520px){.meowShelfSection:has(.meowStoryStatusPickerWrap){padding:10px!important;border-radius:17px!important}.meowShelfSection:has(.meowStoryStatusPickerWrap) .meowShelfHead{gap:5px!important;align-items:flex-start!important}.meowStoryStatusPickerWrap label{display:none!important}.meowStoryStatusPicker{max-width:110px!important;font-size:9px!important}.meowGameHub{padding:10px;border-radius:19px}.meowGameHead h3{font-size:15px}.meowGameHead small{font-size:9px}.meowGameStage{min-height:190px;padding:4px}.meowGameTabs button{font-size:10px}.meowGameModes{font-size:10px}}
+</style>
+<script id="meow-mini-games">
+(()=>{
+ const $=id=>document.getElementById(id);
+ const hub=$('meowGameHub'); if(!hub||hub.dataset.gameEngine==='v2')return; hub.dataset.gameEngine='v2';
+ let game='snake',mode='normal',timer=null,paused=true,score=0,canvas=null,ctx=null,state={},touch=null;
+ const stage=()=>$('meowGameStage');
+ const speed=()=>mode==='easy'?210:mode==='hard'?95:mode==='zen'?260:150;
+ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+ function stop(){if(timer)clearInterval(timer);timer=null;paused=true}
+ function paintScore(){const el=$('meowGameScore');if(el)el.textContent='Điểm: '+score}
+ function hint(t){const el=$('meowGameHint');if(el)el.textContent=t}
+ function save(){
+  const data={game,mode,score,state,at:Date.now()};
+  try{localStorage.setItem('meowGameSave:'+game,JSON.stringify(data))}catch(e){}
+  const user=window.currentCustomer,uid=user&&(user.uid||user.id);
+  if(uid&&window.firebase?.database){window.firebase.database().ref('users/'+uid+'/miniGames/'+game).set(data).then(()=>hint('💾 Đã lưu và đồng bộ bàn game')).catch(()=>hint('💾 Đã lưu trên thiết bị · Firebase chưa đồng bộ'))}
+  else hint('💾 Đã lưu trên thiết bị · đăng nhập để đồng bộ');
+ }
+ function makeControls(){
+  const old=$('meowTouchControls');if(old)old.remove();
+  const box=document.createElement('div');box.id='meowTouchControls';box.className='meowTouchControls';
+  box.innerHTML='<button type="button" data-dir="0,-1" aria-label="Lên">▲</button><div><button type="button" data-dir="-1,0" aria-label="Trái">◀</button><button type="button" data-dir="0,1" aria-label="Xuống">▼</button><button type="button" data-dir="1,0" aria-label="Phải">▶</button></div>';
+  stage().append(box);
+  box.querySelectorAll('[data-dir]').forEach(btn=>{
+   const move=e=>{e.preventDefault();const [dx,dy]=btn.dataset.dir.split(',').map(Number);if(game==='snake')turn(dx,dy)};
+   btn.addEventListener('pointerdown',move);btn.addEventListener('click',move);
+  });
+ }
+ function turn(dx,dy){if(game!=='snake'||!state.dir)return;const [x,y]=state.dir;if(dx===-x&&dy===-y)return;state.dir=[dx,dy]}
+ function setupCanvas(){
+  stage().innerHTML='';canvas=document.createElement('canvas');canvas.width=360;canvas.height=300;
+  canvas.style.cssText='display:block;width:min(100%,360px);height:auto;max-width:100%;touch-action:none;user-select:none';
+  canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Khu vực chơi game');ctx=canvas.getContext('2d');
+  stage().append(canvas);canvas.addEventListener('pointerdown',onPointer);
+  canvas.addEventListener('pointermove',e=>{if(game==='plane'&&e.buttons)movePlane(e)});
+  canvas.addEventListener('touchstart',e=>{const t=e.changedTouches[0];if(t)touch={x:t.clientX,y:t.clientY};},{passive:true});
+  canvas.addEventListener('touchend',e=>{const t=e.changedTouches[0];if(!t||!touch)return;const dx=t.clientX-touch.x,dy=t.clientY-touch.y;touch=null;if(game==='snake'&&Math.max(Math.abs(dx),Math.abs(dy))>15){if(Math.abs(dx)>Math.abs(dy))turn(dx>0?1:-1,0);else turn(0,dy>0?1:-1)}else if(game==='plane')movePlane(e);},{passive:true});
+  if(game==='snake')makeControls();
+ }
+ function reset(){
+  stop();score=0;
+  if(game==='snake')state={snake:[[8,7],[7,7],[6,7]],dir:[1,0],food:[13,7]};
+  else if(game==='plane')state={x:180,bombs:[],tick:0};
+  else state={deck:['🐱','🐱','🌸','🌸','⭐','⭐','🍓','🍓','🎀','🎀','🐾','🐾'].sort(()=>Math.random()-.5),open:[],done:[]};
+  setupCanvas();draw();paintScore();hint(game==='snake'?'🐍 Bấm nút mũi tên hoặc vuốt để đổi hướng.':'Chạm Bắt đầu để chơi nha!');
+ }
+ function draw(){
+  if(!ctx)return;ctx.clearRect(0,0,360,300);
+  if(game==='snake'){
+   ctx.fillStyle='#fff7fc';ctx.fillRect(0,0,360,300);
+   for(let y=0;y<15;y++)for(let x=0;x<18;x++){ctx.fillStyle=(x+y)%2?'#f9e9f4':'#fff';ctx.fillRect(x*20,y*20,20,20)}
+   (state.snake||[]).forEach((part,i)=>{ctx.fillStyle=i?'#d9a1e8':'#ed83b8';ctx.fillRect(part[0]*20+2,part[1]*20+2,16,16)});
+   if(state.food){ctx.font='19px sans-serif';ctx.fillText('🍓',state.food[0]*20,state.food[1]*20+18)}
+  }else if(game==='plane'){
+   ctx.fillStyle='#eaf6ff';ctx.fillRect(0,0,360,300);ctx.font='25px sans-serif';ctx.fillText('✈️',state.x-12,270);
+   (state.bombs||[]).forEach(b=>{ctx.font='23px sans-serif';ctx.fillText('💣',b.x,b.y)});
+  }else{
+   ctx.fillStyle='#fff7fc';ctx.fillRect(0,0,360,300);
+   for(let i=0;i<12;i++){let x=10+(i%4)*90,y=8+Math.floor(i/4)*96,shown=state.open.includes(i)||state.done.includes(i);
+    ctx.fillStyle=state.done.includes(i)?'#d9f3e5':shown?'#f5d9e9':'#e9d8f8';ctx.fillRect(x,y,82,82);ctx.strokeStyle='#d4a6c7';ctx.strokeRect(x,y,82,82);ctx.font='30px sans-serif';ctx.fillText(shown?state.deck[i]:'❔',x+24,y+51)}
+  }
+ }
+ function movePlane(e){if(!canvas)return;const r=canvas.getBoundingClientRect();state.x=clamp((e.clientX-r.left)*360/r.width,16,344);draw()}
+ function onPointer(e){
+  if(game==='plane'){movePlane(e);return}
+  if(game!=='match')return;
+  const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*360/r.width,y=(e.clientY-r.top)*300/r.height;
+  const col=Math.floor((x-10)/90),row=Math.floor((y-8)/96),i=row*4+col;
+  if(col<0||col>3||row<0||row>2||state.open.includes(i)||state.done.includes(i))return;
+  state.open.push(i);draw();
+  if(state.open.length===2){
+   if(state.deck[state.open[0]]===state.deck[state.open[1]]){state.done.push(...state.open);state.open=[];score+=10;paintScore();if(state.done.length===12){stop();hint('🎉 Tìm hết hình rồi! Bấm chơi lại để chơi tiếp')}}else{const pair=[...state.open];setTimeout(()=>{if(game==='match'&&state.open.length===2&&state.open[0]===pair[0]&&state.open[1]===pair[1]){state.open=[];draw()}},750)}
+  }
+ }
+ function step(){
+  if(game==='snake'){
+   const snake=state.snake,head=[snake[0][0]+state.dir[0],snake[0][1]+state.dir[1]];
+   if(head[0]<0||head[0]>=18||head[1]<0||head[1]>=15||snake.some(p=>p[0]===head[0]&&p[1]===head[1])){stop();hint('🐍 Hết lượt! Bấm Chơi lại nha');return}
+   snake.unshift(head);
+   if(head[0]===state.food[0]&&head[1]===state.food[1]){score+=10;let f;do{f=[Math.floor(Math.random()*18),Math.floor(Math.random()*15)]}while(snake.some(p=>p[0]===f[0]&&p[1]===f[1]));state.food=f}else snake.pop();
+  }else if(game==='plane'){
+   state.tick++;if(state.tick%3===0)state.bombs.push({x:Math.random()*330+10,y:-15});
+   let hit=false;state.bombs=state.bombs.filter(b=>{b.y+=mode==='hard'?8:mode==='easy'?3:5;if(b.y>310){score++;return false}if(Math.abs(b.x-state.x)<28&&b.y>230&&b.y<290)hit=true;return true});
+   if(hit){stop();hint('💥 Trúng bom! Bấm Chơi lại nha');return}
+  }
+  draw();paintScore();
+ }
+ function start(){if(!paused)return;paused=false;timer=setInterval(()=>{if(!paused)step()},speed());hint(game==='snake'?'🐍 Điều khiển bằng nút hoặc vuốt':'✈️ Chạm/kéo để né bom')}
+ function loadGame(g){
+  stop();game=g;hub.querySelectorAll('[data-meow-game]').forEach(b=>b.classList.toggle('active',b.dataset.meowGame===g));
+  let saved=null;try{saved=JSON.parse(localStorage.getItem('meowGameSave:'+g)||'null')}catch(e){}
+  if(saved){mode=saved.mode||'normal';score=Number(saved.score)||0;state=saved.state||{};$('meowGameMode').value=mode;setupCanvas();draw();paintScore()}
+  else reset();
+  const user=window.currentCustomer,uid=user&&(user.uid||user.id);
+  if(uid&&window.firebase?.database)window.firebase.database().ref('users/'+uid+'/miniGames/'+g).once('value').then(snap=>{const cloud=snap.val();if(cloud&&Number(cloud.at)>Number(saved?.at||0)){mode=cloud.mode||mode;score=Number(cloud.score)||0;state=cloud.state||{};$('meowGameMode').value=mode;setupCanvas();draw();paintScore();try{localStorage.setItem('meowGameSave:'+g,JSON.stringify(cloud))}catch(e){}}}).catch(()=>{});
+ }
+ $('meowGameStart').onclick=start;
+ $('meowGamePause').onclick=()=>{if(!paused){stop();hint('⏸ Đã tạm dừng')}else start()};
+ $('meowGameReset').onclick=reset;$('meowGameSave').onclick=save;
+ $('meowGameMode').onchange=e=>{mode=e.target.value;reset()};
+ hub.querySelectorAll('[data-meow-game]').forEach(b=>b.addEventListener('click',()=>loadGame(b.dataset.meowGame)));
+ document.addEventListener('keydown',e=>{if(!hub.isConnected||!canvas)return;const dirs={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(game==='snake'&&dirs[e.key]){e.preventDefault();turn(...dirs[e.key])}else if(game==='plane'){if(e.key==='ArrowLeft')state.x=clamp(state.x-20,16,344);if(e.key==='ArrowRight')state.x=clamp(state.x+20,16,344)}draw()});
+ loadGame('snake');
+})();
+</script>
+
+<style id="meow-game-mobile-author-search-fix">
+#homePage .meowSearchRowCompact.is-open{display:flex!important;grid-column:1/-1!important;width:100%!important;min-width:0!important;justify-content:flex-start!important;gap:5px!important;animation:meowSearchSlide .24s ease-out both!important}
+#homePage .meowSearchRowCompact.is-open .meowSearchWrap{display:block!important;opacity:1!important;visibility:visible!important;flex:1 1 auto!important;min-width:0!important;max-width:none!important}
+#homePage .meowSearchRowCompact.is-open #storySearch{width:100%!important;min-width:0!important;display:block!important}
+@keyframes meowSearchSlide{from{opacity:.25;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+.meowTouchControls{display:flex;flex-direction:column;align-items:center;gap:5px;margin:8px auto 2px;touch-action:manipulation}
+.meowTouchControls>div{display:flex;gap:8px}
+.meowTouchControls button{width:48px;height:42px;border:1px dashed #e4a0c4;border-radius:12px;background:#fff5fb;color:#b45e8c;font-size:18px;font-weight:900;touch-action:manipulation;user-select:none}
+body.meowSiteDark .meowTouchControls button{background:#49374f;color:#ffd9ec;border-color:#805b7b}
+@media(max-width:600px){.meowGameStage canvas{width:100%!important;height:auto!important}.meowTouchControls button{width:54px;height:46px;font-size:20px}.meowGameControls button{min-height:42px;touch-action:manipulation}}
+</style>
+
+<script id="meow-game-live-fix">
+(function(){
+ let active=null;
+ function boot(hub){
+  if(hub.dataset.liveGameFix==='1')return;hub.dataset.liveGameFix='1';
+  let game='snake',mode='normal',score=0,timer=null,paused=true,canvas,ctx,state={},touch=null;
+  const $=id=>document.getElementById(id),stage=$('meowGameStage');
+  if(!stage)return;
+  const speed=()=>mode==='easy'?220:mode==='hard'?95:mode==='zen'?260:150;
+  function stop(){clearInterval(timer);timer=null;paused=true}
+  function hint(t){const e=$('meowGameHint');if(e)e.textContent=t}
+  function paint(){const e=$('meowGameScore');if(e)e.textContent='Điểm: '+score}
+  function turn(dx,dy){if(game!=='snake')return;let [x,y]=state.dir||[1,0];if(dx===-x&&dy===-y)return;state.dir=[dx,dy]}
+  function draw(){
+   if(!ctx)return;ctx.clearRect(0,0,360,300);
+   if(game==='snake'){ctx.fillStyle='#fff7fc';ctx.fillRect(0,0,360,300);for(let y=0;y<15;y++)for(let x=0;x<18;x++){ctx.fillStyle=(x+y)%2?'#f9e9f4':'#fff';ctx.fillRect(x*20,y*20,20,20)}(state.snake||[]).forEach((p,i)=>{ctx.fillStyle=i?'#d9a1e8':'#ed83b8';ctx.fillRect(p[0]*20+2,p[1]*20+2,16,16)});if(state.food){ctx.font='19px sans-serif';ctx.fillText('🍓',state.food[0]*20,state.food[1]*20+18)}}
+   else if(game==='plane'){ctx.fillStyle='#eaf6ff';ctx.fillRect(0,0,360,300);ctx.font='25px sans-serif';ctx.fillText('✈️',state.x-12,270);(state.bombs||[]).forEach(b=>{ctx.font='23px sans-serif';ctx.fillText('💣',b.x,b.y)})}
+   else{ctx.fillStyle='#fff7fc';ctx.fillRect(0,0,360,300);for(let i=0;i<12;i++){let x=10+i%4*90,y=8+Math.floor(i/4)*96,show=state.open.includes(i)||state.done.includes(i);ctx.fillStyle=state.done.includes(i)?'#d9f3e5':show?'#f5d9e9':'#e9d8f8';ctx.fillRect(x,y,82,82);ctx.strokeStyle='#d4a6c7';ctx.strokeRect(x,y,82,82);ctx.font='30px sans-serif';ctx.fillText(show?state.deck[i]:'❔',x+24,y+51)}}
+  }
+  function setup(){stage.innerHTML='';canvas=document.createElement('canvas');canvas.width=360;canvas.height=300;canvas.style.cssText='display:block;width:100%;max-width:360px;height:auto;touch-action:none;user-select:none';ctx=canvas.getContext('2d');stage.append(canvas);
+   canvas.addEventListener('pointerdown',pointer);canvas.addEventListener('pointermove',e=>{if(game==='plane'&&e.buttons)planeMove(e)});
+   canvas.addEventListener('touchstart',e=>{let t=e.changedTouches[0];if(t)touch={x:t.clientX,y:t.clientY}},{passive:true});
+   canvas.addEventListener('touchend',e=>{let t=e.changedTouches[0];if(!t||!touch)return;let dx=t.clientX-touch.x,dy=t.clientY-touch.y;touch=null;if(game==='snake'&&Math.max(Math.abs(dx),Math.abs(dy))>12){Math.abs(dx)>Math.abs(dy)?turn(dx>0?1:-1,0):turn(0,dy>0?1:-1)}else if(game==='plane')planeMove(e)},{passive:true});
+   if(game==='snake'){let c=document.createElement('div');c.className='meowTouchControls';c.id='meowTouchControls';c.innerHTML='<button data-d="0,-1">▲</button><div><button data-d="-1,0">◀</button><button data-d="0,1">▼</button><button data-d="1,0">▶</button></div>';stage.append(c);c.querySelectorAll('button').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();turn(...b.dataset.d.split(',').map(Number))}))}
+   draw();
+  }
+  function reset(){stop();score=0;if(game==='snake')state={snake:[[8,7],[7,7],[6,7]],dir:[1,0],food:[13,7]};else if(game==='plane')state={x:180,bombs:[],tick:0};else state={deck:['🐱','🐱','🌸','🌸','⭐','⭐','🍓','🍓','🎀','🎀','🐾','🐾'].sort(()=>Math.random()-.5),open:[],done:[]};setup();paint();hint('Chạm Bắt đầu để chơi nha 🐱')}
+  function planeMove(e){let r=canvas.getBoundingClientRect();state.x=Math.max(16,Math.min(344,(e.clientX-r.left)*360/r.width));draw()}
+  function pointer(e){if(game==='plane'){planeMove(e);return}if(game!=='match')return;let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*360/r.width,y=(e.clientY-r.top)*300/r.height,col=Math.floor((x-10)/90),row=Math.floor((y-8)/96),i=row*4+col;if(col<0||col>3||row<0||row>2||state.open.includes(i)||state.done.includes(i))return;state.open.push(i);draw();if(state.open.length===2){if(state.deck[state.open[0]]===state.deck[state.open[1]]){state.done.push(...state.open);state.open=[];score+=10;paint();if(state.done.length===12){stop();hint('🎉 Hoàn thành!')}}else{let pair=state.open.slice();setTimeout(()=>{if(game==='match'&&state.open.join()==pair.join()){state.open=[];draw()}},700)}}}
+  function step(){if(game==='snake'){let a=state.snake,h=[a[0][0]+state.dir[0],a[0][1]+state.dir[1]];if(h[0]<0||h[0]>=18||h[1]<0||h[1]>=15||a.some(p=>p[0]===h[0]&&p[1]===h[1])){stop();hint('🐍 Hết lượt! Chơi lại nha');return}a.unshift(h);if(h[0]===state.food[0]&&h[1]===state.food[1]){score+=10;state.food=[Math.floor(Math.random()*18),Math.floor(Math.random()*15)]}else a.pop()}
+   else if(game==='plane'){state.tick++;if(state.tick%3===0)state.bombs.push({x:Math.random()*330+10,y:-10});let hit=false;state.bombs=state.bombs.filter(b=>{b.y+=mode==='hard'?8:mode==='easy'?3:5;if(b.y>310){score++;return false}if(Math.abs(b.x-state.x)<27&&b.y>230&&b.y<290)hit=true;return true});if(hit){stop();hint('💥 Trúng bom! Chơi lại nha');return}}
+   draw();paint()}
+  function start(){if(!paused)return;paused=false;timer=setInterval(step,speed());hint(game==='snake'?'🐍 Vuốt hoặc bấm mũi tên để đổi hướng':'✈️ Chạm/kéo để né bom')}
+  function save(){let d={game,mode,score,state,at:Date.now()};try{localStorage.setItem('meowGameSave:'+game,JSON.stringify(d))}catch(e){}hint('💾 Đã lưu bàn trên thiết bị')}
+  function choose(g){stop();game=g;hub.querySelectorAll('[data-meow-game]').forEach(b=>b.classList.toggle('active',b.dataset.meowGame===g));reset()}
+  hub.querySelectorAll('[data-meow-game]').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.meowGame)));
+  $('meowGameStart')?.addEventListener('click',start);$('meowGamePause')?.addEventListener('click',()=>{if(paused)start();else{stop();hint('⏸ Tạm dừng')}});$('meowGameReset')?.addEventListener('click',reset);$('meowGameSave')?.addEventListener('click',save);$('meowGameMode')?.addEventListener('change',e=>{mode=e.target.value;reset()});
+  document.addEventListener('keydown',e=>{if(!hub.isConnected)return;let d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(game==='snake'&&d[e.key]){e.preventDefault();turn(...d[e.key])}else if(game==='plane'){if(e.key==='ArrowLeft')state.x=Math.max(16,state.x-20);if(e.key==='ArrowRight')state.x=Math.min(344,state.x+20);draw()}});
+  reset();
+ }
+ function scan(){let h=document.getElementById('meowGameHub');if(h&&h!==active){active=h;boot(h)}}
+ new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});scan();
+})();
+document.getElementById("meowStorySearchQuick")?.addEventListener("click",()=>{document.getElementById("backHomeBtn")?.click();setTimeout(()=>{document.getElementById("meowSearchToggle")?.click();const input=document.getElementById("storySearch");input?.focus();input?.scrollIntoView({behavior:"smooth",block:"center"})},120)});
+</script>
