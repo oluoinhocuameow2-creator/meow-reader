@@ -2669,6 +2669,45 @@ body.meowSiteDark .meowProfileEmpty{background:#34283f;border-color:#755878}
 }
 
 </style>
+<meta name="robots" content="noarchive,nosnippet">
+<style id="meow-reader-deterrence">
+  /* Chỉ hạn chế thao tác chọn/copy trong vùng nội dung; không làm nhiễu chữ hiển thị */
+  #readerContent, #detailSummary, .meowChapterContent, #chapterContent {
+    -webkit-user-select:none !important;
+    user-select:none !important;
+  }
+  #readerContent img, .meowChapterContent img {
+    -webkit-user-drag:none !important;
+    user-drag:none !important;
+  }
+</style>
+<script id="meow-reader-deterrence-script">
+(function(){
+  "use strict";
+  if(window.__MEOW_READER_DETERRENCE__) return;
+  window.__MEOW_READER_DETERRENCE__ = true;
+
+  const protectedText = "#readerContent, #detailSummary, .meowChapterContent, #chapterContent";
+  document.addEventListener("copy", function(e){
+    if(e.target && e.target.closest && e.target.closest(protectedText)) e.preventDefault();
+  }, true);
+  document.addEventListener("cut", function(e){
+    if(e.target && e.target.closest && e.target.closest(protectedText)) e.preventDefault();
+  }, true);
+  document.addEventListener("contextmenu", function(e){
+    if(e.target && e.target.closest && e.target.closest(protectedText)) e.preventDefault();
+  }, true);
+  document.addEventListener("dragstart", function(e){
+    if(e.target && e.target.closest && e.target.closest(protectedText)) e.preventDefault();
+  }, true);
+
+  // Reader-mode APIs are browser-controlled; these hints are only deterrence.
+  try {
+    document.documentElement.setAttribute("data-noreader", "true");
+    document.documentElement.setAttribute("data-reader-mode", "disabled");
+  } catch (_) {}
+})();
+</script>
 </head>
 <body>
 <div id="meowReaderApp">
