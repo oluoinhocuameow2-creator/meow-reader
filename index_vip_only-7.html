@@ -1,0 +1,144 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mini Meow • Cấp VIP khách</title><style>
+*{box-sizing:border-box}body{margin:0;padding:16px;background:#fff8fc;color:#70445b;font:15px system-ui}main{max-width:760px;margin:auto}header{text-align:center;padding:16px;background:#fff;border:1px solid #ffd6e9;border-radius:22px;margin-bottom:14px}h1{margin:0;color:#e95d9d;font-size:24px}header p{margin:6px 0 0}.vipAccessCard{background:#fff;padding:15px;margin:13px 0;border:1px solid #ffe0ef;border-radius:18px;box-shadow:0 5px 16px #ff8fc522}.vipAccessCard h2{color:#e95d9d;margin:0 0 10px;font-size:18px}input,select{width:100%;padding:12px;margin:7px 0;border:1px solid #ffd6e9;border-radius:14px;background:#fffafd;color:#70445b}.vipAccessItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;margin:7px 0;border-radius:14px;background:#fff2f8;font-size:13px}.vipAccessItem button,button{border:0;padding:9px 12px;border-radius:12px;background:#ff6fae;color:white;cursor:pointer;white-space:nowrap}.small{font-size:12px;color:#aa7893}#status{margin:8px 0;color:#c44d88}.vipTabs{display:flex;gap:8px;padding:6px;background:#fff0f7;border:1px solid #ffd6e9;border-radius:16px;margin:12px 0}.vipTabs button{flex:1;padding:12px 8px;background:transparent;color:#bd6b95;border-radius:12px;font-weight:700}.vipTabs button.active{background:#ff6fae;color:#fff;box-shadow:0 3px 10px #ff6fae44}.vipPanel[hidden]{display:none!important}.vipAccessItem span{min-width:0;overflow-wrap:anywhere}.vipAccessItem button{flex-shrink:0}
+.vipChapterPrice{display:inline-block;margin-top:4px;color:#b45b8b;font-size:12px;font-weight:600}
+</style></head><body><main id="vipAccessManage"><header><h1>👑 Cấp VIP khách</h1><p>Chỉ cấp VIP Full bộ và VIP chương lẻ 🌸</p><div id="status">Đang kết nối...</div></header>
+<nav class="vipTabs"><button id="tabFull" class="active" type="button">💖 VIP Full bộ</button><button id="tabChapter" type="button">🌸 VIP Chương lẻ</button></nav><section id="panelFull" class="vipPanel vipAccessCard"><h2>💖 VIP Full bộ</h2><input id="vipFullCustomerSearch" placeholder="🔎 Tìm khách theo tên / ID / Gmail"><select id="vipFullCustomer"><option value="">🐱 Chọn khách</option></select><input id="vipFullStorySearch" placeholder="🔎 Tìm truyện"><div id="vipFullStoryList"></div></section>
+<section id="panelChapter" class="vipPanel vipAccessCard" hidden><h2>🌸 VIP Chương lẻ</h2><input id="vipChapterCustomerSearch" placeholder="🔎 Tìm khách theo tên / ID / Gmail"><select id="vipChapterCustomer"><option value="">🐱 Chọn khách</option></select><input id="vipChapterStorySearch" placeholder="🔎 Tìm truyện"><select id="vipChapterStory"><option value="">📚 Chọn truyện</option></select><div id="vipChapterList"></div></section></main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import {getDatabase,ref,get,set,remove} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+const firebaseConfig = {
+
+
+
+apiKey:"AIzaSyCMUFJMj74GHONcP3thoTIc2TfZyc91b8",
+
+
+authDomain:"olncm-fa88c.firebaseapp.com",
+
+
+databaseURL:
+
+"https://olncm-fa88c-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+
+projectId:"olncm-fa88c",
+
+
+storageBucket:
+
+"olncm-fa88c.firebasestorage.app",
+
+
+messagingSenderId:"1047257801200",
+
+
+appId:
+
+"1:1047257801200:web:d051244e609b2285ddbd35"
+
+
+
+};
+
+
+
+
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+// ===== VIP ACCESS MANAGER: full book / individual chapters =====
+(()=>{
+const panel=document.getElementById('vipAccessManage');
+if(!panel)return;
+const $=id=>document.getElementById(id);
+let customerCache=null, storyCache=null, chapterCache={}, chapterVipCache={};
+const CACHE_TTL=24*60*60*1000;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function readLocal(key){try{const x=JSON.parse(localStorage.getItem('miniMeowVipCache:'+key)||'null');if(x&&Date.now()-x.time<CACHE_TTL)return x.data;}catch(e){}return null}
+function writeLocal(key,data){try{localStorage.setItem('miniMeowVipCache:'+key,JSON.stringify({time:Date.now(),data}));}catch(e){}}
+async function cached(path,cacheKey){
+ let memory=cacheKey==='customers'?customerCache:storyCache;if(memory)return memory;
+ const local=readLocal(cacheKey);if(local){if(cacheKey==='customers')customerCache=local;else storyCache=local;return local;}
+ const snap=await get(ref(db,path));const val=snap.exists()?snap.val():{};
+ if(cacheKey==='customers')customerCache=val;else storyCache=val;writeLocal(cacheKey,val);return val;
+}
+function fillCustomerSelect(select,search){
+ const key=($(search).value||'').toLowerCase().trim();
+ const data=customerCache||{};
+ const old=select.value;
+ select.innerHTML='<option value="">🐱 Chọn khách</option>';
+ Object.entries(data).forEach(([id,c])=>{
+ const text=(c.name||'')+' '+id+' '+(c.mail||c.email||'');
+ if(key&&!text.toLowerCase().includes(key))return;
+ const o=document.createElement('option');o.value=id;o.textContent=(c.name||id)+' ('+id+')';select.appendChild(o);
+ });
+ if([...select.options].some(o=>o.value===old))select.value=old;
+}
+function paintData(){
+ fillCustomerSelect($('vipFullCustomer'),'vipFullCustomerSearch');fillCustomerSelect($('vipChapterCustomer'),'vipChapterCustomerSearch');
+ const sel=$('vipChapterStory'),old=sel.value;sel.innerHTML='<option value="">📚 Chọn truyện</option>';
+ Object.entries(storyCache||{}).forEach(([id,s])=>{const o=document.createElement('option');o.value=id;o.textContent=(s.info?.name||id);sel.appendChild(o)});
+ if([...sel.options].some(o=>o.value===old))sel.value=old;renderFull();renderChapters();
+}
+async function refreshRemote(){
+ const [cs,ss]=await Promise.all([get(ref(db,'customers')),get(ref(db,'stories'))]);
+ customerCache=cs.exists()?cs.val():{};storyCache=ss.exists()?ss.val():{};writeLocal('customers',customerCache);writeLocal('stories',storyCache);paintData();
+ $('status').textContent=`Đã cập nhật ${Object.keys(customerCache).length} khách • ${Object.keys(storyCache).length} truyện 🌸`;
+}
+async function init(){
+ $('status').textContent='Đang mở bộ nhớ đệm...';customerCache=readLocal('customers');storyCache=readLocal('stories');
+ if(customerCache&&storyCache){paintData();$('status').textContent=`Đã tải nhanh từ bộ nhớ đệm • ${Object.keys(customerCache).length} khách • ${Object.keys(storyCache).length} truyện`;}
+ else $('status').textContent='Đang tải khách và truyện...';
+ try{await refreshRemote();}catch(e){console.error(e);if(!customerCache||!storyCache)$('status').textContent='Không tải được dữ liệu. Kiểm tra Firebase Rules / kết nối.';else $('status').textContent+=' • Offline: đang dùng dữ liệu đã lưu';}
+}
+function renderFull(){
+ const customer=$('vipFullCustomer').value,key=$('vipFullStorySearch').value.toLowerCase().trim(),box=$('vipFullStoryList');box.innerHTML='';
+ Object.entries(storyCache||{}).forEach(([id,s])=>{
+ const name=s.info?.name||id;if(key&&!(`${name} ${id}`).toLowerCase().includes(key))return;
+ const active=!!customer&&!!customerCache?.[customer]?.books?.[id]?.vip;
+ const div=document.createElement('div');div.className='vipAccessItem';
+ div.innerHTML=`<span>📚 ${esc(name)}</span><button data-id="${esc(id)}">${active?'❌ Thu hồi':'👑 Cấp full'}</button>`;
+ div.querySelector('button').onclick=async()=>{
+ if(!customer){alert('Chọn khách trước nha');return}
+ const path=`customers/${customer}/books/${id}`;
+ const now=!!customerCache?.[customer]?.books?.[id]?.vip;
+ if(now) await remove(ref(db,path)); else await set(ref(db,path),{vip:true,full:true,access:'full',purchased:true,purchasedAt:Date.now()});
+ customerCache[customer]??={};customerCache[customer].books??={};
+ if(now) delete customerCache[customer].books[id]; else customerCache[customer].books[id]={vip:true,full:true,access:'full',purchased:true,purchasedAt:Date.now()};
+ writeLocal('customers',customerCache);writeLocal('customer:'+customer,customerCache[customer]);
+ renderFull();
+ };box.appendChild(div);
+ });
+ if(!box.children.length)box.innerHTML='<small>🌸 Không tìm thấy truyện</small>';
+}
+async function renderChapters(){
+ const customer=$('vipChapterCustomer').value,story=$('vipChapterStory').value,key=$('vipChapterStorySearch').value.toLowerCase().trim(),box=$('vipChapterList');box.innerHTML='';
+ if(!story){box.innerHTML='<small>Chọn truyện để hiện chương nha 🌸</small>';return}
+ let data=chapterCache[story]||readLocal('chapters:'+story);
+ if(!data){const snap=await get(ref(db,`stories/${story}/chapters`));data=snap.exists()?snap.val():{};chapterCache[story]=data;writeLocal('chapters:'+story,data)}else chapterCache[story]=data
+ const ids=Object.keys(data).sort((a,b)=>Number(a)-Number(b));
+ for(const id of ids){const ch=data[id],title=ch.title||ch.info?.title||`Chương ${id}`;
+ // Chỉ hiện chương được đánh dấu VIP hoặc có cấu hình giá VIP.
+ const vipFlag=ch.vip===true||ch.isVip===true||ch.vipEnabled===true||ch.vip?.enabled===true;
+ const price=ch.vipPrice??ch.vip_price??ch.priceVip??ch.price_vip??(typeof ch.vip==='object'?ch.vip.price:undefined);
+ const hasPrice=price!==undefined&&price!==null&&String(price).trim()!=='';
+ if(!vipFlag&&!hasPrice)continue;
+ if(key&&!(`${id} ${title}`).toLowerCase().includes(key))continue;
+ let active=false;if(customer){let cv=chapterVipCache[customer+'|'+story];if(cv===undefined){cv=readLocal('chapterVip:'+customer+'|'+story);if(cv===null){const snap=await get(ref(db,`customers/${customer}/chapterVip/${story}`));cv=snap.exists()?snap.val():{};writeLocal('chapterVip:'+customer+'|'+story,cv)}chapterVipCache[customer+'|'+story]=cv}active=!!cv?.[id]}
+ const priceText=hasPrice?`<small class="vipChapterPrice">💰 ${esc(price)} xu</small>`:'<small class="vipChapterPrice">💰 Chưa đặt giá</small>';
+ const div=document.createElement('div');div.className='vipAccessItem';div.innerHTML=`<span>📖 ${esc(title)}<br>${priceText}</span><button>${active?'❌ Thu hồi':'👑 Cấp VIP'}</button>`;
+ div.querySelector('button').onclick=async()=>{if(!customer){alert('Chọn khách trước nha');return}const path=`customers/${customer}/chapterVip/${story}/${id}`;const now=!!chapterVipCache[customer+'|'+story]?.[id];if(now)await remove(ref(db,path));else await set(ref(db,path),true);chapterVipCache[customer+'|'+story]??={};if(now)delete chapterVipCache[customer+'|'+story][id];else chapterVipCache[customer+'|'+story][id]=true;writeLocal('chapterVip:'+customer+'|'+story,chapterVipCache[customer+'|'+story]);renderChapters()};box.appendChild(div);
+ }
+ if(!box.children.length)box.innerHTML='<small>🌸 Truyện này chưa có chương được set VIP hoặc giá VIP</small>';
+}
+
+['vipFullCustomerSearch','vipChapterCustomerSearch'].forEach(id=>$(id).addEventListener('input',()=>fillCustomerSelect($(id==='vipFullCustomerSearch'?'vipFullCustomer':'vipChapterCustomer'),id)));
+$('vipFullCustomer').addEventListener('change',renderFull);$('vipFullStorySearch').addEventListener('input',renderFull);
+$('vipChapterCustomer').addEventListener('change',renderChapters);$('vipChapterStory').addEventListener('change',renderChapters);$('vipChapterStorySearch').addEventListener('input',renderChapters);
+function showTab(which){const full=which==='full';$('panelFull').hidden=!full;$('panelChapter').hidden=full;$('tabFull').classList.toggle('active',full);$('tabChapter').classList.toggle('active',!full)}
+$('tabFull').addEventListener('click',()=>showTab('full'));$('tabChapter').addEventListener('click',()=>showTab('chapter'));
+init();
+})();
+
+</script></body></html>
