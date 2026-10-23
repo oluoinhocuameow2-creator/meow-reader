@@ -8339,6 +8339,86 @@ body.meowSiteDark .meowProfileLibraryTab.is-active{background:linear-gradient(13
 })();
 </script>
 
+
+<!-- MEOW SECURITY LAYER: best-effort browser friction; server/Firebase rules remain authoritative -->
+<meta name="robots" content="noindex, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, noarchive, nosnippet">
+<style id="meow-anti-reader-friction">
+  /* Discourage simple browser reader extraction; this is not DRM and must not replace access rules. */
+  #readerContent, #detailSummary { -webkit-user-select:none; user-select:none; }
+  #readerContent img, .meowCover img, .meowDetailCover img {
+    -webkit-user-drag:none; user-drag:none;
+  }
+  @media print {
+    #meowReaderApp, #readerPage { display:none !important; }
+    body::after { content:"Nội dung Meow không hỗ trợ in."; display:block; padding:2rem; }
+  }
+</style>
+<script id="meow-anti-abuse-layer">
+(function () {
+  "use strict";
+  if (window.__MEOW_ANTI_ABUSE_V2__) return;
+  window.__MEOW_ANTI_ABUSE_V2__ = true;
+
+  // Client-side speed bump only: limits rapid repeated UI actions without blocking normal reading.
+  const actionTimes = new Map();
+  const globalTimes = [];
+  const protectedActions = [
+    ".meowOpenStory", "[data-show-more-stories]", "[data-recent-chapter-story]",
+    "[data-continue-story]", ".meowChapterItem", "#meowBuyFullBookBtn",
+    "[data-meow-buy-chapter]", "[data-follow-story]", "[data-story-follow]"
+  ].join(",");
+
+  document.addEventListener("click", function (event) {
+    const el = event.target && event.target.closest ? event.target.closest(protectedActions) : null;
+    if (!el) return;
+
+    const now = Date.now();
+    while (globalTimes.length && now - globalTimes[0] > 5000) globalTimes.shift();
+    globalTimes.push(now);
+
+    const key = [
+      el.dataset.storyId || "",
+      el.dataset.chapterId || "",
+      el.dataset.recentChapterStory || "",
+      el.id || "",
+      String(el.className || "").slice(0, 80)
+    ].join("|");
+    const recent = (actionTimes.get(key) || []).filter(t => now - t < 1800);
+    recent.push(now);
+    actionTimes.set(key, recent);
+
+    // Stop only obvious rapid-fire repeats; never block ordinary browsing pace.
+    if (recent.length > 12 || globalTimes.length > 60) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (!window.__MEOW_RATE_NOTICE_AT__ || now - window.__MEOW_RATE_NOTICE_AT__ > 2500) {
+        window.__MEOW_RATE_NOTICE_AT__ = now;
+        const notice = document.createElement("div");
+        notice.textContent = "🐾 Bà thao tác nhanh quá, chờ một chút rồi thử lại nha.";
+        notice.setAttribute("role", "status");
+        notice.style.cssText = "position:fixed;z-index:2147483647;left:50%;bottom:22px;transform:translateX(-50%);max-width:calc(100% - 28px);padding:12px 17px;border:1px solid #ffd0e3;border-radius:16px;background:#fff5fa;color:#a74475;box-shadow:0 8px 28px #8c426633;font:600 14px/1.5 sans-serif;text-align:center";
+        document.body.appendChild(notice);
+        setTimeout(() => notice.remove(), 2200);
+      }
+    }
+  }, true);
+
+  // Discourage browser-generated reader extraction where supported. Not a guaranteed block.
+  try {
+    document.documentElement.setAttribute("data-reader-mode", "disabled");
+    document.documentElement.setAttribute("data-noreader", "true");
+  } catch (_) {}
+
+  // Avoid accidental dragging/saving of cover and chapter images; does not affect text rendering.
+  document.addEventListener("dragstart", function (event) {
+    if (event.target && event.target.matches && event.target.matches("#readerContent img, .meowCover img, .meowDetailCover img")) {
+      event.preventDefault();
+    }
+  }, true);
+})();
+</script>
+
 </body>
 
 
