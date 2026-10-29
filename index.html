@@ -2539,6 +2539,12 @@ body.meowSiteDark .meowCommentReply{background:#443149;color:#f5ddeb}
 .meowNotifyPager select{max-width:95px}
 .meowNotifyCount{text-align:center;font-size:11px;color:#9c8197;margin-bottom:10px}
 @media(max-width:480px){.meowNotifyTab{font-size:10px;padding:9px 1px}.meowNotifyTabs{gap:4px}}
+/* Reader: hide chapter content from ordinary browser print output.
+   This is a deterrent only; Firebase rules must enforce VIP authorization. */
+@media print {
+  #readerPage #readerContent, #readerPage .meowReaderBody,
+  #readerPage .meowReaderChapterTitle {visibility:hidden!important;display:none!important}
+}
 </style>
 
 
@@ -2938,6 +2944,133 @@ body.meowDark .meowSideMenu,body.dark .meowSideMenu,.dark-mode .meowSideMenu{bac
 /* Chống chọn văn bản chỉ trong nội dung chương; không ảnh hưởng thao tác UI */
 #readerContent{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 </style>
+
+<style id="meowRestoreNewBadgeStandalone">
+/* Restore 48-hour NEW badge without changing original status badge. */
+.meowCover{position:relative!important}
+.meowCover > .meowNewStoryBadge{position:absolute!important;z-index:5!important;top:6px!important;right:6px!important;left:auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;max-width:48%!important;padding:4px 7px!important;border-radius:999px!important;border:1px solid #f3b8d6!important;background:linear-gradient(135deg,#fff9df,#ffe2f1)!important;color:#a34a83!important;font:800 9px/1.2 'Be Vietnam Pro',sans-serif!important;white-space:nowrap!important;box-shadow:0 2px 8px #6b355b2b!important;pointer-events:none!important}
+</style>
+<style id="meow-chapter-ending-badges">
+/* Nhãn nhỏ cuối tên chương, chỉ hiện khi admin đã chọn trạng thái */
+#storyPage .meowChapterTitle .meowChapterEndBadge{
+  display:inline-flex!important;vertical-align:middle;align-items:center;justify-content:center;
+  margin-left:6px;padding:2px 7px;border-radius:999px;
+  font:700 10px/1.45 'Be Vietnam Pro',Arial,sans-serif!important;
+  white-space:nowrap;letter-spacing:0;box-shadow:none;
+}
+#storyPage .meowChapterEndBadge.is-end{background:#d9f8e2;color:#207b43;border:1px solid #a4e2b6}
+#storyPage .meowChapterEndBadge.is-raw{background:#fff0bc;color:#91620a;border:1px solid #f2d67a}
+body.meowSiteDark #storyPage .meowChapterEndBadge.is-end{background:#234d35;color:#b9f6cd;border-color:#417e57}
+body.meowSiteDark #storyPage .meowChapterEndBadge.is-raw{background:#58451e;color:#ffe6a0;border-color:#957535}
+
+/* Badge nằm sát chữ cuối của tên chương, không bị rơi riêng xuống dòng. */
+#storyPage .meowChapterTitle .meowChapterBadgeKeep{display:inline-block!important;white-space:nowrap!important;vertical-align:baseline!important}
+#storyPage .meowChapterTitle .meowChapterBadgeKeep .meowChapterEndBadge{margin-left:3px!important;padding:1px 5px!important;font-size:9px!important;line-height:1.25!important;vertical-align:baseline!important}
+</style>
+<style id="meow-auth-compact-price-catalog-v2">
+/* Login modal: compact, no opaque or blurred screen behind the card. */
+html body #loginPage.meowAuthVisible,
+html body #loginPage.meowAuthVisible:not([hidden]){
+ background:transparent!important;background-image:none!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ padding:12px!important;
+}
+html body #loginPage .meowLoginBox,
+html body.meowSiteDark #loginPage .meowLoginBox{
+ width:min(365px,calc(100vw - 26px))!important;
+ max-width:365px!important;
+ padding:35px 16px 18px!important;
+ border-radius:25px!important;
+ box-shadow:0 10px 32px #6b386036!important;
+ outline:0!important;
+}
+html body #loginPage .meowLoginBox:before{top:7px!important;font-size:12px!important;letter-spacing:2px!important}
+html body #loginPage .meowLoginBox:after{top:34px!important;right:12px!important;font-size:16px!important}
+html body #loginPage .meowLoginCat{width:61px!important;height:61px!important;margin-bottom:4px!important}
+html body #loginPage .meowLoginTitle{font-size:23px!important;margin:3px 0!important}
+html body #loginPage .meowPrincessWelcome{font-size:10px!important;margin:4px auto!important}
+html body #loginPage .meowAuthTabs{margin:9px 0!important}
+#miwPrices .meow-price-view-only{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+#miwPrices .meow-price-view-only>span{flex:1 1 125px;min-width:0}
+#miwPrices .meow-price-view-only>strong{white-space:nowrap}
+#miwPrices .meow-price-open-story{border:1px solid #eeb5d9;border-radius:999px;padding:7px 10px;background:linear-gradient(120deg,#ffe3f0,#eee1ff);color:#9b508b;font:700 11px 'Be Vietnam Pro',sans-serif;cursor:pointer}
+body.meowSiteDark #miwPrices .meow-price-open-story{background:linear-gradient(120deg,#563b59,#483956);color:#ffe4f4;border-color:#86618d}
+/* Khôi phục tổng kết giỏ hàng và nút thanh toán mua nhiều truyện. */
+</style>
+<style id="meow-auth-actually-compact-2026">
+/* Compact login card, no full-page decorative panel; register remains scrollable. */
+html body #loginPage.meowAuthVisible:not([hidden]){
+ position:fixed!important;inset:0!important;z-index:999999!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ background:transparent!important;background-image:none!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ padding:8px!important;overflow-y:auto!important;
+}
+html body #loginPage.meowAuthVisible:before,
+html body #loginPage.meowAuthVisible:after{content:none!important;display:none!important}
+html body #loginPage .meowLoginBox,
+html body.meowSiteDark #loginPage .meowLoginBox{
+ box-sizing:border-box!important;width:min(320px,calc(100vw - 24px))!important;
+ max-width:320px!important;max-height:calc(100dvh - 22px)!important;
+ overflow-y:auto!important;overscroll-behavior:contain!important;
+ margin:auto!important;padding:17px 15px 15px!important;
+ border:1px solid #efbddb!important;outline:none!important;
+ border-radius:20px!important;box-shadow:0 9px 30px #6b386030!important;
+}
+html body #loginPage .meowLoginBox:before,
+html body #loginPage .meowLoginBox:after{content:none!important;display:none!important}
+html body #loginPage #meowAuthClose{top:7px!important;right:7px!important;width:29px!important;height:29px!important;font-size:18px!important}
+html body #loginPage .meowLoginCat{width:46px!important;height:46px!important;margin:0 auto 3px!important;padding:5px!important;border-radius:15px!important}
+html body #loginPage .meowLoginTitle{font-size:20px!important;line-height:1.25!important;margin:0!important}
+html body #loginPage .meowPrincessSubtitle{font-size:10px!important;margin:2px auto!important}
+html body #loginPage .meowPrincessWelcome{font-size:10px!important;margin:7px 0!important;padding:6px!important;border-radius:10px!important}
+html body #loginPage .meowAuthTabs{margin:8px 0 10px!important;padding:3px!important;border-radius:12px!important}
+html body #loginPage .meowAuthTabs button{padding:8px 4px!important;font-size:12px!important;border-radius:10px!important}
+html body #loginPage .meowPrincessFieldLabel,html body #loginPage #meowRegisterForm label{margin:7px 0 4px!important;font-size:11px!important}
+html body #loginPage .meowInput,html body.meowSiteDark #loginPage .meowInput{min-height:38px!important;margin:5px 0!important;padding:8px 10px!important;font-size:12px!important;border-radius:11px!important}
+html body #loginPage .meowLoginBtn{min-height:40px!important;margin:10px 0 7px!important;padding:8px!important;font-size:13px!important;border-radius:12px!important;box-shadow:0 3px 0 #cb6698!important}
+html body #loginPage .meowPrincessHelp,html body #loginPage #meowGuestHint{margin:8px 0 3px!important;padding:7px!important;font-size:10px!important;line-height:1.4!important;border-radius:11px!important}
+html body #loginPage #meowAvatarChoices{gap:5px!important;margin:6px 0!important}
+html body #loginPage #meowAvatarChoices button{width:36px!important;height:36px!important}
+html body #loginPage #meowRegisterAvatarFile{padding:7px!important;font-size:10px!important}
+@media(max-width:520px){html body #loginPage.meowAuthVisible:not([hidden]){padding:8px!important}html body #loginPage .meowLoginBox{padding:17px 13px 13px!important;border-radius:18px!important}}
+</style>
+
+<!-- Meow Reader: best-effort browser reading-mode deterrence (reader only) -->
+<meta name="google" content="notranslate">
+<style id="meow-reader-mode-guard">
+/* Only chapter content: preserve reading settings, scroll, chapter navigation and TTS. */
+#readerPage #readerContent { -webkit-user-select:none!important; user-select:none!important; -webkit-touch-callout:none!important; }
+#readerPage #readerContent img { -webkit-user-drag:none; user-drag:none; pointer-events:none; }
+@media print { #readerPage #readerContent { display:none!important; } }
+</style>
+<script id="meow-reader-mode-guard-script">
+(function(){
+  'use strict';
+  function mark(){
+    const reader=document.getElementById('readerPage');
+    const content=document.getElementById('readerContent');
+    if(!reader||!content)return;
+    // Hints for reader-mode extractors; browsers are free to ignore them.
+    reader.setAttribute('data-reader-mode','disabled');
+    content.setAttribute('data-no-reader','true');
+    content.setAttribute('data-readability','exclude');
+    content.classList.add('meow-protected-chapter');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});
+  else mark();
+  // React to chapter replacements without observing the whole document.
+  const start=()=>{
+    const content=document.getElementById('readerContent');
+    if(!content)return;
+    mark();
+    new MutationObserver(()=>{if(!content.hasAttribute('data-no-reader'))mark()})
+      .observe(content,{attributes:true,attributeFilter:['data-no-reader']});
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script>
 </head>
 <body>
 <div id="meowAgeGate" role="dialog" aria-modal="true" aria-labelledby="meowAgeTitle">
@@ -3027,7 +3160,7 @@ body.meowDark .meowSideMenu,body.dark .meowSideMenu,.dark-mode .meowSideMenu{bac
         </div>
       </div>
 
-      <div class="meowHeaderSearch" id="meowHeaderSearch"><span>⌕</span><input id="meowHeaderSearchInput" placeholder="Tìm truyện, tác giả, thể loại..." autocomplete="off"></div><button id="meowHeaderSearchBtn" class="meowSideHamb" type="button" aria-label="Tìm kiếm">⌕</button><div class="meowTopActions">
+      <div class="meowHeaderSearch" id="meowHeaderSearch"><span>⌕</span><input id="meowHeaderSearchInput" placeholder="Tìm truyện, tác giả, thể loại..." autocomplete="off"></div><button id="meowChatOpen" class="meowChatIcon" type="button" title="Khung chat" aria-label="Mở khung chat">♧</button><button id="meowHeaderSearchBtn" class="meowSideHamb" type="button" aria-label="Tìm kiếm">⌕</button><div class="meowTopActions">
         <button class="meowTopBtn meowThemeToggle" id="meowThemeToggle" type="button" aria-label="Đổi chế độ sáng tối" title="Sáng / tối">🌙</button>
 
         <div class="meowProfileMenuWrap" style="position:relative;display:inline-flex;align-items:center;justify-content:center">
@@ -3051,6 +3184,7 @@ body.meowDark .meowSideMenu,body.dark .meowSideMenu,.dark-mode .meowSideMenu{bac
  <div class="meowSideTop"><strong><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5SGlYMwFw3PhFEAxcIszgXukRv1lOBsVNJSEAQ0MeM2dOhOzeN1cqpK3hZXGSFlYddpm6wlQLUf9pfZUDF_662KyhXMe7rHbt8BZlucheK1fl7g2TvKzK6bjsCfzWfmcMq_2eyayzTPwLWFt-T9EC-UlCHjIfz9EQajD7Awq3KZTpUilD7Kh3DU-EKOpZ/s381/t%E1%BA%A3i%20xu%E1%BB%91ng%20%286%29.png" alt="Mini Meow" class="meowSideBrandImage" loading="eager" decoding="async" fetchpriority="low"></strong><button id="meowSideClose" aria-label="Đóng menu">×</button></div>
  <div class="meowSideScroll">
   <div id="meowSideWalletHost"></div>
+  <button id="meowMenuHome" type="button">⌂ Trang chủ</button>
   <div class="meowSideHeading">✦ TIỆN ÍCH ✦</div>
   <button data-ms-toggle="genres">▦ Thể loại <span>⌄</span></button><div id="meowSideGenres" class="meowSideSub" hidden></div>
   <button data-ms-toggle="authors">✎ Tác giả <span>⌄</span></button><div id="meowSideAuthors" class="meowSideSub" hidden></div>
@@ -3282,37 +3416,7 @@ body.meowDark .meowSideMenu,body.dark .meowSideMenu,.dark-mode .meowSideMenu{bac
 @media(max-width:420px){#meow-quick-nav{padding:18px 12px 15px;border-radius:23px}#meow-quick-nav .mqn-links{gap:9px}#meow-quick-nav .mqn-link{padding:11px 9px;gap:8px;border-radius:16px}#meow-quick-nav .mqn-icon{width:36px;height:36px;flex-basis:36px;border-radius:12px;font-size:19px}#meow-quick-nav .mqn-copy strong{font-size:12px}#meow-quick-nav .mqn-copy small{font-size:9px}}
 @media(prefers-reduced-motion:reduce){#meow-quick-nav .mqn-link{transition:none}}
 </style>
-<div id="meow-quick-nav" aria-label="Điều hướng nhanh Meow Reader">
-  
-  <h3 class="mqn-title">Góc nhỏ tiện ích của Meow</h3>
-  <p class="mqn-desc">Chọn lối đi của nàng nè — nhanh gọn, xinh xắn, dễ tìm ♡</p>
-  <div class="mqn-links">
-    <!-- BÀ THAY href="#" BẰNG LINK WEB CŨ CỦA BÀ -->
-    <a class="mqn-link" href="https://oluoinhocuameow-com.github.io/-L-i-Nh-C-a-Meow-/?fbclid=IwY2xjawU8aIhleHRuA2FlbQIxMABwZG9mA2JyaWQRMUJkZzd0dzFJdEhTWFZHU1FzcnRjBmFwcF9pZA81MTQ3NzE1NjkyMjgwNjEAAR7uMSGF4dHeNCquXRuY2f7FTX7ITSuwvi82VMjU-iS1Ls7Nqi3gf7cBL-qmrQ_aem_-oPA5SDS7s6Vl7sT9tlH5Q" data-meow-placeholder="Web cũ">
-      
-      <span class="mqn-copy"><strong>Web cũ</strong><small>Ghé lại nhà cũ của Meow</small></span>
-    </a>
-    <!-- DÁN LINK THEO DÕI BILL / NGHE NHẠC VÀO href -->
-  </div>
-  <p class="mqn-foot">✧ Một chút xinh xắn dành riêng cho các nàng ✧</p>
-</div>
-<script>
-(function(){
-  var root=document.getElementById('meow-quick-nav');
-  if(!root)return;
-  root.querySelectorAll('a[data-meow-placeholder]').forEach(function(link){
-    link.addEventListener('click',function(event){
-      if(link.getAttribute('href')==='#'){
-        event.preventDefault();
-        var name=link.getAttribute('data-meow-placeholder')||'mục này';
-        var note=document.getElementById('meowQuickNavHint');
-        if(!note){note=document.createElement('div');note.id='meowQuickNavHint';note.setAttribute('role','status');note.style.cssText='margin:10px auto 0;padding:9px 12px;max-width:520px;border-radius:13px;background:#fff;color:#a64c7b;font:600 12px/1.5 Arial,sans-serif;border:1px dashed #f0b7d4';root.querySelector('.mqn-links').after(note)}
-        note.textContent='💗 Bà dán link '+name+' vào thuộc tính href của nút này là dùng được nha!';
-      }
-    });
-  });
-})();
-</script>
+
 
 <div id="meow-contact">
 
@@ -3340,7 +3444,7 @@ body.meowDark .meowSideMenu,body.dark .meowSideMenu,.dark-mode .meowSideMenu{bac
 
     <!-- EMAIL: THAY EMAIL NẾU CẦN -->
     <a class="mc-social"
-       href="oluoinhocuameow@gmail.com">
+       href="mailto:oluoinhocuameow@gmail.com">
       <span class="mc-circle">@</span>
       <span>Mail</span>
     </a>
@@ -3603,11 +3707,12 @@ body.meowDark .meowSideMenu,body.dark .meowSideMenu,.dark-mode .meowSideMenu{bac
 
       <div
         id="readerContent"
+        role="presentation"
+        data-reader-surface="meow-dynamic"
+        translate="no"
       ></div>
 
     </div>
-
-
     <div id="meowTTSPanel" class="meowTTSPanel" aria-label="AI đọc truyện">
       <div class="meowTTSHead">
         <span class="meowTTSIcon">🐱</span>
@@ -4702,7 +4807,7 @@ function meowStartCustomerLiveSync(customerId){
       clearTimeout(window.__meowVipRedrawTimer);
       window.__meowVipRedrawTimer=setTimeout(()=>{if(currentStoryId)renderStoryInfo();},80);
     }
-    if(typeof meowNotifyScheduleRefresh==="function")meowNotifyScheduleRefresh();
+    if(grantsChanged && typeof meowNotifyScheduleRefresh==="function")meowNotifyScheduleRefresh();
     const bal=document.getElementById("meowPrepaidBalance");
     if(bal){const amount=Number(fresh.balance??fresh.walletBalance??fresh._meowWallet?.balance??0);bal.textContent=amount.toLocaleString("vi-VN")+"đ";}
   },err=>console.warn("Meow: chưa đồng bộ quyền khách trực tiếp",err));
@@ -4826,6 +4931,9 @@ setupMeowPurchaseButtons();
 ========================================================= */
 
 function logout(){
+  // Đăng xuất ở bất kỳ trang riêng tư nào cũng trở về Home ngay.
+  try{document.getElementById('meowProfileOverlay')?.classList.remove('show','meow-notify-view');document.getElementById('meowProfileOverlay')?.setAttribute('aria-hidden','true');document.body.classList.remove('meowProfilePageOpen','meowGenrePageActive');document.body.style.overflow='';document.getElementById('meowGenrePage')?.style.setProperty('display','none','important');document.getElementById('meowNotifyPage')?.style.setProperty('display','none','important');window.meowSetExclusiveRoute?.('home');}catch(e){console.warn('Logout route cleanup',e)}
+
 
   if(typeof meowCustomerLiveUnsubscribe==="function"){try{meowCustomerLiveUnsubscribe()}catch(e){}meowCustomerLiveUnsubscribe=null;}
   localStorage.removeItem(
@@ -5092,9 +5200,15 @@ function meowStoryCardHTML(storyId, story, options = {}) {
   const tags = getStoryTags(info);
   const chapterCount = meowGetStoryChapterCount(story);
   const isPersonal = options.personal === true;
+  const rawNew = info.createdAt ?? info.created_at ?? info.publishedAt ?? info.publishDate;
+  const numNew = Number(rawNew);
+  const tsNew = Number.isFinite(numNew) && numNew > 0 ? (numNew < 1e11 ? numNew*1000 : numNew) : Date.parse(String(rawNew||""));
+  const isNewStory = Number.isFinite(tsNew) && tsNew <= Date.now() && Date.now()-tsNew < 2*86400000;
   return `<div class="meowStoryCard">
     <div class="meowCover">
+      
       ${cover ? `<img src="${escapeHTML(cover)}" alt="${escapeHTML(name)}" loading="lazy" decoding="async" fetchpriority="low">` : `<div class="meowCoverPlaceholder">🐱🎀</div>`}
+      ${isNewStory ? `<span class="meowNewStoryBadge">✨ MỚI</span>` : ""}
       <span class="meowStatusBadge ${meowStatusType(info)==="full"?"is-full":meowStatusType(info)==="upcoming"?"is-upcoming":"is-ongoing"}">${meowStatusType(info)==="full"?"FULL":meowStatusType(info)==="upcoming"?"SẮP RA":"ĐANG RA"}</span>
       <button type="button" class="meowFollowBtn ${meowFollowedStories[String(storyId)] ? "is-following" : ""}" data-follow-story="${escapeHTML(storyId)}" aria-pressed="${!!meowFollowedStories[String(storyId)]}">${meowFollowedStories[String(storyId)] ? "♥ Đang theo dõi" : "♡ Theo dõi"}</button>
     </div>
@@ -5437,7 +5551,7 @@ function meowStartRecentChapterRefresh() {
     if (document.visibilityState !== "visible") return;
     if (document.getElementById("meowRecentChaptersList")) meowRenderRecentChapters(true);
     if (typeof meowNotifyScheduleRefresh === "function") meowNotifyScheduleRefresh();
-  }, 20000);
+  }, 90000);
 }
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
@@ -5699,6 +5813,16 @@ let meowLiveChapterUnsubscribe = null;
 let meowLiveStoryId = "";
 let meowLiveChapterRenderTimer = null;
 let meowLiveChapterCacheTimer = null;
+let meowLiveChapterSnapshotSignature = "";
+function meowChapterSyncSignature(chapters) {
+  // Cheap metadata fingerprint; no JSON serialization of chapter HTML.
+  return Object.keys(chapters || {}).sort().map(id => {
+    const c = chapters[id] || {};
+    const body = c.content ?? c.text ?? c.body ?? "";
+    return [id, c.updatedAt || 0, c.title || "", c.vip === true ? 1 : 0,
+      c.price ?? "", String(body).length, c.views ?? 0].join(":");
+  }).join("|");
+}
 
 function meowWatchLiveChapters(storyId) {
   storyId = String(storyId || "");
@@ -5707,10 +5831,14 @@ function meowWatchLiveChapters(storyId) {
     try { meowLiveChapterUnsubscribe(); } catch (_) {}
   }
   meowLiveStoryId = storyId;
+  meowLiveChapterSnapshotSignature = "";
   meowWatchLiveStoryInfo(storyId);
   meowLiveChapterUnsubscribe = onValue(ref(db, "stories/" + storyId + "/chapters"), snap => {
     if (String(currentStoryId) !== storyId) return;
     const latestChapters = snap.exists() ? (snap.val() || {}) : {};
+    const signature = meowChapterSyncSignature(latestChapters);
+    if (signature === meowLiveChapterSnapshotSignature) return;
+    meowLiveChapterSnapshotSignature = signature;
     meowRecentChapterCache = {at:0,entries:[]};
     currentChapters = latestChapters;
     currentStory = currentStory || allStories[storyId] || {};
@@ -6546,6 +6674,31 @@ function sortChapterIds(ids){
 }
 
 
+// Nhãn kết thúc chương do trang đăng truyện lưu vào Firebase.
+// Hỗ trợ chapter.endBadge = "het" / "ngang_raw" hoặc chapter.chapterEnding.
+function meowChapterEndingBadge(chapter){
+  if(!chapter || typeof chapter !== 'object') return '';
+  const value = chapter.endBadge ?? chapter.chapterEnding ?? chapter.endingBadge ?? chapter.endType ?? chapter.chapterEndStatus ?? '';
+  const key = String(value).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\s_-]+/g,'');
+  if(['het','end','ended','complete','completed'].includes(key)) return '<span class="meowChapterEndBadge is-end">Hết</span>';
+  if(['ngangraw','raw','pauseatraw'].includes(key)) return '<span class="meowChapterEndBadge is-raw">Ngang raw</span>';
+  return '';
+}
+
+// Gộp từ cuối tên chương và badge thành một cụm không tách dòng.
+// Phần đầu tên chương vẫn được xuống dòng bình thường trên điện thoại.
+function meowChapterTitleWithInlineBadge(id, chapter){
+  const badge = meowChapterEndingBadge(chapter);
+  const prefix = 'Chương ' + escapeHTML(id);
+  const title = String(chapter?.title || '').trim();
+  if(!title) return badge ? prefix + ' <span class="meowChapterBadgeKeep">' + badge + '</span>' : prefix;
+  if(!badge) return prefix + ' - ' + escapeHTML(title);
+  const match = title.match(/^(.*?)(\S+)$/s);
+  const before = match ? match[1] : '';
+  const lastWord = match ? match[2] : title;
+  return prefix + ' - ' + escapeHTML(before) + '<span class="meowChapterBadgeKeep">' + escapeHTML(lastWord) + ' ' + badge + '</span>';
+}
+
 function renderChapterList(){
 
   const box =
@@ -6611,19 +6764,7 @@ function renderChapterList(){
             <span
               class="meowChapterTitle"
             >
-              Chương
-              ${escapeHTML(id)}
-
-              ${
-                chapter.title
-                ?
-                " - " +
-                escapeHTML(
-                  chapter.title
-                )
-                :
-                ""
-              }
+              ${meowChapterTitleWithInlineBadge(id, chapter)}
             </span>
             <span class="meowChapterMiniStats">
               <span>📝 ${formatMeowNumber(countMeowWords((() => { const raw = chapter.content ?? chapter.contentHtml ?? chapter.contentHTML ?? chapter.html ?? chapter.text ?? chapter.body ?? chapter.chapterContent ?? chapter.chapter_content ?? chapter.contentText ?? chapter.bodyHtml ?? chapter.bodyHTML ?? chapter.content_body ?? chapter.paragraphs ?? ""; return Array.isArray(raw) ? raw.map(x => typeof x === "string" ? x : (x?.html || x?.content || x?.text || "")).join(" ") : (typeof raw === "object" && raw ? (raw.html || raw.content || raw.text || "") : raw); })()))} chữ</span>
@@ -6967,6 +7108,11 @@ function renderReader(){
   }
 
   if (typeof meowTTSStopInternal === "function") { meowTTSStopInternal(true); meowTTSSetStatus("Sẵn sàng đọc chương này"); meowTTSFullText = ""; }
+  // Nội dung chương chỉ được tạo sau khi tải dữ liệu Firebase.
+  // Tránh thẻ article/main và cấu trúc semantic thường được Reader Mode nhận diện.
+  contentEl.setAttribute('role', 'presentation');
+  contentEl.setAttribute('data-reader-surface', 'meow-dynamic');
+  contentEl.setAttribute('translate', 'no');
   contentEl.replaceChildren();
   const text = String(body ?? "");
   if (text.trim()) {
@@ -8574,24 +8720,32 @@ window.meowMenuBridge={
  notify:()=>{meowOpenProfile();setTimeout(()=>{if(typeof meowNotifyOpen==='function')meowNotifyOpen()},80)}
 };
 
-// Meow footer: chỉ đọc thống kê khi Home xuất hiện, không tải toàn bộ chương/khách.
+// Tổng lượt đọc = tổng views từng chương; tổng chữ = tổng wordCount từng chương.
+// Không coi lượt xem trang truyện hay số chữ văn án là lượt đọc/số chữ chương.
+// Chỉ dùng tổng ở info khi dữ liệu chương chưa tải và đó là tổng chương đã lưu.
 window.meowFooterGetStoryStats = () => {
  const entries=Object.values(allStories||{}).filter(v=>v&&!v._hidden);
  let reads=0,words=0,readsComplete=true,wordsComplete=true;
- const number=v=>{if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)&&n>=0?n:null};
+ const numeric=v=>{if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)&&n>=0?n:null};
+ const first=(obj,keys)=>{for(const k of keys){const v=numeric(obj?.[k]);if(v!==null)return v}return null};
  for(const story of entries){
   const info=story.info||{};
-  const chapters=story.chapters&&typeof story.chapters==='object'&&!story._catalogOnly?Object.values(story.chapters):null;
-  const readValue=[info.totalViews,info.views,info.viewCount,info.totalReads,info.readCount,info.reads].map(number).find(v=>v!==null);
-  const wordValue=[info.totalWords,info.wordCount,info.words,info.totalWordCount].map(number).find(v=>v!==null);
-  if(readValue!==undefined)reads+=readValue;
-  else if(chapters&&chapters.length&&chapters.every(ch=>[ch?.views,ch?.viewCount,ch?.readCount].some(v=>number(v)!==null))){
-   reads+=chapters.reduce((sum,ch)=>sum+([ch.views,ch.viewCount,ch.readCount].map(number).find(v=>v!==null)||0),0);
-  }else readsComplete=false;
-  if(wordValue!==undefined)words+=wordValue;
-  else if(chapters&&chapters.length&&chapters.every(ch=>[ch?.wordCount,ch?.words,ch?.totalWords].some(v=>number(v)!==null))){
-   words+=chapters.reduce((sum,ch)=>sum+([ch.wordCount,ch.words,ch.totalWords].map(number).find(v=>v!==null)||0),0);
-  }else wordsComplete=false;
+  const chapters=story.chapters && typeof story.chapters==='object' && !story._catalogOnly?Object.values(story.chapters).filter(Boolean):null;
+  if(chapters){
+   for(const ch of chapters){
+    const views=first(ch,['views','viewCount','readCount','reads']);
+    if(views===null)readsComplete=false;else reads+=views;
+    let wc=first(ch,['wordCount','words','totalWords']);
+    // Không lấy nội dung chương từ mạng chỉ để tính thống kê: tránh lag khi mở web.
+    if(wc===null && typeof ch.content==='string')wc=ch.content.replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length;
+    if(wc===null)wordsComplete=false;else words+=wc;
+   }
+  }else{
+   const v=first(info,['totalChapterViews','totalReads','totalViews']);
+   const w=first(info,['totalChapterWords','totalWords','totalWordCount']);
+   if(v===null)readsComplete=false;else reads+=v;
+   if(w===null)wordsComplete=false;else words+=w;
+  }
  }
  return {stories:entries.length,reads:readsComplete?reads:null,words:wordsComplete?words:null};
 };
@@ -9597,6 +9751,9 @@ body.meowSiteDark .meowCalendarReading{background:#302539;border-color:#775574}b
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',place,{once:true});else place();
 })();
 </script>
+<!-- Nội dung Reader không có sẵn trong View Source; nó được tải động từ Firebase.
+     Reader Mode: chỉ hạn chế nhận diện tự động, không thể chặn tuyệt đối trích xuất DOM. -->
+<meta name="google" content="notranslate">
 <!-- Reader deterrence only: actual access control must be enforced by Firebase rules. -->
 <style id="meow-reader-copy-deterrence">
 #readerContent{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -9725,7 +9882,7 @@ body.meowSiteDark #miwRealHeader,body.meowDark #miwRealHeader{background:#292232
  <div class="miw-card" id="miwVoucher" hidden><h3>🎟️ Nạp bằng mã voucher</h3><p class="miw-hint">Mỗi ID được đổi mỗi mã một lần.</p><label>Mã voucher</label><input id="miwCode" placeholder="MEOW-XXXX-XXXX"><button type="button" class="miw-primary" id="miwRedeem">💗 Xác nhận đổi mã</button><div class="miw-status" id="miwVoucherMsg" aria-live="polite"></div></div>
  <div class="miw-card" id="miwPoints" hidden><h3>🌸 Điểm tích của bạn</h3><div class="miw-stats"><div class="miw-stat">🌷 Điểm hiện có<strong id="miwPointsHave">0</strong></div><div class="miw-stat">🎁 Quy đổi<strong id="miwPointsExchangeValue">0đ</strong></div></div><p class="miw-hint" id="miwPointProgress"></p><label for="miwPointQuantity">Số điểm muốn đổi</label><input id="miwPointQuantity" type="number" min="1" step="1" value="1" inputmode="numeric" style="max-width:180px"><button type="button" class="miw-primary" id="miwConvert">🎀 Đổi điểm thành tiền</button><div class="miw-status" id="miwPointMsg" aria-live="polite"></div><p class="miw-hint">Cộng điểm từ chuyển khoản đã duyệt, Admin nạp hộ và VIP được cấp. Các khoản nạp lẻ được cộng dồn, không làm tròn bỏ tiền lẻ.</p></div>
  <div class="miw-card" id="miwLedger" hidden><h3>📊 Sao kê giao dịch & điểm tích</h3><p class="miw-hint">Tổng hợp chuyển khoản, voucher, cấp VIP, đổi điểm và giao dịch ví. Số dư từng dòng được tính từ số dư ví hiện tại và giao dịch đã lưu.</p><div class="miw-ledger-filters"><label>Từ ngày<input type="date" id="miwLedgerFrom"></label><label>Đến ngày<input type="date" id="miwLedgerTo"></label><button type="button" id="miwLedgerClear">Tất cả</button></div><div class="miw-stats" id="miwLedgerStats"></div><div id="miwLedgerRows" aria-live="polite"></div><div id="miwLedgerPager" class="miw-ledger-pager"></div><p id="miwLedgerCount" class="miw-ledger-count"></p></div>
- <div class="miw-card" id="miwPrices" hidden><h3>Bảng giá truyện Full</h3><p class="miw-hint">Chỉ hiển thị truyện đã có giá mua trọn bộ.</p><div id="miwPriceList" class="miw-price-list">Đang cập nhật danh sách...</div><div class="miw-cart-summary" id="miwCartSummary"></div><button type="button" class="miw-primary" id="miwCheckout" disabled>Chọn truyện để mua</button><p id="miwCheckoutMsg" aria-live="polite"></p></div>
+ <div class="miw-card" id="miwPrices" hidden><h3>♡ Bảng giá truyện</h3><p class="miw-hint">Bảng giá FULL BỘ: chọn một hoặc nhiều truyện để mua cùng lúc. Đã mua chương lẻ vẫn có thể mua full bộ; chỉ truyện đã sở hữu full bộ mới bị khóa chọn.</p><div id="miwPriceList" class="miw-price-list">Đang cập nhật danh sách...</div><div class="miw-cart-summary" id="miwCartSummary"></div><button type="button" class="miw-primary" id="miwCheckout" disabled>Chọn truyện để mua</button><p id="miwCheckoutMsg" aria-live="polite"></p></div>
  <div id="miwPhotoOverlay" hidden role="dialog" aria-modal="true"><div class="miw-photo-panel"><button type="button" id="miwPhotoClose">✕ Đóng ảnh</button><img id="miwPhoto" alt="Ảnh chuyển khoản đã gửi Admin"></div></div></div>
 </section>
 
@@ -9762,7 +9919,7 @@ $('miwLedgerFrom').addEventListener('change',drawLedger);$('miwLedgerTo').addEve
 $('miwPhotoClose').onclick=()=>{$('miwPhotoOverlay').hidden=true;$('miwPhoto').removeAttribute('src')};$('miwPhotoOverlay').onclick=e=>{if(e.target===$('miwPhotoOverlay'))$('miwPhotoClose').click()};
 function listen(id){clearSubs();cid=id;wallet={};tx={};requests={};vipGrants={};unsubs.push(onValue(ref(db,'meowVipPointGrants/'+cid),s=>{vipGrants=s.val()||{};draw()}));unsubs.push(onValue(ref(db,'meowWallet/'+cid),s=>{wallet=s.val()||{};draw()}));unsubs.push(onValue(ref(db,'meowWalletTransactions'),s=>{tx=s.val()||{};draw()}));unsubs.push(onValue(ref(db,'meowTopupRequests'),s=>{requests=s.val()||{};draw()}));unsubs.push(onValue(ref(db,'meowVoucherHistory'),s=>{voucherHistory=s.val()||{};draw()}));draw()}
 function openWallet(fromHistory=false){syncWalletHeader();const c=customer();if(!c?.id){window.meowShowAuth?.();if(typeof meowShowAuth==='function')meowShowAuth();else document.getElementById('meowProfileTrigger')?.click();return}const id=String(c.id);if(cid!==id)listen(id);if($('meowIntegratedWallet').hidden&&!fromHistory){history.pushState({...history.state,meowIntegratedWallet:true},'',location.href)}previousTitle=document.title;$('meowIntegratedWallet').hidden=false;document.body.style.overflow='hidden';document.title='Ví của '+String(c.name||c.displayName||id)+' | Mini Meow';draw()}
-function closeWallet(){ $('meowIntegratedWallet').hidden=true;document.body.style.overflow='';document.title=previousTitle||'Mini Meow';}
+function closeWallet(){ $('meowIntegratedWallet').hidden=true;document.body.style.overflow='';document.title=previousTitle||'Mini Meow';if(document.body.classList.contains('meow-route-wallet')){const route=window.meowWalletReturnRoute?.()||'home';window.meowNavigateExclusive?.(route==='wallet'?'home':route);if(route==='profile')window.meowMenuBridge?.profile?.();}}
 window.meowOpenIntegratedWallet=openWallet;window.meowCloseIntegratedWallet=closeWallet;
 
 window.addEventListener('popstate',e=>{if(e.state?.meowIntegratedWallet){if($('meowIntegratedWallet').hidden)openWallet(true)}else if(!$('meowIntegratedWallet').hidden)closeWallet()});
@@ -9790,8 +9947,8 @@ async function loadOwnedFullBooks(){
   const [a,b]=await Promise.all([get(ref(db,'customers/'+id+'/books')),get(ref(db,'meowPurchases/'+id))]);
   if(meowOwnedId!==id)return;
   const books=a.val()||{},purchases=b.val()||{},owned=new Set();
-  Object.entries(books).forEach(([key,v])=>{if(v&&(v===true||v.full||v.vip||v.purchased||v.access==='full'))owned.add(String(key))});
-  Object.values(purchases).forEach(v=>{if(v&&v.storyId&&(v.type==='full'||v.full||v.purchaseType==='full'))owned.add(String(v.storyId))});
+  Object.entries(books).forEach(([key,v])=>{if(v&&(v===true||v.full===true||v.access==='full'))owned.add(String(key))});
+  Object.values(purchases).forEach(v=>{if(v&&v.storyId&&(v.type==='full'||v.full===true||v.purchaseType==='full'))owned.add(String(v.storyId))});
   meowOwned=owned;meowOwnedLoaded=true;
   owned.forEach(key=>meowCart.delete(key));
  }catch(e){console.warn('Không thể kiểm tra quyền mua:',e);meowOwnedLoaded=false}
@@ -9828,7 +9985,7 @@ function renderFullPriceList(){
  const frag=document.createDocumentFragment();
  entries.forEach(item=>{
   const row=document.createElement('label');row.className='miw-price-item miw-select-price';
-  const check=document.createElement('input');check.type='checkbox';const owned=meowOwned.has(String(item.id))||window.meowHasPurchasedStory?.(item.id)===true;check.checked=!owned&&meowCart.has(item.id);check.disabled=owned||!meowOwnedLoaded;if(owned){row.classList.add('miw-already-owned');row.title='Truyện đã mua — không thể chọn lại';}
+  const check=document.createElement('input');check.type='checkbox';const owned=meowOwned.has(String(item.id));check.checked=!owned&&meowCart.has(item.id);check.disabled=owned||!meowOwnedLoaded;if(owned){row.classList.add('miw-already-owned');row.title='Truyện đã mua — không thể chọn lại';}
   check.addEventListener('change',()=>{if(check.checked)meowCart.add(item.id);else meowCart.delete(item.id);renderCartSummary()});
   const title=document.createElement('span');title.textContent=item.name;
   const price=document.createElement('strong');price.textContent=money(item.price);
@@ -9849,8 +10006,8 @@ $('miwCheckout').addEventListener('click',async()=>{
  ]).catch(()=>null);
  if(!purchasedSnap){tell('miwCheckoutMsg','Không kiểm tra được quyền mua hiện tại. Vui lòng thử lại.');return}
  const books=purchasedSnap[0].val()||{}, purchases=purchasedSnap[1].val()||{};
- const owned=new Set(Object.entries(books).filter(([k,v])=>v&&(v.full||v.vip||v.purchased||v.access==='full')).map(([k])=>k));
- Object.values(purchases).forEach(v=>{if(v&&(v.type==='full'||v.full||v.purchaseType==='full')&&v.storyId)owned.add(String(v.storyId))});
+ const owned=new Set(Object.entries(books).filter(([k,v])=>v&&(v===true||v.full===true||v.access==='full')).map(([k])=>k));
+ Object.values(purchases).forEach(v=>{if(v&&(v.type==='full'||v.full===true||v.purchaseType==='full')&&v.storyId)owned.add(String(v.storyId))});
  const toBuy=selected.filter(x=>!owned.has(x.id));
  if(toBuy.length!==selected.length){
   for(const item of selected)if(owned.has(item.id))meowCart.delete(item.id);
@@ -10175,7 +10332,9 @@ body.meow-route-reader #meowProfileOverlay,body.meow-route-genre #meowProfileOve
 const pageIds=['homePage','storyPage','readerPage','meowGenrePage'];
 const $=id=>document.getElementById(id);
 let current='';
+let walletReturnRoute='home';
 function setRoute(next){
+ if(next==='wallet' && current && current!=='wallet') walletReturnRoute=current;
  if(!next)return;
  current=next;
  document.body.classList.remove('meow-route-wallet','meow-route-profile','meow-route-home','meow-route-story','meow-route-reader','meow-route-genre');
@@ -10200,6 +10359,7 @@ function setRoute(next){
  }
 }
 window.meowSetExclusiveRoute=setRoute;
+window.meowWalletReturnRoute=()=>walletReturnRoute;
 // Đồng bộ trạng thái lớp phủ: không để hồ sơ cá nhân nằm trên trang khác.
 function syncProfileLayer(){
  const p=$('meowProfileOverlay');if(!p)return;
@@ -10576,7 +10736,8 @@ function makeFooter(){
  <div class="meowFooterStats" aria-label="Thống kê website">
   <span><strong data-meow-stat="users">—</strong> tài khoản</span>
   <span><strong data-meow-stat="reads">—</strong> lượt đọc toàn web</span>
-  <span><strong data-meow-stat="stories">—</strong> truyện</span>\n  <span><strong data-meow-stat="words">—</strong> chữ toàn web</span>
+  <span><strong data-meow-stat="stories">—</strong> truyện</span>
+  <span><strong data-meow-stat="words">—</strong> chữ toàn web</span>
  </div>
  <div class="meowFooterBottom">@2026- Ổ Lười Nhỏ Của Meow - Khu Vườn Sắc Nữ</div>`;
  home.appendChild(footer);
@@ -10773,7 +10934,8 @@ body.meowSiteDark #meowSiteFooter .mqn-copy strong,body.meowSiteDark #meowSiteFo
 .meowReaderBottom button{width:38px!important;height:39px!important;min-width:38px!important;min-height:39px!important;border-radius:12px!important;font-size:17px!important;padding:4px!important;background:#fff1fa!important;color:#a55e98!important;border:1px solid #f7cce9!important;box-shadow:inset 0 1px #fff,0 2px 6px #241a2926!important}
 #readerListBtn{font-size:22px!important;background:#f3e6ff!important;color:#ad70bf!important}
 @media(max-width:420px){.meowReaderBottom button{width:34px!important;min-width:34px!important;height:36px!important;min-height:36px!important}}
-</style>\n<style id="meow-bulk-price-style">
+</style>
+<style id="meow-bulk-price-style">
 #miwPrices .miw-select-price{display:flex!important;align-items:center!important;gap:10px!important;cursor:pointer}
 #miwPrices .miw-select-price input{width:19px!important;height:19px!important;flex:0 0 19px;accent-color:#c576bd}
 #miwPrices .miw-select-price span{flex:1;min-width:0}
@@ -10932,6 +11094,432 @@ syncAccount();
   },true);
 })();
 </script>
+
+<style id="meow-reader-scroll-auto-hide">
+/* Animate only compositor-friendly properties; no layout changes during scroll. */
+#readerPage .meowReaderTop,#readerPage .meowReaderBottom{transition:transform .22s ease,opacity .22s ease!important;will-change:auto;}
+#readerPage.meow-bars-hidden .meowReaderTop{transform:translate3d(0,-110%,0)!important;opacity:0!important;pointer-events:none!important;}
+#readerPage.meow-bars-hidden .meowReaderBottom{transform:translate3d(-50%,125%,0)!important;opacity:0!important;pointer-events:none!important;}
+@media(prefers-reduced-motion:reduce){#readerPage .meowReaderTop,#readerPage .meowReaderBottom{transition:none!important}}
+</style>
+<script id="meow-reader-scroll-auto-hide-js">
+(function(){
+  const page=document.getElementById('readerPage');
+  if(!page)return;
+  let last=page.scrollTop, travel=0, direction=0, raf=0;
+  const show=()=>page.classList.remove('meow-bars-hidden');
+  function update(){
+    raf=0;
+    if(page.style.display==='none'){last=page.scrollTop;travel=0;return;}
+    const y=Math.max(0,page.scrollTop), delta=y-last;
+    last=y;
+    if(y<55){show();travel=0;direction=0;return;}
+    if(Math.abs(delta)<2)return;
+    const dir=delta>0?1:-1;
+    if(dir!==direction){direction=dir;travel=0;}
+    travel=Math.min(160,travel+Math.abs(delta));
+    if(travel>=65){
+      const hidden=dir>0;
+      if(page.classList.contains('meow-bars-hidden')!==hidden)page.classList.toggle('meow-bars-hidden',hidden);
+      travel=0;
+    }
+  }
+  page.addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(update)},{passive:true});
+  // No MutationObserver on class: it can cause feedback loops and stutter.
+})();
+</script>
+
+<style id="meowChatFixedCorner2026">
+/* Chat cố định góc phải, không che toàn trang */
+#meowChatOverlay[hidden]{display:none!important}
+#meowChatOverlay{position:fixed!important;inset:auto 16px 16px auto!important;width:min(410px,calc(100vw - 24px));height:min(620px,calc(100dvh - 28px));padding:0!important;background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;display:block!important;z-index:2147483010;pointer-events:none}
+#meowChatPanel{width:100%!important;height:100%!important;max-height:100%!important;pointer-events:auto;border-radius:23px!important;box-shadow:0 14px 55px #45233c45!important}
+#meowChatMessages{min-height:0}
+@media(max-width:600px){#meowChatOverlay{right:8px!important;bottom:8px!important;width:min(390px,calc(100vw - 16px));height:min(570px,calc(100dvh - 16px))}}
+</style>
+<style id="meowChatStyles">
+.meowChatIcon{border:1px solid #ead9ed;background:#f7f1fa;color:#aa9bb6;border-radius:13px;width:35px;height:35px;flex:none;font-size:23px;cursor:pointer;opacity:.8}#meowChatOverlay[hidden]{display:none!important}#meowChatOverlay{position:fixed;inset:0;z-index:2147483010;background:#2d1b3259;display:flex;align-items:center;justify-content:center;padding:12px}#meowChatPanel{width:min(430px,100%);height:min(650px,88dvh);display:flex;flex-direction:column;overflow:hidden;border:1px solid #f6cbe4;border-radius:24px;background:#fffafd;color:#62445c;box-shadow:0 20px 65px #311a374a;font:13px 'Be Vietnam Pro',sans-serif}#meowChatHead{padding:13px;background:linear-gradient(110deg,#ffe7f2,#eee3ff);display:flex;align-items:center;gap:8px}#meowChatHead strong{flex:1}#meowChatHead button,#meowChatComposer button,#meowChatRooms button,.meowChatMsg button{border:0;border-radius:10px;background:#f7e7f2;color:#a35b85;padding:7px;cursor:pointer}#meowChatRooms{display:flex;gap:6px;overflow:auto;padding:9px;border-bottom:1px dashed #eed2e3}#meowChatRooms button{white-space:nowrap}#meowChatRooms button.active{background:#d99ae3;color:white}#meowChatMessages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:9px;overscroll-behavior:contain}.meowChatMsg{max-width:93%;padding:9px 10px;border-radius:15px;background:#fff0f7;overflow-wrap:anywhere}.meowChatMsg.mine{align-self:flex-end;background:#f0e7ff}.meowChatMsg small{display:block;color:#a87694;font-size:10px;margin-bottom:5px}.meowChatMsg img{display:block;max-width:190px;max-height:200px;object-fit:contain;border-radius:9px;margin:5px 0}.meowChatMsg .meowChatActions{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}.meowChatMsg button{font-size:11px;padding:3px 6px}#meowChatComposer{padding:10px;border-top:1px solid #f5d6e7;display:flex;gap:5px;align-items:center}#meowChatText{flex:1;min-width:0;resize:none;max-height:90px;border:1px solid #f1cce1;border-radius:12px;padding:8px;background:white;color:#5d4055}#meowChatStatus{font-size:10px;padding:4px 12px;color:#b57c9b}body.meowSiteDark #meowChatPanel{background:#302638;color:#f8e4f3}body.meowSiteDark .meowChatMsg{background:#49364c}body.meowSiteDark .meowChatMsg.mine{background:#4b3a60}
+.meowChatIdentity{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px}.meowChatIdentity strong{font-size:12px}.meowChatBadge{font-size:9px;font-weight:800;padding:3px 7px;border-radius:999px}.meowChatBadge.owner{background:#d8edff;color:#1674d2}.meowChatBadge.admin{background:#dcf8e6;color:#14844b}.meowChatBadge.member{background:#f8ddf2;color:#b75aa4}.meowChatMsg:has(.meowChatBadge.owner){background:#e1f1ff;color:#20598e}.meowChatMsg.pinned,.meowChatMsg.pinned:has(.meowChatBadge.owner){background:#fff2b8;color:#7a6027;border:1px solid #f2d46a}.meowChatTime{margin-top:8px!important;margin-bottom:0!important;font-size:9px!important;opacity:.75}#meowChatComposer{background:linear-gradient(130deg,#fff1f8,#f3eaff);border-radius:0 0 23px 23px;padding:12px}#meowChatText{border-radius:18px;background:#fffafd;min-height:42px}#meowChatSend{background:linear-gradient(135deg,#ff87b4,#c69bff)!important;color:#fff!important;border-radius:15px!important;padding:12px!important}
+</style>
+<div id="meowChatOverlay" hidden><section id="meowChatPanel" role="dialog" aria-modal="true" aria-label="Phòng chat Mini Meow"><div id="meowChatHead"><strong>💌 Góc trò chuyện Meow</strong><button id="meowChatClose" type="button">✕</button></div><div id="meowChatRooms"></div><div id="meowChatPinFloat" hidden aria-label="Tin nhắn đã ghim"></div><div id="meowChatMessages"></div><div id="meowChatStatus">Đăng nhập để gửi tin nhắn</div><div id="meowChatComposer"><button id="meowChatImage" title="Gửi ảnh" type="button">▧</button><input id="meowChatFile" type="file" accept="image/jpeg,image/png,image/webp" hidden><textarea id="meowChatText" rows="1" maxlength="1500" placeholder="Nhập tin nhắn..."></textarea><button id="meowChatSend" type="button">➤</button></div></section></div>
+
+<style id="meowChatFloatingPinsCSS">
+#meowChatPinFloat[hidden]{display:none!important}
+#meowChatPinFloat{flex:none;max-height:92px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;margin:6px 11px 0;padding:6px;border:1px solid #efd778;border-radius:14px;background:#fff8d7f2;box-shadow:0 6px 17px #ae8b3a25;z-index:2}
+#meowChatPinFloat button{width:100%;display:flex;align-items:center;gap:7px;text-align:left;border:0;border-radius:9px;background:#fff9e7;color:#856522;padding:5px 9px;font:600 11px 'Be Vietnam Pro',sans-serif;cursor:pointer}
+#meowChatPinFloat button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+#meowChatPinFloat button:hover{background:#ffeaa6}
+.meowChatMsg.meowChatPinTarget{outline:2px solid #f1b62e;outline-offset:2px;transition:outline-color .7s}
+</style>
+
+<style id="meowChatCuteAvatar2026">
+#meowChatPanel{border:2px solid #ffe1f0;border-radius:26px;background:linear-gradient(160deg,#fffaff,#fff2fa 65%,#f6eeff);box-shadow:0 22px 70px #9f5a9c3b,inset 0 0 0 4px #ffffff85}
+#meowChatHead{padding:15px 14px;background:linear-gradient(115deg,#ffd9ec,#f0ddff,#ffeaf6);border-bottom:1px dashed #eebcdb}
+#meowChatHead strong{font-family:'Comfortaa','Be Vietnam Pro',sans-serif;font-size:14px;color:#a05289}
+#meowChatRooms{background:#fff7fcaa}
+#meowChatRooms button{border-radius:999px!important;padding:8px 13px!important;box-shadow:0 2px 8px #b889ae17}
+#meowChatMessages{background:radial-gradient(circle at 10% 15%,#ffe9f585,transparent 35%),radial-gradient(circle at 90% 85%,#e9e0ff70,transparent 35%);gap:12px;padding:14px 10px}
+.meowChatMsg,.meowChatMsg.mine{display:flex;align-items:flex-end;gap:7px;max-width:98%;width:fit-content;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible}
+.meowChatMsg.mine{flex-direction:row-reverse;margin-left:auto}
+.meowChatAvatar{width:34px!important;height:34px!important;min-width:34px;flex:0 0 34px;object-fit:cover!important;aspect-ratio:1;border-radius:50%!important;border:2px solid white;box-shadow:0 2px 10px #d785b255;margin:0 0 4px!important;background:#ffe3f0}
+.meowChatBubble{display:flex;flex-direction:column;gap:5px;min-width:0;max-width:min(325px,calc(100vw - 95px));padding:10px 11px;border-radius:18px 18px 18px 6px;background:#fff!important;border:1px solid #f4d4e8;box-shadow:0 5px 16px #dba5c02b;overflow-wrap:anywhere}
+.meowChatBubble>img{display:block;max-width:100%;max-height:280px;width:auto;height:auto;border-radius:12px;object-fit:contain}.meowChatMsg.mine .meowChatBubble{background:#f4e8ff!important;border-color:#e8d3fa;border-radius:18px 18px 6px 18px}
+.meowChatIdentity strong{color:#a65c8f}
+.meowChatMsg .meowChatActions{gap:5px;margin-top:9px}
+.meowChatMsg .meowChatActions button{border-radius:999px!important;background:#fff2f9!important;color:#ad6593!important;padding:4px 7px!important}
+#meowChatComposer{background:#fff8fc;border-top:1px dashed #edc5df;padding:10px}
+#meowChatText{border-radius:18px;background:#fff;box-shadow:inset 0 1px 4px #d6aac21c}
+body.meowSiteDark #meowChatPanel{background:linear-gradient(160deg,#322638,#392a46);border-color:#71516f;color:#f6e7f4}
+body.meowSiteDark #meowChatMessages{background:radial-gradient(circle at 0 0,#5d3b5540,transparent 50%)}
+body.meowSiteDark .meowChatBubble{background:#47354b!important;border-color:#76516f;color:#fff1f8}
+body.meowSiteDark .meowChatBubble>img{display:block;max-width:100%;max-height:280px;width:auto;height:auto;border-radius:12px;object-fit:contain}.meowChatMsg.mine .meowChatBubble{background:#4c3b61!important;border-color:#785b95}
+body.meowSiteDark #meowChatHead,body.meowSiteDark #meowChatComposer,body.meowSiteDark #meowChatRooms{background:#3d3048;color:#fceafa}
+body.meowSiteDark #meowChatHead strong,body.meowSiteDark .meowChatIdentity strong{color:#ffd0e8}
+@media(max-width:420px){#meowChatPanel{height:min(690px,92dvh)}.meowChatBubble{max-width:calc(100vw - 92px)}.meowChatAvatar{width:30px!important;height:30px!important;min-width:30px;flex-basis:30px}}
+
+/* Member: bong bong hong tim ngot, khong anh huong chu phong/admin */
+.meowChatMsg:has(.meowChatBadge.member) .meowChatBubble{
+ background:linear-gradient(135deg,#ffe0ef 0%,#f5ddff 55%,#ebdfff 100%)!important;
+ border:1px solid #e6b9e8!important;color:#74436f!important;
+ box-shadow:0 5px 16px rgba(196,123,180,.17)!important;
+}
+.meowChatMsg:has(.meowChatBadge.member) .meowChatIdentity strong{color:#a34c91!important}
+.meowChatMsg:has(.meowChatBadge.member) .meowChatBadge.member{background:#fff4fb;color:#a45099;border:1px solid #e9c5e8}
+body.meowSiteDark .meowChatMsg:has(.meowChatBadge.member) .meowChatBubble{
+ background:linear-gradient(135deg,#68445f,#60466e 65%,#57466d)!important;
+ border-color:#a579a4!important;color:#fff0fa!important;
+}
+body.meowSiteDark .meowChatMsg:has(.meowChatBadge.member) .meowChatIdentity strong{color:#ffd3ed!important}
+
+</style>
+<script type="module" id="meowChatScript">
+import {initializeApp,getApps,getApp} from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js';
+import {getDatabase,ref,onValue,push,set,update,remove,query,limitToLast,serverTimestamp,get} from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js';
+const config={apiKey:'AIzaSyCMUFJMj74GHONpC3thoTIc2TfZyc91b8',authDomain:'olncm-fa88c.firebaseapp.com',databaseURL:'https://olncm-fa88c-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'olncm-fa88c',storageBucket:'olncm-fa88c.firebasestorage.app',messagingSenderId:'1047257801200',appId:'1:1047257801200:web:d051244e609b2285ddbd35'};
+const app=getApps().length?getApp():initializeApp(config),db=getDatabase(app),$=id=>document.getElementById(id);let room='general',stopRooms=null,stopMessages=null,reply=null,roles={},pendingImage=null;
+const me=()=>window.meowCheckinGetCustomer?.()||null;
+const userId=()=>String(me()?.id||me()?.uid||'').trim();
+const label=()=>String(me()?.name||me()?.username||userId()||'Khách').slice(0,40);
+const status=t=>$('meowChatStatus').textContent=t;
+const chatAvatarCache=new Map();
+function chatAvatarFor(uid,img){
+  const id=String(uid||'');
+  const cached=chatAvatarCache.get(id);
+  if(cached!==undefined){if(cached)img.src=cached;return}
+  chatAvatarCache.set(id,'');
+  if(!id||!(/^[^.#$\[\]/]+$/.test(id)))return;
+  get(ref(db,'customers/'+id+'/profileAvatar')).then(s=>{
+    const url=String(s.val()||'');
+    const safe=/^(https:\/\/|data:image\/(png|jpeg|webp|gif);base64,)/i.test(url)?url:'';
+    chatAvatarCache.set(id,safe);
+    if(safe&&img.isConnected)img.src=safe;
+  }).catch(()=>{});
+}
+
+function chatUploadError(e){const code=String(e?.code||'');if(code.includes('unauthorized')||code.includes('unauthenticated'))return 'Firebase Storage chưa cho phép tài khoản này tải ảnh. Cần cấu hình Firebase Authentication và Storage Rules cho người dùng đã xác thực.';if(code.includes('bucket-not-found'))return 'Không tìm thấy Storage bucket. Kiểm tra cấu hình Firebase Storage.';if(code.includes('quota-exceeded'))return 'Firebase Storage đã vượt hạn mức.';if(code.includes('retry-limit-exceeded'))return 'Kết nối tải ảnh bị gián đoạn. Thử lại khi mạng ổn định.';return 'Lỗi tải ảnh ('+(code||'không rõ mã')+'): '+String(e?.message||e)}
+const role=id=>roles[encodeURIComponent(id)]?.role==='admin'?'Admin':roles[encodeURIComponent(id)]?.role==='owner'?'Chủ phòng':'Member';
+const msgRef=id=>ref(db,'meowChat/messages/'+room+'/'+id);
+const pinHost=$('meowChatPinFloat'),messageHost=$('meowChatMessages');
+let pinnedItems=[];
+let pinListExpanded=false;
+function jumpToPinnedMessage(target){
+  if(!target)return;
+  messageHost.scrollTo({top:messageHost.scrollTop+target.getBoundingClientRect().top-messageHost.getBoundingClientRect().top-12,behavior:'smooth'});
+  target.classList.add('meowChatPinTarget');
+  setTimeout(()=>target.classList.remove('meowChatPinTarget'),1600);
+  pinListExpanded=false;
+  refreshFloatingPins();
+}
+function refreshFloatingPins(){
+  if(!pinHost||!messageHost)return;
+  const viewport=messageHost.getBoundingClientRect();
+  const hiddenPins=[];
+  for(const item of pinnedItems){
+    const target=Array.from(messageHost.children).find(e=>e.dataset.messageId===item.id);
+    if(target&&target.getBoundingClientRect().bottom<=viewport.top+8)hiddenPins.push({item,target});
+  }
+  // Avoid recreating DOM during scroll when the displayed set hasn't changed.
+  const signature=hiddenPins.map(x=>x.item.id).join('|')+';'+pinListExpanded;
+  if(pinHost.dataset.signature===signature)return;
+  pinHost.dataset.signature=signature;
+  pinHost.replaceChildren();
+  if(!hiddenPins.length){pinHost.hidden=true;pinListExpanded=false;return}
+  pinHost.hidden=false;
+  const createPin=(entry)=>{
+    const btn=document.createElement('button');btn.type='button';btn.className='meowChatPinItem';
+    const icon=document.createElement('span');icon.textContent='📌';icon.style.flex='none';
+    const title=document.createElement('span');title.textContent=(entry.item.name||'Member')+': '+(entry.item.text||'🖼 Ảnh đã ghim').slice(0,90);
+    btn.append(icon,title);btn.onclick=()=>jumpToPinnedMessage(entry.target);
+    return btn;
+  };
+  // Keep the floating strip one row tall even when many messages are pinned.
+  const first=hiddenPins[hiddenPins.length-1];
+  const bar=document.createElement('div');bar.className='meowChatPinCompact';
+  bar.append(createPin(first));
+  if(hiddenPins.length>1){
+    const more=document.createElement('button');more.type='button';more.className='meowChatPinMore';
+    more.textContent=pinListExpanded?'−':'+'+(hiddenPins.length-1);
+    more.title=pinListExpanded?'Thu gọn danh sách ghim':'Xem tất cả tin ghim';
+    more.setAttribute('aria-expanded',String(pinListExpanded));
+    more.onclick=()=>{pinListExpanded=!pinListExpanded;pinHost.dataset.signature='';refreshFloatingPins()};
+    bar.append(more);
+  }
+  pinHost.append(bar);
+  if(pinListExpanded&&hiddenPins.length>1){
+    const list=document.createElement('div');list.className='meowChatPinDropdown';
+    for(const entry of hiddenPins.slice().reverse())list.append(createPin(entry));
+    pinHost.append(list);
+  }
+}
+let pinScrollFrame=0;
+messageHost.addEventListener('scroll',()=>{if(pinScrollFrame)return;pinScrollFrame=requestAnimationFrame(()=>{pinScrollFrame=0;refreshFloatingPins()})},{passive:true});
+
+const textEl=(tag,txt,cls)=>{let e=document.createElement(tag);e.textContent=txt;if(cls)e.className=cls;return e};
+function subscribeMessages(){stopMessages?.();$('meowChatMessages').replaceChildren();stopMessages=onValue(query(ref(db,'meowChat/messages/'+room),limitToLast(100)),snap=>{const box=$('meowChatMessages');const wasNearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<90;const oldScroll=box.scrollTop;box.replaceChildren();pinnedItems=[];let items=Object.entries(snap.val()||{});items.sort((a,b)=>(a[1].at||0)-(b[1].at||0));for(const [id,m] of items){if(m.deleted)continue;const mine=m.uid===userId(),el=textEl('div','', 'meowChatMsg'+(mine?' mine':''));el.dataset.messageId=id;if(m.pinned){el.classList.add('pinned');pinnedItems.push({id,name:m.name,text:m.text})}const head=textEl('div','','meowChatIdentity');head.append(textEl('strong',m.name||'Member'));head.append(textEl('span',role(m.uid),'meowChatBadge '+(role(m.uid)==='Admin'?'admin':role(m.uid)==='Chủ phòng'?'owner':'member')));const avatar=document.createElement('img');avatar.className='meowChatAvatar';avatar.alt='Avatar';avatar.loading='lazy';avatar.referrerPolicy='no-referrer';avatar.src='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="#ffe4f2"/><text x="32" y="44" text-anchor="middle" font-size="38">🐱</text></svg>');chatAvatarFor(m.uid,avatar);const bubble=document.createElement('div');bubble.className='meowChatBubble';bubble.append(head);el.append(avatar,bubble);if(m.pinned)el.append(textEl('small','📌 Tin đã ghim'));if(m.replyText)el.append(textEl('small','↪ '+m.replyText));if(m.text)el.append(textEl('div',m.text));if(m.image){let img=document.createElement('img');img.src=m.image;img.alt='Ảnh trong tin nhắn';img.loading='lazy';el.append(img)}const actions=textEl('div','','meowChatActions');const act=(t,fn)=>{let b=textEl('button',t);b.type='button';b.onclick=fn;actions.append(b)};act('↩ Trả lời',()=>{reply={id,text:(m.text||'Ảnh').slice(0,100)};status('Đang trả lời: '+reply.text);$('meowChatText').focus()});act('♡ '+(Object.keys(m.hearts||{}).length||''),()=>{if(!userId())return status('Đăng nhập trước nha');set(ref(db,'meowChat/messages/'+room+'/'+id+'/hearts/'+encodeURIComponent(userId())),m.hearts?.[encodeURIComponent(userId())]?null:true).catch(e=>status(e.message))});act('☺',()=>{let emoji=prompt('Thả cảm xúc: ❤️ 😂 🥰 😮 🎉','🥰');if(emoji&&userId())set(ref(db,'meowChat/messages/'+room+'/'+id+'/reactions/'+encodeURIComponent(userId())),emoji.slice(0,5)).catch(e=>status(e.message))});if(m.reactions)el.append(textEl('small',Object.values(m.reactions).join(' ')));if(['admin','owner'].includes(roles[encodeURIComponent(userId())]?.role))act(m.pinned?'Bỏ ghim':'📌 Ghim',()=>update(msgRef(id),{pinned:!m.pinned}).catch(e=>status(e.message))); if(mine)act('✎ Sửa',()=>{
+  const editor=document.createElement('div');editor.className='meowChatEditBox';
+  const input=document.createElement('textarea');input.value=m.text||'';input.maxLength=1500;input.rows=3;input.placeholder='Chỉnh sửa nội dung tin nhắn…';
+  const buttons=document.createElement('div');buttons.className='meowChatEditButtons';
+  const cancel=textEl('button','Hủy');cancel.type='button';cancel.onclick=()=>editor.remove();
+  const save=textEl('button','Lưu thay đổi');save.type='button';save.onclick=async()=>{
+    if(!userId()||userId()!==m.uid){status('Chỉ được sửa tin nhắn của mình');return}
+    const value=input.value.trim();
+    if(!value&&!m.image){status('Tin nhắn không được để trống');return}
+    save.disabled=true;
+    try{await update(msgRef(id),{text:value,editedAt:serverTimestamp()});status('Đã sửa tin nhắn')}
+    catch(e){status('Không sửa được tin: '+(e?.message||e));save.disabled=false}
+  };
+  buttons.append(cancel,save);editor.append(input,buttons);
+  el.querySelector('.meowChatEditBox')?.remove();actions.parentNode.insertBefore(editor,actions);input.focus();
+});
+if(m.editedAt)el.append(textEl('small','(Đã chỉnh sửa)','meowChatEdited'));
+if(mine)act('Xóa',()=>{if(confirm('Xóa tin nhắn của bạn?'))remove(msgRef(id)).catch(e=>status(e.message))});el.append(textEl('small',m.at?new Date(m.at).toLocaleString('vi-VN'):'Vừa gửi','meowChatTime'));el.append(actions);for(const node of Array.from(el.childNodes).slice(2))bubble.append(node);box.append(el)}box.scrollTop=wasNearBottom?box.scrollHeight:oldScroll;refreshFloatingPins();},e=>status('Không đọc được chat: '+e.message));}
+function subscribeRooms(){stopRooms?.();stopRooms=onValue(ref(db,'meowChat/rooms'),snap=>{const data=snap.val()||{general:{name:'Phòng chung'}};const host=$('meowChatRooms');host.replaceChildren();for(const [id,r] of Object.entries(data)){const b=textEl('button',r.name||id,id===room?'active':'');b.onclick=()=>{room=id;reply=null;subscribeRooms();subscribeMessages()};host.append(b)}if(!data[room]){room=Object.keys(data)[0]||'general';subscribeMessages()}},e=>status('Không tải được phòng: '+e.message));}
+$('meowChatOpen')?.addEventListener('click',()=>{$('meowChatOverlay').hidden=false;subscribeRooms();subscribeMessages();get(ref(db,'meowChat/roles')).then(s=>{roles=s.val()||{};subscribeMessages()}).catch(()=>{});status(userId()?'Sẵn sàng trò chuyện':'Đăng nhập Mini Meow để gửi tin nhắn')});
+function close(){stopRooms?.();stopMessages?.();stopRooms=stopMessages=null;$('meowChatOverlay').hidden=true}
+$('meowChatClose').onclick=close;$('meowChatOverlay').addEventListener('click',e=>{if(e.target===$('meowChatOverlay'))close()});
+$('meowMenuHome')?.addEventListener('click',()=>{$('meowSideClose')?.click();window.meowCloseIntegratedWallet?.();window.meowCloseProfile?.();document.body.classList.remove('meowGenrePageActive');let g=$('meowGenrePage');if(g){g.hidden=true;g.style.display='none'}for(const id of ['readerPage','storyPage']){let x=$(id);if(x)x.style.display='none'}let h=$('homePage');if(h){h.hidden=false;h.style.display='block'}window.scrollTo(0,0)});
+async function send(text,image){const uid=userId();if(!uid)return status('Vui lòng đăng nhập Mini Meow trước');if(!text&&!image)return;try{await push(ref(db,'meowChat/messages/'+room),{uid,name:label(),text:text.slice(0,1500),image:image||'',replyId:reply?.id||'',replyText:reply?.text||'',at:serverTimestamp()});$('meowChatText').value='';pendingImage=null;$('meowChatImage').textContent='▧';reply=null;status('Đã gửi')}catch(e){status('Firebase từ chối gửi: '+(e?.code||'')+' '+e.message+' — nếu báo PERMISSION_DENIED cần kiểm tra Database Rules tại meowChat/messages')}}
+async function chatImageData(file){
+  // Nén ảnh trước khi ghi vào Realtime Database, không gửi ảnh gốc nhiều MB.
+  if(!file.type.startsWith('image/'))throw Error('Vui lòng chọn ảnh.');
+  const url=URL.createObjectURL(file);
+  try{
+    const img=new Image();img.src=url;
+    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error('Không đọc được ảnh này. Hãy thử JPG hoặc PNG.'))});
+    const longest=Math.max(img.naturalWidth,img.naturalHeight);
+    for(let maxSide of [1100,850,650,480,320]){
+      const scale=Math.min(1,maxSide/longest);
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));
+      canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+      const ctx=canvas.getContext('2d');if(!ctx)throw Error('Trình duyệt không hỗ trợ xử lý ảnh.');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      for(let quality of [.7,.55,.4,.3]){
+        const data=canvas.toDataURL('image/jpeg',quality);
+        if(data.length<140000)return data;
+      }
+    }
+    throw Error('Không thể nén ảnh đủ nhỏ để gửi.');
+  }finally{URL.revokeObjectURL(url)}
+}
+$('meowChatSend').onclick=async()=>{const btn=$('meowChatSend');if(btn.disabled)return;if(!userId())return status('Vui lòng đăng nhập Mini Meow trước khi gửi ảnh hoặc tin nhắn');const message=$('meowChatText').value.trim();if(!message&&!pendingImage)return;btn.disabled=true;try{let image='';if(pendingImage){status('Đang nén ảnh để gửi…');image=await chatImageData(pendingImage)}await send(message,image)}catch(e){status('Không gửi được ảnh: '+String(e?.message||e));console.error('Meow chat image:',e)}finally{btn.disabled=false}};
+$('meowChatText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('meowChatSend').click()}});
+$('meowChatImage').onclick=()=>$('meowChatFile').click();$('meowChatFile').onchange=e=>{const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/'))return status('Chỉ nhận tệp hình ảnh');pendingImage=f;$('meowChatImage').textContent='🖼️';status('Đã chọn ảnh: '+f.name+' — có thể viết thêm chữ rồi gửi');e.target.value=''};
+</script>
+
+<style id="meowChatCompactPinListCSS">
+#meowChatPinFloat{max-height:none!important;overflow:visible!important;display:block!important;padding:5px 7px!important;margin:5px 11px 0!important}
+#meowChatPinFloat .meowChatPinCompact{display:flex;align-items:center;gap:5px;min-width:0}
+#meowChatPinFloat .meowChatPinCompact>.meowChatPinItem{min-width:0;flex:1}
+#meowChatPinFloat .meowChatPinMore{flex:none;width:auto;min-width:34px;padding:6px 8px!important;border-radius:10px;background:#ffe5a0;color:#805800;font-size:12px;font-weight:900;justify-content:center}
+#meowChatPinFloat .meowChatPinDropdown{display:flex;flex-direction:column;gap:4px;max-height:190px;overflow-y:auto;margin-top:6px;padding-top:6px;border-top:1px dashed #e5c45f}
+#meowChatPinFloat .meowChatPinDropdown .meowChatPinItem{width:100%}
+</style>
+<style id="meowChatEditStyle">
+.meowChatEditBox{margin:8px 0;padding:9px;border:1px dashed #efacd2;border-radius:14px;background:rgba(255,242,250,.92)}
+.meowChatEditBox textarea{display:block;box-sizing:border-box;width:100%;min-height:65px;resize:vertical;padding:10px;border-radius:12px;border:1px solid #e9c1e0;background:#fff;color:#593e55;font:inherit;font-size:13px;outline-color:#d78dc8}
+.meowChatEditButtons{display:flex;gap:7px;justify-content:flex-end;margin-top:7px}
+.meowChatEditButtons button{padding:6px 10px;border-radius:10px;border:1px solid #e9b8d7;background:#ffe5f3;color:#91547c;font-weight:700;cursor:pointer}
+.meowChatEditButtons button:last-child{background:#c87fc0;color:#fff}
+.meowChatEdited{display:block;font-size:10px;opacity:.7;margin-top:3px}
+</style>
+
+<!-- Mini Meow: đồng bộ nền cho toàn bộ giao diện ngoài Reader -->
+<style id="meow-appearance-full-coverage">
+/* Nền tùy chỉnh phải bao phủ cùng phạm vi nền gốc, kể cả header, menu, card và popup. */
+body:is([data-mws-bg],[data-mws-image]){
+ --mws-surface:color-mix(in srgb,var(--mws-bg,#fff7fa) 38%,white);
+ --mws-surface-strong:color-mix(in srgb,var(--mws-bg,#fff7fa) 24%,white);
+ --mws-surface-soft:color-mix(in srgb,var(--mws-bg,#fff7fa) 58%,white);
+ --mws-stroke:color-mix(in srgb,var(--mws-bg,#fff7fa) 62%,#c999c1);
+ --mws-ink:#574057;
+ --mws-muted:#806a7c;
+}
+body.meowSiteDark:is([data-mws-bg],[data-mws-image]){
+ --mws-surface:color-mix(in srgb,var(--mws-bg,#30253b) 45%,#292132);
+ --mws-surface-strong:color-mix(in srgb,var(--mws-bg,#30253b) 32%,#33273f);
+ --mws-surface-soft:color-mix(in srgb,var(--mws-bg,#30253b) 62%,#231c2d);
+ --mws-stroke:color-mix(in srgb,var(--mws-bg,#30253b) 50%,#77617e);
+ --mws-ink:#f9eaf5;
+ --mws-muted:#dbc3d6;
+}
+body:is([data-mws-bg],[data-mws-image]) :is(
+ .meowTopbar,.meowGlobalFixedHeader,#meowSideMenu,#meowSiteFooter,
+ .meowHero,.meowStoryDetail,.meowStoryCard,.meowShelfSection,
+ .meowLoginBox,.meowWelcomeGlass,.meowWalletBar,#meow-quick-nav,#meow-contact,
+ .meowGenrePanel,.meowDetailMetaPanel,.meowSummary,.meowStoryPriceBox,
+ .meowChapterItem,.meowShelfRecentItem,.meowWelcomeField,.meowDetailLine,
+ .meowProfileCard,.meowWalletCard,.miw-card,.miw-panel,
+ #meowWebSettingsPanel,#meowSideShade .meowSidePanel,
+ .meowCheckinCard,.meowCalendar,.meowNotifyCard
+):not(#readerPage):not(#readerPage *){
+ background:var(--mws-surface)!important;
+ background-image:none!important;
+ border-color:var(--mws-stroke)!important;
+ color:var(--mws-ink);
+}
+body:is([data-mws-bg],[data-mws-image]) :is(
+ .meowTopBtn:not(.primary),.meowShelfTab:not(.active),.mqn-link,
+ .meowInput,.meowCopyBtn,.meowChapterPrice,.meowWalletIcon,
+ .meowPriceLine,.meowStoryCard button:not(.primary),
+ #meowSideMenu button,#meowWebSettingsPanel select
+):not(#readerPage):not(#readerPage *){
+ background:var(--mws-surface-strong)!important;
+ border-color:var(--mws-stroke)!important;
+ color:var(--mws-ink)!important;
+}
+body:is([data-mws-bg],[data-mws-image]) :is(
+ #homePage,#storyPage,#meowGenrePage,#meowProfileOverlay,#meowIntegratedWallet,
+ #meowCheckinOverlay,#meowNotifyPage,#meowSiteFooter
+){color:var(--mws-ink)}
+/* Giữ ảnh nền phủ toàn bộ các trang giống nền mặc định, có lớp phủ theo chế độ sáng/tối. */
+body[data-mws-image] :is(#homePage,#storyPage,#meowGenrePage,#meowProfileOverlay,
+ #meowIntegratedWallet,#meowCheckinOverlay,#meowNotifyPage){
+ background-color:var(--mws-bg,#fff7fa)!important;
+ background-image:linear-gradient(var(--mws-image-tint),var(--mws-image-tint)),var(--mws-image-url)!important;
+ background-size:cover!important;background-position:center!important;
+}
+/* Đối với nền màu, dark mode cũng dùng màu nền đã chọn thay vì ép về nền tối cố định. */
+body.meowSiteDark[data-mws-bg]{background:var(--mws-bg)!important}
+body.meowSiteDark[data-mws-bg] :is(#homePage,#storyPage,#meowGenrePage,#meowProfileOverlay,
+ #meowIntegratedWallet,#meowCheckinOverlay,#meowNotifyPage){background:var(--mws-bg)!important;background-image:none!important}
+/* Tuyệt đối không tác động Reader: Reader dùng bộ cài đặt sáng/tối và màu riêng. */
+</style>
+<script id="meow-appearance-palette-sync">
+(()=>{
+ const body=document.body;
+ const colorMap={pink:'#ffe5f0',lavender:'#e8ddff',blue:'#e4f3ff',cream:'#fff2db',mint:'#e1f6ef',dark:'#30253b'};
+ function sync(){
+  if(!body.matches('[data-mws-bg],[data-mws-image]'))return;
+  const chosen=colorMap[body.dataset.mwsBg]||'#fff7fa';
+  const isDark=body.classList.contains('meowSiteDark');
+  // Màu nền sáng được chuyển thành phiên bản trầm tương ứng khi bật chế độ tối.
+  const darkColors={pink:'#382330',lavender:'#30273f',blue:'#243440',cream:'#3d3229',mint:'#263b36',dark:'#241d2d'};
+  body.style.setProperty('--mws-bg',isDark?(darkColors[body.dataset.mwsBg]||'#292332'):chosen);
+ }
+ const observer=new MutationObserver(sync);
+ observer.observe(body,{attributes:true,attributeFilter:['class','data-mws-bg','data-mws-image']});
+ sync();
+})();
+</script>
+
+
+<div id="meowBootSplash" aria-live="polite"><img alt="Mini Meow" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5SGlYMwFw3PhFEAxcIszgXukRv1lOBsVNJSEAQ0MeM2dOhOzeN1cqpK3hZXGSFlYddpm6wlQLUf9pfZUDF_662KyhXMe7rHbt8BZlucheK1fl7g2TvKzK6bjsCfzWfmcMq_2eyayzTPwLWFt-T9EC-UlCHjIfz9EQajD7Awq3KZTpUilD7Kh3DU-EKOpZ/s381/t%E1%BA%A3i%20xu%E1%BB%91ng%20%286%29.png"><span>ĐANG TẢI ...</span></div>
+<script>(function(){const splash=document.getElementById('meowBootSplash');if(!splash)return;let done=false;function dismiss(){if(done)return;done=true;splash.classList.add('meow-done');setTimeout(()=>splash.remove(),300)}window.addEventListener('load',dismiss,{once:true});setTimeout(dismiss,1900)})();</script>
+
+
+
+
+<style id="meowCuteFooterAndTinyScroll">
+/* Chân trang kiểu web truyện: mềm, thoáng, dễ đọc ở sáng/tối */
+#meowSiteFooter{position:relative!important;overflow:hidden!important;max-width:1320px!important;margin:36px auto 0!important;padding:35px clamp(16px,4vw,38px) 23px!important;border:1px solid #f1cde8!important;border-radius:30px 30px 0 0!important;background:linear-gradient(145deg,#fffafd,#fff0f8 55%,#f1eaff)!important;box-shadow:0 -5px 26px #dba4d021!important;color:#72566d!important}
+#meowSiteFooter::before{content:'✦ ୨୧ ✦';display:block;text-align:center;color:#db88ba;font-size:19px;letter-spacing:12px;margin:0 auto 13px}
+#meowSiteFooter .meowFooterCuteHeading{text-align:center;font:800 clamp(17px,3vw,24px) 'Comfortaa','Be Vietnam Pro',sans-serif;color:#c66da9;margin:0 0 9px}
+#meowSiteFooter .meowFooterCuteDesc{text-align:center;font-size:12px;line-height:1.9;color:#95788e;margin:0 auto 18px;max-width:560px}
+#meowSiteFooter .meowFooterCuteLinks{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:14px auto 21px}
+#meowSiteFooter .meowFooterCuteLinks button{font:700 12px 'Be Vietnam Pro',sans-serif;border:1px dashed #e7afd2;border-radius:999px;padding:9px 14px;color:#a65f93;background:#fffaff;cursor:pointer;box-shadow:0 4px 11px #dba3c122}
+#meowSiteFooter .meowFooterCuteLinks button:hover{background:#fbe7f4;transform:translateY(-2px)}
+#meowSiteFooter .meowFooterStats{padding-top:15px!important;border-top:1px dashed #e5bfdc!important;display:flex!important;justify-content:center!important;flex-wrap:wrap!important;gap:10px 20px!important}
+#meowSiteFooter .meowFooterBottom{text-align:center!important;font-size:11px!important;line-height:1.8!important;color:#9a7894!important}
+body.meowSiteDark #meowSiteFooter{background:linear-gradient(145deg,#30253d,#3d2b47 55%,#30283f)!important;border-color:#74547e!important;color:#f4dceb!important}
+body.meowSiteDark #meowSiteFooter .meowFooterCuteHeading{color:#ffc5e4!important}
+body.meowSiteDark #meowSiteFooter .meowFooterCuteDesc{color:#dbc0d5!important}
+body.meowSiteDark #meowSiteFooter .meowFooterCuteLinks button{background:#513d59;color:#fbd9ec;border-color:#956e9c}
+body.meowSiteDark #meowSiteFooter .meowFooterStats{border-top-color:#785d7c!important}
+/* Hai nút lên/xuống nhỏ gọn, không che nội dung */
+.meow-scroll{left:8px!important;bottom:calc(14px + env(safe-area-inset-bottom))!important;gap:5px!important;z-index:80!important}
+.meow-scroll .meow-btn{width:35px!important;height:35px!important;min-width:35px!important;min-height:35px!important;padding:3px!important;margin:0!important;border:1px solid #f1d3e8!important;border-radius:13px!important;background:rgba(255,249,253,.83)!important;box-shadow:0 4px 12px #b67ea12e!important;backdrop-filter:blur(6px);animation:none!important;display:grid!important;place-items:center!important}
+.meow-scroll .meow-btn img{width:28px!important;height:28px!important;filter:drop-shadow(0 1px 3px #eeb5d1)!important}
+body.meowSiteDark .meow-scroll .meow-btn{background:rgba(57,42,67,.88)!important;border-color:#86678d!important}
+@media(max-width:600px){#meowSiteFooter{padding:27px 13px 20px!important;border-radius:22px 22px 0 0!important}.meow-scroll{left:6px!important;bottom:calc(10px + env(safe-area-inset-bottom))!important}.meow-scroll .meow-btn{width:31px!important;height:31px!important;min-width:31px!important;min-height:31px!important;border-radius:11px!important}.meow-scroll .meow-btn img{width:24px!important;height:24px!important}}
+</style>
+<script id="meowCuteFooterScript">(function(){
+ function enhance(){const footer=document.getElementById('meowSiteFooter');if(!footer||footer.querySelector('.meowFooterCuteHeading'))return;
+ const heading=document.createElement('div');heading.className='meowFooterCuteHeading';heading.textContent='🐱 Ổ Lười Nhỏ Của Meow';
+ const desc=document.createElement('div');desc.className='meowFooterCuteDesc';desc.textContent='Một góc nhỏ xinh dành cho những câu chuyện đáng yêu. Chúc nàng có những phút giây đọc truyện thật vui! ♡';
+ const links=document.createElement('div');links.className='meowFooterCuteLinks';
+ [['⌂ Trang chủ',()=>{window.meowNavigateExclusive?.('home');window.scrollTo({top:0,behavior:'smooth'})}],['⌕ Tìm truyện',()=>document.getElementById('meowHeaderSearchBtn')?.click()],['☷ Thể loại',()=>document.getElementById('meowSideOpen')?.click()]].forEach(([label,action])=>{const btn=document.createElement('button');btn.type='button';btn.textContent=label;btn.addEventListener('click',action);links.appendChild(btn)});
+ footer.prepend(links);footer.prepend(desc);footer.prepend(heading);
+ }
+ enhance();document.addEventListener('DOMContentLoaded',enhance,{once:true});
+ const observer=new MutationObserver(()=>{if(document.getElementById('meowSiteFooter')){enhance();observer.disconnect()}});
+ observer.observe(document.body,{childList:true,subtree:true});setTimeout(()=>observer.disconnect(),12000);
+ localStorage.removeItem('MEOW_READER_PAGE_MODE');document.getElementById('readerPage')?.classList.remove('meowHorizontalFlip');
+})();</script>
+
+
+<style id="meowFinalPolish2026">
+#meow-quick-nav{display:none!important}
+/* Cute but readable contact panel, responsive in dark and light themes. */
+#meow-contact{position:relative!important;margin:22px auto!important;padding:25px clamp(14px,4vw,30px)!important;max-width:900px!important;border:2px dashed #dfa4d2!important;border-radius:27px!important;background:linear-gradient(135deg,#fff9fe,#fff0f9 55%,#f4ebff)!important;box-shadow:0 12px 28px #9c58911c!important;text-align:center!important}
+#meow-contact:before{content:'✦ 🎀 ✦';display:block;color:#d585bb;font-size:18px;margin-bottom:8px}
+#meow-contact .mc-title{font-size:clamp(18px,3.5vw,26px)!important;color:#af5e99!important;line-height:1.5!important}
+#meow-contact .mc-desc{font-size:clamp(12px,2.8vw,15px)!important;line-height:1.85!important;color:#83647c!important}
+#meow-contact .mc-socials{display:flex!important;gap:10px!important;justify-content:center!important;flex-wrap:wrap!important;margin-top:16px!important}
+#meow-contact .mc-social{display:inline-flex!important;align-items:center!important;gap:7px!important;padding:10px 15px!important;border:1px solid #eab4d8!important;border-radius:18px!important;background:#fff9fe!important;color:#a85c91!important;box-shadow:0 5px 13px #a77a9919!important;text-decoration:none!important;font-weight:700!important;min-width:0!important;transition:transform .18s ease!important}
+#meow-contact .mc-social:hover{transform:translateY(-2px)}
+#meow-contact .mc-circle{display:grid!important;place-items:center!important;width:27px!important;height:27px!important;border-radius:50%!important;background:#f8d9ed!important;color:#9e4c87!important}
+body.meowSiteDark #meow-contact{background:linear-gradient(135deg,#382b46,#423049)!important;border-color:#936b99!important}
+body.meowSiteDark #meow-contact .mc-title{color:#ffd0e8!important}
+body.meowSiteDark #meow-contact .mc-desc{color:#e7c9df!important}
+body.meowSiteDark #meow-contact .mc-social{background:#523d59!important;color:#ffe2f1!important;border-color:#966b97!important}
+#meowSiteFooter .meowFooterStats{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;max-width:560px!important;margin-inline:auto!important}
+#meowSiteFooter .meowFooterStats>span{min-width:0!important;padding:9px 6px!important;border:1px dashed #dfb3d8!important;border-radius:14px!important;text-align:center!important;line-height:1.7!important;overflow-wrap:anywhere!important}
+#meowSiteFooter .meowFooterStats>span+span{border-left:1px dashed #dfb3d8!important}
+@media(max-width:380px){#meow-contact .mc-social{padding:8px!important;font-size:11px!important}#meowSiteFooter .meowFooterStats{gap:7px!important}}
+@media(prefers-reduced-motion:reduce){#meow-contact .mc-social{transition:none!important}}
+</style>
+<script id="meowFinalPolishNav2026">(function(){
+// Capture footer Home before other handlers; close profile/wallet/genre instead of scrolling behind them.
+document.addEventListener('click',function(e){const b=e.target.closest('#meowSiteFooter .meowFooterCuteLinks button');if(!b||!b.textContent.includes('Trang chủ'))return;e.preventDefault();e.stopImmediatePropagation();window.meowNavigateExclusive?.('home');window.meowCloseIntegratedWallet?.();window.meowCloseProfile?.();window.scrollTo({top:0,behavior:'instant'});},true);
+})();</script>
+
+<style id="meow-auth-soft-backdrop-slightly-larger">
+/* Modal backdrop: translucent glass veil; reader and website remain untouched underneath. */
+html body #loginPage.meowAuthVisible:not([hidden]){
+ background:rgba(48,29,57,.40)!important;
+ background-image:none!important;
+ backdrop-filter:blur(5px)!important;
+ -webkit-backdrop-filter:blur(5px)!important;
+}
+html body #loginPage .meowLoginBox,
+html body.meowSiteDark #loginPage .meowLoginBox{
+ width:min(326px,calc(100vw - 28px))!important;
+ max-width:326px!important;
+ padding:17px 16px 15px!important;
+ border-radius:21px!important;
+ box-shadow:0 16px 42px rgba(43,22,54,.27)!important;
+}
+html body.meowSiteDark #loginPage.meowAuthVisible:not([hidden]){
+ background:rgba(10,6,17,.62)!important;
+}
+</style>
+<style id="meow-wallet-back-exclusive-fix">
+#meowIntegratedWallet[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body:not(.meow-route-wallet) #meowIntegratedWallet{pointer-events:none}
+body.meow-route-home #homePage,body.meow-route-story #storyPage,body.meow-route-genre #meowGenrePage{visibility:visible}
+</style>
 </body>
 
 
@@ -12076,6 +12664,75 @@ html body #loginPage .meowLoginBox{
 @media(max-width:600px){#meowSideMenu{width:min(285px,87vw)!important}#meowSideMenu .meowSideScroll{padding:7px 10px 14px!important}}
 </style>
 
+
+<style id="meow-auth-chat-sized-final">
+/* Login as a small floating chat-style card; later rule wins over older princess styles. */
+html body #loginPage.meowAuthVisible:not([hidden]){
+ position:fixed!important;inset:0!important;z-index:999999!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ padding:10px!important;background:transparent!important;background-image:none!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ overflow-y:auto!important;overflow-x:hidden!important;
+}
+html body #loginPage .meowLoginBox,
+html body.meowSiteDark #loginPage .meowLoginBox{
+ position:relative!important;box-sizing:border-box!important;
+ width:min(292px,calc(100vw - 28px))!important;max-width:292px!important;
+ height:auto!important;max-height:calc(100dvh - 24px)!important;
+ margin:auto!important;padding:14px 13px 12px!important;
+ overflow-y:auto!important;overflow-x:hidden!important;
+ border:1px solid #efb8dd!important;outline:0!important;
+ border-radius:19px!important;
+ background:linear-gradient(145deg,#fffafd,#fff0f9 58%,#f4edff)!important;
+ box-shadow:0 10px 28px #a96a9a36!important;
+ text-align:center!important;
+}
+html body #loginPage .meowLoginBox::before,
+html body #loginPage .meowLoginBox::after{content:none!important;display:none!important}
+html body #loginPage #meowAuthClose{position:absolute!important;top:5px!important;right:6px!important;width:25px!important;height:25px!important;min-height:0!important;line-height:22px!important;font-size:16px!important}
+html body #loginPage .meowLoginCat{width:36px!important;height:36px!important;margin:0 auto 3px!important;padding:2px!important;border-radius:11px!important}
+html body #loginPage .meowLoginTitle{font-size:17px!important;line-height:1.15!important;margin:0!important;letter-spacing:0!important}
+html body #loginPage .meowPrincessSubtitle{font-size:9px!important;margin:2px 0 5px!important}
+html body #loginPage .meowPrincessWelcome{display:none!important}
+html body #loginPage .meowAuthTabs{margin:6px 0 7px!important;padding:2px!important;gap:3px!important;border-radius:11px!important}
+html body #loginPage .meowAuthTabs button{padding:6px 2px!important;min-height:30px!important;font-size:11px!important;border-radius:9px!important}
+html body #loginPage .meowPrincessFieldLabel,
+html body #loginPage #meowRegisterForm label{display:block!important;margin:5px 0 2px!important;font-size:10px!important;text-align:left!important}
+html body #loginPage .meowInput,
+html body.meowSiteDark #loginPage .meowInput{width:100%!important;min-height:34px!important;margin:4px 0!important;padding:6px 9px!important;font-size:11px!important;border-radius:10px!important}
+html body #loginPage .meowLoginBtn{width:100%!important;min-height:35px!important;margin:7px 0 5px!important;padding:7px!important;font-size:12px!important;border-radius:11px!important;box-shadow:0 2px 0 #cb6698!important}
+html body #loginPage .meowPrincessHelp,
+html body #loginPage #meowGuestHint{margin:6px 0 2px!important;padding:5px!important;font-size:9px!important;line-height:1.35!important;border-radius:9px!important}
+html body #loginPage #meowAvatarChoices{gap:4px!important;margin:4px 0!important}
+html body #loginPage #meowAvatarChoices button{flex:0 0 33px!important;width:33px!important;min-width:33px!important;max-width:33px!important;height:33px!important;min-height:33px!important;max-height:33px!important}
+html body #loginPage #meowRegisterAvatarFile{font-size:9px!important;padding:5px!important}
+html body #loginPage .meowIdHint{font-size:9px!important;line-height:1.25!important}
+html body.meowSiteDark #loginPage .meowLoginBox{background:linear-gradient(145deg,#382b40,#30263c 60%,#3e2c4c)!important;color:#f8e1f0!important;border-color:#76567e!important}
+</style>
+
+<style id="meow-auth-glass-overlay-ultimate-fix">
+/* Final override: earlier chat-sized styles were resetting the backdrop to transparent. */
+html body #loginPage.meowAuthVisible:not([hidden]){
+  background:rgba(42,25,52,.46)!important;
+  background-image:none!important;
+  -webkit-backdrop-filter:blur(9px) saturate(105%)!important;
+  backdrop-filter:blur(9px) saturate(105%)!important;
+}
+html body.meowSiteDark #loginPage.meowAuthVisible:not([hidden]){
+  background:rgba(12,8,22,.68)!important;
+}
+html body #loginPage .meowLoginBox,
+html body.meowSiteDark #loginPage .meowLoginBox{
+  width:min(326px,calc(100vw - 28px))!important;
+  max-width:326px!important;
+  padding:17px 16px 15px!important;
+  border-radius:21px!important;
+  box-shadow:0 16px 44px rgba(43,22,54,.29)!important;
+}
+@supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+ html body #loginPage.meowAuthVisible:not([hidden]){background:rgba(42,25,52,.70)!important}
+}
+</style>
 <script>
 /* 🚫 BLOCK */
 
