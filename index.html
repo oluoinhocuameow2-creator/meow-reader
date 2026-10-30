@@ -10162,7 +10162,7 @@ body.meowGenrePageActive #meowProfileOverlay.show{display:block!important;z-inde
  }
  window.meowCaptureNavState=()=>snap();
  window.meowRestoreNavState=restore;
- window.addEventListener('popstate',e=>{if(e.state?.meowNewRankNav)return;if(e.state?.meowNavV2)restore(e.state.meowNavV2);else if(e.state?.meowNav){const old=e.state.meowNav;restore({...snap(),states:Object.fromEntries(ids.map(id=>[id,{visible:id===old.page}])),genreActive:old.page==='meowGenrePage',story:old.story,scroll:old.scroll})}});
+ window.addEventListener('popstate',e=>{if(e.state?.meowNewRankNav || !document.getElementById('meowNewRankPage')?.hidden)return;if(e.state?.meowNavV2)restore(e.state.meowNavV2);else if(e.state?.meowNav){const old=e.state.meowNav;restore({...snap(),states:Object.fromEntries(ids.map(id=>[id,{visible:id===old.page}])),genreActive:old.page==='meowGenrePage',story:old.story,scroll:old.scroll})}});
  function init(){if(ready)return;ready=true;const s=snap();last=signature(s);try{history.replaceState({...history.state,meowNavV2:s},'')}catch(_){}
   const observer=new MutationObserver(schedule);ids.forEach(id=>{const e=el(id);if(e)observer.observe(e,{attributes:true,attributeFilter:['style','class','hidden']})});
   observer.observe(document.body,{attributes:true,attributeFilter:['class']});
@@ -12529,7 +12529,7 @@ const NAV_KEY='meowNewRankNav';
 function navState(view,kind){const state={...(history.state||{})};delete state.meowNavV2;return {...state,[NAV_KEY]:{view,kind,seq:++navSeq}}}
 function preservePrevious(){try{const snapshot=window.meowCaptureNavState?.();if(snapshot)history.replaceState({...history.state,meowNavV2:snapshot},'',location.href)}catch(_){}}
 function reveal(){page.hidden=false;document.body.classList.add('meowNewRankActive');const home=$('homePage');if(home){home.hidden=true;home.style.display='none'}const story=$('storyPage');if(story)story.style.display='none';const reader=$('readerPage');if(reader)reader.style.display='none'}
-function conceal(){page.hidden=true;document.body.classList.remove('meowNewRankActive')}
+function conceal(){++requestId;page.hidden=true;page.style.display='none';document.body.classList.remove('meowNewRankActive');window.meowNewRankHistoryBusy=false}
 
 const toTime=value=>{if(value==null||value==='')return 0;let n=Number(value);if(Number.isFinite(n)&&n>0)return n<1e11?n*1000:n;const t=Date.parse(String(value));return Number.isFinite(t)?t:0};
 const created=x=>toTime(x.info?.createdAt??x.info?.created_at??x.info?.publishedAt??x.info?.publishDate??x.info?.date??x.info?.postedAt);
@@ -12594,7 +12594,7 @@ const cover=x=>x.info?.cover||x.info?.coverUrl||x.info?.coverImage||x.info?.imag
 const chapterCount=x=>{const c=x.data?.chapters;if(c&&typeof c==='object'&&!x.data?._catalogOnly)return Object.keys(c).length;return Number(x.info?.chapterCount??x.info?.totalChapters??x.data?.chapterCount??0)||0};
 function back(){
  if(history.state?.[NAV_KEY]?.view==='list' && history.length>1){history.back();return}
- conceal();window.meowNavigateExclusive?.('home');window.scrollTo(0,0);
+ meowRankGoHome();
 }
 async function openStory(x){
  // Giữ trang danh sách trong lịch sử, sau đó mở profile bằng luồng chuẩn.
@@ -12620,8 +12620,37 @@ async function openStory(x){
 function makeCard(x){const b=document.createElement('button');b.type='button';b.className='mnr-card';const img=cover(x);if(img){const frame=document.createElement('div');frame.className='mnr-cover-frame';const im=document.createElement('img');im.className='mnr-cover';im.loading='lazy';im.alt='';im.src=img;frame.append(im);b.append(frame)}else{const p=document.createElement('div');p.className='mnr-cover mnr-placeholder';p.textContent='📖';b.append(p)}if(created(x)>Date.now()-7*86400000&&created(x)<=Date.now()){const badge=document.createElement('span');badge.className='mnr-new';badge.textContent='✨ MỚI';b.append(badge)}const body=document.createElement('div');body.className='mnr-card-body';const name=document.createElement('strong');name.textContent=x.info?.name||x.info?.title||x.id;const meta=document.createElement('small');meta.textContent=chapterCount(x).toLocaleString('vi-VN')+' chương';body.append(name,meta);b.append(body);b.onclick=()=>openStory(x);return b}
 function render(){const content=$('mnrContent'),pager=$('mnrPagination');content.replaceChildren();pager.replaceChildren();const total=Math.max(1,Math.ceil(items.length/PAGE_SIZE));pageIndex=Math.max(1,Math.min(pageIndex,total));const slice=items.slice((pageIndex-1)*PAGE_SIZE,pageIndex*PAGE_SIZE);if(!slice.length){const p=document.createElement('p');p.className='mnr-empty';p.textContent=mode==='new'?'Chưa có truyện mới trong 7 ngày qua 🌷':'Chưa có dữ liệu lượt đọc chương';content.append(p)}else if(mode==='new'){const grid=document.createElement('div');grid.className='mnr-grid';slice.forEach(x=>grid.append(makeCard(x)));content.append(grid)}else{const list=document.createElement('div');list.className='mnr-ranking';slice.forEach((x,i)=>{const pos=(pageIndex-1)*PAGE_SIZE+i+1,b=document.createElement('button');b.type='button';b.className='mnr-rank';const num=document.createElement('span');num.className='mnr-number';num.textContent=pos===1?'♛':pos===2?'♕':pos===3?'♔':String(pos);b.append(num);const im=document.createElement('img');im.alt='';im.loading='lazy';if(cover(x))im.src=cover(x);b.append(im);const info=document.createElement('span');info.className='mnr-rank-info';const name=document.createElement('strong');name.textContent=x.info?.name||x.id;const meta=document.createElement('small');meta.textContent=chapterCount(x).toLocaleString('vi-VN')+' chương';info.append(name,meta);b.append(info);const countEl=document.createElement('span');countEl.className='mnr-count';countEl.textContent='◉ '+count(x).toLocaleString('vi-VN');b.append(countEl);b.onclick=()=>openStory(x);list.append(b)});content.append(list)}
  const prev=document.createElement('button');prev.textContent='‹ Trước';prev.disabled=pageIndex===1;prev.onclick=()=>{pageIndex--;render();page.scrollTop=0};const label=document.createElement('span');label.textContent=`Trang ${pageIndex} / ${total}`;const next=document.createElement('button');next.textContent='Sau ›';next.disabled=pageIndex===total;next.onclick=()=>{pageIndex++;render();page.scrollTop=0};pager.append(prev,label,next)}
-async function show(nextMode,fromHistory=false){window.meowNewRankHistoryBusy=true;if(!fromHistory){preservePrevious();history.pushState(navState('list',nextMode),'',location.href)}mode=nextMode;pageIndex=1;const req=++requestId;document.getElementById('meowSideClose')?.click();window.meowCloseIntegratedWallet?.();window.meowCloseProfile?.();document.body.classList.remove('meowGenrePageActive');const genre=$('meowGenrePage');if(genre){genre.hidden=true;genre.style.display='none'}for(const id of ['readerPage','storyPage']){const el=$(id);if(el)el.style.display='none'}const home=$('homePage');if(home){home.hidden=true;home.style.display='none'}page.hidden=false;document.body.classList.add('meowNewRankActive');page.scrollTop=0;$('mnrTitle').textContent=mode==='new'?'✦ Truyện mới cập nhật':'♛ Xếp hạng truyện';$('mnrSubtitle').textContent=mode==='new'?'Chỉ hiện truyện được thêm trong 7 ngày gần nhất · mới nhất trước':'Xếp hạng theo tổng lượt đọc của các chương';$('mnrContent').textContent='Đang tải danh sách...';$('mnrPagination').replaceChildren();try{const bridge=window.meowMenuBridge;if(!bridge)throw Error('Chưa tải xong dữ liệu');const all=bridge.stories();if(req!==requestId)return;items=all.filter(x=>x&&x.info).filter(x=>mode!=='new'||(created(x)>Date.now()-7*86400000&&created(x)<=Date.now())).sort(mode==='new'?(a,b)=>created(b)-created(a):((a,b)=>count(b)-count(a)));render();if(mode==='rank')void hydrateRankingTotals(items,req)}catch(e){$('mnrContent').textContent='Không tải được danh sách, bà thử lại nha.'}finally{setTimeout(()=>{window.meowNewRankHistoryBusy=false},350)}}
-$('meowMenuNewest')?.addEventListener('click',()=>show('new'));$('meowMenuTopReads')?.addEventListener('click',()=>show('rank'));$('mnrBack')?.addEventListener('click',back);$('meowMenuHome')?.addEventListener('click',()=>{if(!page.hidden)back()});
+async function show(nextMode,fromHistory=false){window.meowNewRankHistoryBusy=true;if(!fromHistory){preservePrevious();history.pushState(navState('list',nextMode),'',location.href)}mode=nextMode;pageIndex=1;const req=++requestId;document.getElementById('meowSideClose')?.click();window.meowCloseIntegratedWallet?.();window.meowCloseProfile?.();document.body.classList.remove('meowGenrePageActive');const genre=$('meowGenrePage');if(genre){genre.hidden=true;genre.style.display='none'}for(const id of ['readerPage','storyPage']){const el=$(id);if(el)el.style.display='none'}const home=$('homePage');if(home){home.hidden=true;home.style.display='none'}page.hidden=false;page.style.display='block';document.body.classList.add('meowNewRankActive');page.scrollTop=0;$('mnrTitle').textContent=mode==='new'?'✦ Truyện mới cập nhật':'♛ Xếp hạng truyện';$('mnrSubtitle').textContent=mode==='new'?'Chỉ hiện truyện được thêm trong 7 ngày gần nhất · mới nhất trước':'Xếp hạng theo tổng lượt đọc của các chương';$('mnrContent').textContent='Đang tải danh sách...';$('mnrPagination').replaceChildren();try{const bridge=window.meowMenuBridge;if(!bridge)throw Error('Chưa tải xong dữ liệu');const all=bridge.stories();if(req!==requestId)return;items=all.filter(x=>x&&x.info).filter(x=>mode!=='new'||(created(x)>Date.now()-7*86400000&&created(x)<=Date.now())).sort(mode==='new'?(a,b)=>created(b)-created(a):((a,b)=>count(b)-count(a)));render();if(mode==='rank')void hydrateRankingTotals(items,req)}catch(e){$('mnrContent').textContent='Không tải được danh sách, bà thử lại nha.'}finally{setTimeout(()=>{window.meowNewRankHistoryBusy=false},350)}}
+// FIX: Home from New/Ranking must never return to cached wallet or remain behind ranking layer.
+function meowRankGoHome(){
+  conceal();
+  document.getElementById('meowSideMenu')?.classList.remove('is-open');
+  const shade=$('meowSideShade');if(shade)shade.hidden=true;
+  $('meowSideOpen')?.setAttribute('aria-expanded','false');
+  try{window.meowCloseIntegratedWallet?.()}catch(_){}
+  try{window.meowCloseProfile?.()}catch(_){}
+  const wallet=$('meowIntegratedWallet');if(wallet){wallet.hidden=true;wallet.style.display='none'}
+  document.body.classList.remove('meowGenrePageActive','meowProfilePageOpen','meow-route-wallet');
+  document.body.style.overflow='';
+  window.meowNavigateExclusive?.('home');
+  for(const id of ['storyPage','readerPage','meowGenrePage']){const el=$(id);if(el){el.hidden=true;el.style.display='none'}}
+  const home=$('homePage');if(home){home.hidden=false;home.style.display='block'}
+  try{const state={...(history.state||{})};delete state.meowNewRankNav;const snap=window.meowCaptureNavState?.();if(snap)state.meowNavV2=snap;history.replaceState(state,'',location.pathname+location.search+location.hash)}catch(_){}
+  window.scrollTo(0,0);
+}
+// Capture before the older menu/logo handlers so they cannot reopen a stale route.
+window.addEventListener('click',event=>{
+  if(page.hidden && !document.body.classList.contains('meowNewRankActive'))return;
+  const target=event.target.closest('#meowMenuHome,.meowUnifiedLogo,.meowLogo,#meowLogo,[data-meow-home]');
+  if(!target)return;
+  event.preventDefault();event.stopImmediatePropagation();meowRankGoHome();
+},true);
+window.addEventListener('keydown',event=>{
+  if(page.hidden || !['Enter',' '].includes(event.key))return;
+  if(!event.target.closest('.meowUnifiedLogo,.meowLogo,#meowLogo,[data-meow-home]'))return;
+  event.preventDefault();event.stopImmediatePropagation();meowRankGoHome();
+},true);
+$('meowMenuNewest')?.addEventListener('click',()=>show('new'));$('meowMenuTopReads')?.addEventListener('click',()=>show('rank'));$('mnrBack')?.addEventListener('click',back);$('meowMenuHome')?.addEventListener('click',()=>{if(!page.hidden)meowRankGoHome()});
 window.addEventListener('popstate',e=>{
  const nav=e.state?.[NAV_KEY];
  if(nav?.view==='list'){if(!page.hidden && mode===(nav.kind||'new'))return;show(nav.kind||'new',true);return}
@@ -12633,8 +12662,7 @@ window.addEventListener('popstate',e=>{
  }
  if(!page.hidden || document.body.classList.contains('meowNewRankActive')){
    conceal();
-   if(e.state?.meowNavV2){window.meowRestoreNavState?.(e.state.meowNavV2)}
-   else {window.meowNavigateExclusive?.('home');const home=$('homePage');if(home){home.hidden=false;home.style.display='block'}}
+   if(!e.state?.meowNavV2){window.meowNavigateExclusive?.('home');const home=$('homePage');if(home){home.hidden=false;home.style.display='block'}}
  }
 });
 document.addEventListener('click',e=>{if(page.hidden)return;if(e.target.closest('#meowSideMenu [data-ms-action],#meowSideMenu [data-ms-toggle]'))conceal()},true);
