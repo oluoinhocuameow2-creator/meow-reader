@@ -2594,6 +2594,74 @@ body.meowSiteDark .meowSearchIconBtn,body.meowSiteDark #meowHeaderSearchBtn{back
 @media(hover:none){.meowStoryCard:hover,.meowStoryCard:hover .meowCover img{transform:none!important}.meowStoryCard{transition:none!important}}
 .meowStoryCard{contain:layout style}
 @media(prefers-reduced-motion:reduce){.meowStoryCard,.meowStoryCard *{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* MEOW BULK UI — compact, fixed summary and cute confirmation */
+.meowChapterTitleDivider{display:block!important;text-align:center}
+.meowBulkOpenRow{display:flex;justify-content:center;margin:12px 0 4px}
+.meowBulkOpen{background:linear-gradient(135deg,#ff6b80,#e84165)!important;color:#fff!important;border:1px solid #ff9bac!important;box-shadow:0 5px 15px #e9476a35;padding:8px 16px!important;font-size:12px!important}
+.meowBulkOverlay{padding:10px!important;align-items:center!important}
+.meowBulkPanel{height:min(690px,calc(100dvh - 36px));max-height:calc(100dvh - 36px)!important;width:min(470px,100%)!important;display:flex;flex-direction:column;overflow:hidden!important;padding:13px!important;border-radius:20px!important;gap:7px}
+.meowBulkPanel h3{font-size:17px!important}
+.meowBulkPanel .meowBulkNote{font-size:11px;margin:2px 0;line-height:1.45}
+.meowBulkPanel input[type=text]{padding:10px!important;font-size:13px!important;flex-shrink:0}
+.meowBulkPanel>.meowBulkActions{flex-shrink:0}
+.meowBulkActions button{padding:9px 7px!important;font-size:12px!important;border-radius:11px!important;min-height:38px}
+.meowBulkList{flex:1;min-height:70px;max-height:none!important;overflow-y:auto!important;overscroll-behavior:contain;margin:3px 0!important;padding:5px 8px!important}
+.meowBulkItem{padding:7px 3px!important;font-size:11px!important;gap:7px!important}
+.meowBulkItem span{line-height:1.45}
+.meowBulkItem b{white-space:nowrap}
+.meowBulkFooter{flex-shrink:0;background:linear-gradient(135deg,#fff4fa,#f8edff);border:1px solid #f5d0e5;border-radius:14px;padding:9px 10px;box-shadow:0 -3px 12px #dba1c71a}
+#meowBulkTotal{margin:0 0 5px!important;font-size:12px!important;line-height:1.5}
+#meowBulkStatus{margin:0 0 5px!important;font-size:10px!important}
+.meowBulkFooter .meowBulkActions button{min-height:40px}
+.meowBulkConfirmOverlay{position:fixed;inset:0;z-index:10100;background:#44213f88;display:grid;place-items:center;padding:18px;backdrop-filter:blur(7px)}
+.meowBulkConfirmCard{width:min(350px,100%);padding:23px 19px;text-align:center;border:2px dashed #f6b5d8;border-radius:25px;background:linear-gradient(150deg,#fffaff,#fff0f8,#f5ebff);box-shadow:0 20px 65px #3b203b55;color:#865170}
+.meowBulkConfirmCard .meowBulkConfirmIcon{font-size:38px;margin-bottom:7px}
+.meowBulkConfirmCard h3{font-size:19px;color:#d45491;margin:0 0 10px}
+.meowBulkConfirmCard p{font-size:13px;line-height:1.65;margin:7px 0 17px}
+.meowBulkConfirmCard strong{color:#d64e86}
+.meowBulkConfirmCard .meowBulkActions button{font-size:13px!important}
+@media(max-height:620px){.meowBulkPanel{height:calc(100dvh - 18px);max-height:calc(100dvh - 18px)!important}}
+
+
+/* MEOW BULK MOBILE FIX V2: true viewport modal, unobstructed actions */
+#meowBulkOverlay.meowBulkOverlay:not([hidden]){position:fixed!important;inset:0!important;z-index:2147483000!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:10px!important;box-sizing:border-box!important;background:rgba(48,24,45,.65)!important}
+#meowBulkOverlay .meowBulkPanel{position:relative!important;box-sizing:border-box!important;width:min(440px,100%)!important;height:min(610px,calc(100dvh - 28px))!important;max-height:calc(100dvh - 28px)!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:5px!important;padding:12px!important;overflow:hidden!important;transform:none!important;z-index:1!important}
+#meowBulkOverlay .meowBulkPanel>div:first-child{flex:0 0 auto!important;min-height:30px!important}
+#meowBulkOverlay .meowBulkPanel h3{font-size:15px!important}
+#meowBulkOverlay .meowBulkNote{font-size:10px!important;margin:2px 0!important;line-height:1.35!important}
+#meowBulkOverlay #meowBulkRange{font-size:12px!important;padding:8px 10px!important;min-height:35px!important}
+#meowBulkOverlay .meowBulkActions{display:flex!important;flex-wrap:nowrap!important;gap:7px!important}
+#meowBulkOverlay .meowBulkActions button{font-size:11px!important;line-height:1.25!important;min-height:35px!important;padding:7px 8px!important;touch-action:manipulation!important}
+#meowBulkOverlay .meowBulkList{flex:1 1 auto!important;min-height:40px!important;max-height:none!important;overflow:auto!important;margin:3px 0!important;overscroll-behavior:contain!important}
+#meowBulkOverlay .meowBulkItem{font-size:11px!important;padding:7px 3px!important}
+#meowBulkOverlay .meowBulkFooter{flex:0 0 auto!important;position:relative!important;z-index:3!important;padding:8px!important;margin:0!important}
+#meowBulkOverlay #meowBulkTotal{font-size:11px!important;line-height:1.35!important;margin:0 0 5px!important}
+#meowBulkOverlay #meowBulkStatus:empty{display:none!important}
+#meowBulkOverlay #meowBulkBuy{cursor:pointer!important;pointer-events:auto!important}
+.meowBulkConfirmOverlay{z-index:2147483001!important}
+.meowBulkConfirmCard{padding:17px!important}
+.meowBulkConfirmCard .meowBulkActions{display:flex!important;gap:8px!important}
+.meowBulkConfirmCard .meowBulkActions button{flex:1!important;min-height:40px!important;padding:8px!important}
+@media(max-width:480px){#meowBulkOverlay.meowBulkOverlay:not([hidden]){padding:7px!important}#meowBulkOverlay .meowBulkPanel{height:calc(100dvh - 14px)!important;max-height:calc(100dvh - 14px)!important;border-radius:16px!important}}
+
+/* MEOW BULK V3 — compact, accessible mobile purchase sheet */
+body.meow-bulk-active{overflow:hidden!important}
+body.meow-bulk-active #meowReaderApp{isolation:auto!important}
+#meowBulkOverlay.meowBulkOverlay:not([hidden]){z-index:2147483640!important;position:fixed!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:12px!important;overflow:hidden!important}
+#meowBulkOverlay .meowBulkPanel{width:min(420px,100%)!important;height:min(540px,calc(100dvh - 32px))!important;max-height:calc(100dvh - 32px)!important;padding:12px!important;gap:5px!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;box-sizing:border-box!important}
+#meowBulkOverlay .meowBulkPanel>div:first-child{min-height:28px!important}
+#meowBulkOverlay .meowBulkPanel h3{font-size:15px!important}
+#meowBulkOverlay .meowBulkNote{font-size:10px!important;line-height:1.3!important;margin:2px 0!important}
+#meowBulkOverlay #meowBulkRange{min-height:34px!important;padding:7px 9px!important;font-size:12px!important}
+#meowBulkOverlay .meowBulkActions button{font-size:11px!important;min-height:34px!important;padding:6px!important}
+#meowBulkOverlay .meowBulkList{flex:1 1 0!important;min-height:45px!important;overflow-y:auto!important;max-height:none!important;margin:3px 0!important}
+#meowBulkOverlay .meowBulkItem{padding:6px 3px!important;font-size:11px!important}
+#meowBulkOverlay .meowBulkFooter{flex:0 0 auto!important;padding:7px!important;position:relative!important;z-index:2!important}
+#meowBulkOverlay #meowBulkTotal{font-size:11px!important;margin:0 0 4px!important}
+#meowBulkOverlay #meowBulkBuy{opacity:1!important;pointer-events:auto!important;touch-action:manipulation!important}
+.meowBulkConfirmOverlay{z-index:2147483646!important}
+@media(max-width:480px){#meowBulkOverlay .meowBulkPanel{height:min(510px,calc(100dvh - 26px))!important}}
 </style>
 
 
@@ -3368,8 +3436,74 @@ html body #loginPage .meowLoginBox button:focus-visible,html body #loginPage inp
 #meowNewRankPage .mnr-rank,#meowNewRankPage .mnr-card{transition:background-color .15s ease!important}
 @media(prefers-reduced-motion:reduce){#meowNewRankPage *,#meowChatOpen{animation:none!important;transition:none!important}}
 </style>
+<style id="meow-bulk-style">
+.meowChapterTitleDivider{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px}.meowBulkOpen{border:1px dashed #f4a6cd;border-radius:999px;background:linear-gradient(120deg,#ffe4f1,#f0e4ff);color:#a84680;padding:9px 13px;font-weight:800;font-size:12px;cursor:pointer}.meowBulkOverlay{position:fixed;inset:0;z-index:10050;background:#3e223e80;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(5px)}.meowBulkPanel{width:min(510px,100%);max-height:90dvh;overflow:auto;background:#fff8fc;border:2px dashed #f3b3d6;border-radius:22px;padding:17px;color:#67445b;box-shadow:0 20px 60px #3b203b55}.meowBulkPanel h3{margin:0;color:#bd4d89}.meowBulkPanel input[type=text]{width:100%;padding:12px;border:1px solid #efb7d6;border-radius:12px;background:white;font:inherit}.meowBulkList{max-height:35vh;overflow:auto;margin:10px 0;border:1px dashed #efc2db;border-radius:12px;padding:8px}.meowBulkItem{display:flex;align-items:center;gap:9px;padding:9px 5px;border-bottom:1px solid #f7e0ee;font-size:12px}.meowBulkItem span{flex:1}.meowBulkActions{display:flex;gap:8px;flex-wrap:wrap}.meowBulkActions button{flex:1;border:0;border-radius:12px;padding:11px;background:#f6dfed;color:#9d4775;font-weight:800}.meowBulkActions button.primary{background:linear-gradient(120deg,#fa82b2,#bb94f0);color:white}.meowBulkActions button:disabled{opacity:.5}.meowBulkNote{font-size:12px;color:#a65b84;line-height:1.6;margin:9px 0}
+</style>
+<style id="meow-bulk-final-fix">
+/* Definitive mobile layout, applied after every legacy stylesheet */
+#meowBulkOverlay[hidden]{display:none!important}
+#meowBulkOverlay:not([hidden]){position:fixed!important;inset:0!important;z-index:2147483640!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:12px!important;background:rgba(43,20,40,.64)!important;box-sizing:border-box!important}
+#meowBulkOverlay .meowBulkPanel{display:flex!important;flex-direction:column!important;width:min(440px,100%)!important;height:min(570px,calc(100dvh - 40px))!important;max-height:calc(100dvh - 40px)!important;min-height:0!important;overflow:hidden!important;gap:7px!important;padding:14px!important;border-radius:20px!important;box-sizing:border-box!important}
+#meowBulkOverlay .meowBulkPanel>div:first-child{flex:none!important}
+#meowBulkOverlay .meowBulkPanel h3{font-size:17px!important}
+#meowBulkOverlay .meowBulkNote{flex:none!important;margin:2px 0!important;font-size:11px!important;line-height:1.4!important}
+#meowBulkOverlay #meowBulkRange{flex:none!important;min-height:39px!important;padding:9px 11px!important;font-size:13px!important}
+#meowBulkOverlay .meowBulkActions{display:flex!important;gap:8px!important;flex-wrap:nowrap!important}
+#meowBulkOverlay .meowBulkActions button{min-height:39px!important;padding:8px!important;font-size:12px!important;line-height:1.3!important;touch-action:manipulation!important}
+#meowBulkOverlay .meowBulkList{flex:1 1 0!important;min-height:50px!important;max-height:none!important;overflow-y:auto!important;overscroll-behavior:contain!important;margin:0!important;padding:6px!important}
+#meowBulkOverlay .meowBulkItem{padding:8px 4px!important;font-size:12px!important;line-height:1.45!important}
+#meowBulkOverlay .meowBulkFooter{flex:none!important;position:relative!important;z-index:5!important;padding:9px!important;margin:0!important;background:#fff0f7!important;border-radius:13px!important}
+#meowBulkOverlay #meowBulkTotal{font-size:12px!important;line-height:1.5!important;margin:0 0 5px!important}
+#meowBulkOverlay #meowBulkStatus:empty{display:none!important}
+#meowBulkOverlay #meowBulkBuy{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
+.meowBulkConfirmOverlay{position:fixed!important;inset:0!important;z-index:2147483646!important;display:grid!important;place-items:center!important;padding:18px!important;background:#44213f99!important}
+.meowBulkConfirmCard{width:min(380px,100%)!important;padding:22px!important;border-radius:22px!important;background:#fff6fb!important;text-align:center!important;box-shadow:0 18px 55px #3b203b55!important}
+.meowBulkConfirmCard .meowBulkActions{display:flex!important;gap:9px!important}
+.meowBulkConfirmCard button{flex:1!important;min-height:43px!important;border:0!important;border-radius:13px!important;background:#f4dbe9!important;color:#984b75!important;font-weight:800!important}
+.meowBulkConfirmCard button.primary{background:linear-gradient(110deg,#ff7eaa,#c38ee8)!important;color:white!important}
+.meowBulkOpenRow{width:100%!important;display:flex!important;justify-content:center!important;margin:9px 0 3px!important}
+#meowBulkOpen{background:linear-gradient(120deg,#ff536a,#e74476)!important;color:white!important;border:1px solid #ff718d!important;border-radius:999px!important;font-size:12px!important;padding:9px 16px!important}
+@media(max-width:480px){#meowBulkOverlay .meowBulkPanel{height:min(560px,calc(100dvh - 28px))!important;padding:11px!important}#meowBulkOverlay .meowBulkItem{font-size:11px!important}}
+</style>
+
+<style id="meowHomeFullBleedFix20261031">
+/* Home phủ ngang màn hình, bỏ dải lề trái/phải nhưng giữ khoảng đệm nội dung. */
+html body #meowReaderApp #homePage.meowPage{
+ width:100%!important;max-width:none!important;min-width:0!important;
+ margin-left:0!important;margin-right:0!important;
+ padding-left:0!important;padding-right:0!important;
+ box-sizing:border-box!important;
+}
+html body #meowReaderApp #homePage>.meowHero{
+ width:100%!important;max-width:none!important;
+ margin-left:0!important;margin-right:0!important;
+ box-sizing:border-box!important;
+}
+@media(max-width:700px){
+ html body #meowReaderApp #homePage.meowPage{width:100%!important;max-width:100%!important;}
+ html body #meowReaderApp #homePage>.meowHero{padding-left:10px!important;padding-right:10px!important;}
+}
+</style>
+<style id="meowProfileFullBleedFix20261031">
+/* Profile truyện: bỏ hai dải lề ngoài, giống Home; không đụng Reader. */
+html body #meowReaderApp #storyPage.meowPage{
+ width:100%!important;max-width:none!important;min-width:0!important;
+ margin-left:0!important;margin-right:0!important;
+ padding-left:0!important;padding-right:0!important;box-sizing:border-box!important;
+}
+html body #meowReaderApp #storyPage>.meowStoryDetail{
+ width:100%!important;max-width:none!important;box-sizing:border-box!important;
+ margin-left:0!important;margin-right:0!important;
+}
+@media(max-width:700px){
+ html body #meowReaderApp #storyPage.meowPage{width:100%!important;max-width:100%!important;}
+ html body #meowReaderApp #storyPage>.meowStoryDetail{padding-left:12px!important;padding-right:12px!important;}
+ html body #meowReaderApp #storyPage>.meowStoryTopActions{padding-left:10px!important;padding-right:10px!important;}
+}
+</style>
 </head>
 <body>
+<div id="meowStartupLoading" role="status" aria-label="Meow đang tải"><div class="meow-loading-center"><div class="meow-loading-circle"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiU7RJCaDnotJOXcR9w50HZR39YwP2FNlgTUFLOy0CEZ3hKeQUQhQbGaD2uWYCAO6S5Qj4UeGPPEeBoTHcECz9Zs6I6VHk6kvRW__zo4SkMCw6tBk35Rf7XoWU1E8E3Ft-JkMwOhGCd5XcCgzCniCyO1I3scO_DGWbVzKXLdcob2pAd6uKfRbcGR-5XpRc/s381/t%E1%BA%A3i%20xu%E1%BB%91ng%20%284%29.png" alt="Mini Meow"></div><span class="meow-loading-dots">Đang tải</span></div></div>
 <div id="meowAgeGate" role="dialog" aria-modal="true" aria-labelledby="meowAgeTitle">
   <section class="meowAgeBox">
     <div class="meowAgeCrown meowAgeLogoWrap"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiU7RJCaDnotJOXcR9w50HZR39YwP2FNlgTUFLOy0CEZ3hKeQUQhQbGaD2uWYCAO6S5Qj4UeGPPEeBoTHcECz9Zs6I6VHk6kvRW__zo4SkMCw6tBk35Rf7XoWU1E8E3Ft-JkMwOhGCd5XcCgzCniCyO1I3scO_DGWbVzKXLdcob2pAd6uKfRbcGR-5XpRc/s381/t%E1%BA%A3i%20xu%E1%BB%91ng%20%284%29.png" alt="Logo Mini Meow" loading="eager" decoding="async"><span class="meowAge18Badge">18+</span></div>
@@ -3872,6 +4006,7 @@ html body #loginPage .meowLoginBox button:focus-visible,html body #loginPage inp
         ></div>
 
         <div class="meowCommentLinkDivider meowChapterTitleDivider" aria-label="Danh sách chương"><span>📚 DANH SÁCH CHƯƠNG 🎀</span></div>
+        <div class="meowBulkOpenRow"><button type="button" id="meowBulkOpen" class="meowBulkOpen">🛒 Mua chương lẻ</button></div>
         <div class="meowChapterTools">
           <input id="meowChapterSearch" type="search" placeholder="🔎 Tìm số chương hoặc tên chương..." aria-label="Tìm chương">
           <div class="meowChapterSort" role="group" aria-label="Sắp xếp chương">
@@ -8807,6 +8942,7 @@ function meowCalendarInit(){
 }
 
 function meowOpenProfile(){
+ window.meowProfileLoadingShow?.();
  window.meowSetExclusiveRoute?.('profile');
  const o=document.getElementById('meowProfileOverlay');
  document.getElementById('meowProfileMenu')?.classList.remove('show');
@@ -8818,16 +8954,16 @@ function meowOpenProfile(){
  // Paint the destination first; expensive card rendering waits until next frame.
  if(needsRender){requestAnimationFrame(()=>setTimeout(()=>{
    if(!document.getElementById('meowProfileOverlay')?.classList.contains('show')||String(currentCustomer?.id||'')!==id)return;
-   meowProfileRender();window.__meowProfileRenderedFor=id;
+   try{meowProfileRender();window.__meowProfileRenderedFor=id;}finally{window.meowProfileLoadingHide?.();}
    if(window.__meowAvatarAppliedFor!==id){meowApplyProfileAvatar();window.__meowAvatarAppliedFor=id;}
    if(typeof meowNotifyUpdateBadge==='function')meowNotifyUpdateBadge();
  },0));}
- else if(typeof meowNotifyUpdateBadge==='function')meowNotifyUpdateBadge();
+ else {window.meowProfileLoadingHide?.();if(typeof meowNotifyUpdateBadge==='function')meowNotifyUpdateBadge();}
  if(typeof meowNotifyStartLiveSync==='function')setTimeout(()=>{
   if(o?.classList.contains('show'))meowNotifyStartLiveSync();
  },80);
 }
-function meowCloseProfile(){const o=document.getElementById("meowProfileOverlay");o?.classList.remove("show");o?.setAttribute("aria-hidden","true");document.body.style.overflow="";document.body.classList.remove("meowProfilePageOpen");if(typeof meowNotifyStopLiveSync==="function")meowNotifyStopLiveSync();clearTimeout(typeof meowNotifyRefreshTimer!=="undefined"?meowNotifyRefreshTimer:null)}
+function meowCloseProfile(){window.meowProfileLoadingHide?.();const o=document.getElementById("meowProfileOverlay");o?.classList.remove("show");o?.setAttribute("aria-hidden","true");document.body.style.overflow="";document.body.classList.remove("meowProfilePageOpen");if(typeof meowNotifyStopLiveSync==="function")meowNotifyStopLiveSync();clearTimeout(typeof meowNotifyRefreshTimer!=="undefined"?meowNotifyRefreshTimer:null)}
 // Delegated click handlers: still work if the header/avatar is re-rendered later.
 document.addEventListener("click",e=>{
  const avatarLogout=e.target.closest("#meowAvatarLogoutIcon");
@@ -9083,6 +9219,7 @@ document.getElementById("meowProfileClose")?.addEventListener("click",meowCloseP
      meowNotifyOpening=false;
      return;
    }
+   window.meowProfileLoadingShow?.();
    root.innerHTML='<div class="meowNotifyPage"><div class="meowNotifyEmpty">🐱 Meow đang gom thư xinh cho bà…</div></div>';
    meowNotifyTabActive="overview";meowNotifyPageIndex=1;
    const uidAtStart=String(currentCustomer?.id||"");
@@ -9096,7 +9233,7 @@ document.getElementById("meowProfileClose")?.addEventListener("click",meowCloseP
 
    }
    catch(e){console.warn("Notification load failed",e);root.innerHTML='<div class="meowNotifyEmpty">🌷 Chưa tải được thông báo. Bà thử lại nha.</div>'}
-   finally{meowNotifyOpening=false;}
+   finally{meowNotifyOpening=false;window.meowProfileLoadingHide?.();}
  }
  document.addEventListener("click",e=>{if(e.target.closest("#meowNotifyBell")){e.preventDefault();e.stopPropagation();meowNotifyOpen()}});
  document.addEventListener("visibilitychange",()=>{
@@ -9177,7 +9314,7 @@ window.meowFooterGetStoryStats = () => {
    if(w===null)wordsComplete=false;else words+=w;
   }
  }
- return {stories:entries.length,reads:readsComplete?reads:null,words:wordsComplete?words:null};
+ return {stories:entries.length,reads:readsComplete?reads:(reads>0?reads:null),words:wordsComplete?words:(words>0?words:null),readsComplete,wordsComplete};
 };
 // Bảng giá là danh mục công khai của tất cả truyện có giá Full.
 // Tuyệt đối không lọc theo quyền xem tên tác giả hay các truyện đã mua.
@@ -9218,6 +9355,78 @@ window.meowReaderChapterBridge = {
   },
   open(id){return openChapter(String(id))}
 };
+
+// Bulk chapter purchases: uses the same Firebase instance and purchase path as the existing reader.
+const byId=id=>document.getElementById(id);
+const money=n=>Math.floor(Number(n)||0).toLocaleString('vi-VN')+'đ';
+let selected=new Set(), eligible=[], busy=false;
+const overlay=document.createElement('div');overlay.id='meowBulkOverlay';overlay.className='meowBulkOverlay';overlay.hidden=true;overlay.style.display='none';
+overlay.innerHTML=`<div class="meowBulkPanel" role="dialog" aria-modal="true" aria-label="Mua chương lẻ"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3>🎀 Mua chương lẻ</h3><button id="meowBulkClose" type="button" aria-label="Đóng" style="border:0;background:#ffe3ef;border-radius:10px;padding:8px">✕</button></div><p class="meowBulkNote">Chỉ hiển thị chương có giá chưa sở hữu. Chọn chương hoặc nhập nhanh dãy số chương.</p><input type="text" id="meowBulkRange" placeholder="Ví dụ: 1,2,3,10-20,35,38,40"><div class="meowBulkActions" style="margin-top:8px"><button type="button" id="meowBulkApply">Áp dụng dãy số</button><button type="button" id="meowBulkAll">☑ Chọn tất cả</button></div><div id="meowBulkList" class="meowBulkList"></div><div class="meowBulkFooter"><p id="meowBulkTotal" style="font-weight:800"></p><p id="meowBulkStatus" class="meowBulkNote" role="status"></p><div class="meowBulkActions"><button id="meowBulkCancel" type="button">Đóng</button><button id="meowBulkBuy" class="primary" type="button">💗 Xác nhận mua</button></div></div></div>`;
+document.body.appendChild(overlay);
+function meowBulkConfirm(count,total){
+ return new Promise(resolve=>{
+  const layer=document.createElement('div');layer.className='meowBulkConfirmOverlay';
+  layer.innerHTML=`<div class="meowBulkConfirmCard" role="alertdialog" aria-modal="true" aria-label="Xác nhận mua chương"><div class="meowBulkConfirmIcon">🎀💗</div><h3>Xác nhận mua chương</h3><p>Bà muốn mở khóa <strong>${count} chương</strong> với tổng <strong>${money(total)}</strong> từ Ví Meow chứ?</p><div class="meowBulkActions"><button type="button" data-no>🌷 Để sau</button><button type="button" class="primary" data-yes>💗 Đồng ý mua</button></div></div>`;
+  const finish=value=>{layer.remove();resolve(value)};
+  layer.querySelector('[data-no]').onclick=()=>finish(false);
+  layer.querySelector('[data-yes]').onclick=()=>finish(true);
+  layer.addEventListener('click',e=>{if(e.target===layer)finish(false)});
+  document.body.appendChild(layer);
+ });
+}
+const close=()=>{if(busy)return;overlay.hidden=true;overlay.style.display='none';document.body.classList.remove('meow-bulk-active')};
+byId('meowBulkClose').onclick=close;byId('meowBulkCancel').onclick=close;
+overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+function available(){
+ const chapters=typeof currentChapters!=='undefined'?currentChapters:{};
+ if(typeof hasFullStoryAccess==='function'&&hasFullStoryAccess())return [];
+ return Object.entries(chapters||{}).filter(([id,c])=>c&&Number(meowPriceNumber(c.price))>0&&!(typeof hasChapterAccess==='function'&&hasChapterAccess(id))).map(([id,c])=>({id,chapter:c,price:Math.floor(meowPriceNumber(c.price))})).sort((a,b)=>Number(a.id)-Number(b.id));
+}
+function draw(){
+ const list=byId('meowBulkList');list.replaceChildren();
+ if(!eligible.length)list.textContent='🌸 Không có chương lẻ nào cần mua.';
+ for(const item of eligible){const label=document.createElement('label');label.className='meowBulkItem';const cb=document.createElement('input');cb.type='checkbox';cb.checked=selected.has(item.id);cb.onchange=()=>{cb.checked?selected.add(item.id):selected.delete(item.id);totals()};const name=document.createElement('span');name.textContent='Chương '+item.id+(item.chapter.title?' - '+item.chapter.title:'');const price=document.createElement('b');price.textContent=money(item.price);label.append(cb,name,price);list.append(label)}totals();
+}
+function totals(){const items=eligible.filter(x=>selected.has(x.id));const total=items.reduce((a,x)=>a+x.price,0);byId('meowBulkTotal').textContent=`Đã chọn ${items.length} chương · Tổng ${money(total)} · Số dư ${money(currentCustomer?._meowWallet?.balance)}`;byId('meowBulkBuy').disabled=busy;byId('meowBulkBuy').setAttribute('aria-disabled',String(busy))}
+function open(){if(!currentCustomer?.id){if(typeof meowCuteNotice==='function')meowCuteNotice('login');else alert('Vui lòng đăng nhập');return}eligible=available();selected=new Set();byId('meowBulkRange').value='';byId('meowBulkStatus').textContent='';draw();overlay.hidden=false;overlay.style.display='flex';document.body.classList.add('meow-bulk-active')}
+byId('meowBulkOpen')?.addEventListener('click',open);
+byId('meowBulkAll').onclick=()=>{selected=new Set(eligible.map(x=>x.id));draw()};
+byId('meowBulkApply').onclick=()=>{const raw=byId('meowBulkRange').value.trim();if(!/^[\d\s,\-]+$/.test(raw)){byId('meowBulkStatus').textContent='Dãy chương không hợp lệ.';return}const nums=new Set();for(const token of raw.split(',')){const t=token.trim();if(!t)continue;const m=t.match(/^(\d+)\s*-\s*(\d+)$/);if(m){const a=+m[1],b=+m[2];if(b<a||b-a>2000){byId('meowBulkStatus').textContent='Khoảng chương không hợp lệ hoặc quá dài.';return}for(let n=a;n<=b;n++)nums.add(String(n))}else if(/^\d+$/.test(t))nums.add(String(+t));else{byId('meowBulkStatus').textContent='Dãy chương không hợp lệ.';return}}selected=new Set(eligible.filter(x=>nums.has(String(+x.id))).map(x=>x.id));byId('meowBulkStatus').textContent=`Đã tìm thấy ${selected.size} chương chưa mua có giá.`;draw()};
+byId('meowBulkBuy').onclick=async()=>{
+ if(busy)return;const chosen=eligible.filter(x=>selected.has(x.id));if(!chosen.length){byId('meowBulkStatus').textContent='🌸 Hãy tích chọn ít nhất một chương hoặc áp dụng dãy số trước khi mua nha.';byId('meowBulkList').scrollTop=0;return;}
+ const total=chosen.reduce((a,x)=>a+x.price,0);if(!await meowBulkConfirm(chosen.length,total))return;
+ busy=true;totals();byId('meowBulkStatus').textContent='⏳ Đang kiểm tra quyền sở hữu và số dư...';
+ try{
+  // Recheck remote rights before purchase; never rely on the stale UI selection.
+  const uid=String(currentCustomer.id),sid=String(currentStoryId);
+  const [pSnap,rightsSnap,bookSnap]=await Promise.all([get(ref(db,`${MEOW_PURCHASE_DATA_PATH}/${uid}`)),get(ref(db,`customers/${uid}/chapterVip/${sid}`)),get(ref(db,`customers/${uid}/books/${sid}`))]);
+  const owned=new Set();const purchases=pSnap.val()||{};let full=false;
+  Object.values(purchases).forEach(p=>{if(String(p?.storyId)!==sid)return;if(p.full===true||p.type==='full'||p.purchaseType==='full')full=true;if(p.chapterId&&(p.type==='chapter'||p.purchaseType==='chapter'))owned.add(String(p.chapterId))});
+  const rights=rightsSnap.val()||{};Object.entries(rights).forEach(([id,v])=>{if(v===true||v?.unlocked===true||v?.purchased===true||v?.vip===true)owned.add(String(id))});
+  const book=bookSnap.val()||{};if(book.full===true||book.vip===true||book.access==='full')full=true;
+  const fresh=full?[]:chosen.filter(x=>!owned.has(x.id)&&currentChapters[x.id]&&Math.floor(meowPriceNumber(currentChapters[x.id].price))===x.price);
+  if(!fresh.length){byId('meowBulkStatus').textContent='Các chương đã sở hữu hoặc giá đã thay đổi. Mở lại danh sách nha.';return}
+  const amount=fresh.reduce((a,x)=>a+x.price,0);
+  if(fresh.length!==chosen.length){byId('meowBulkStatus').textContent='Danh sách quyền mua vừa thay đổi. Vui lòng mở lại để xác nhận giá mới.';return}
+  const walletRef=ref(db,`${MEOW_WALLET_DATA_PATH}/${uid}`);
+  const transaction=await runTransaction(walletRef,w=>{if(!w||!Number.isFinite(Number(w.balance))||Number(w.balance)<amount)return;w.balance=Number(w.balance)-amount;w.totalOut=(Number(w.totalOut)||0)+amount;return w});
+  if(!transaction.committed)throw Error('Số dư không đủ hoặc ví không thể cập nhật.');
+  let written=false;
+  try{
+   const now=Date.now(),updates={};
+   for(const x of fresh){const key=push(ref(db,`${MEOW_PURCHASE_DATA_PATH}/${uid}`)).key;updates[`${MEOW_PURCHASE_DATA_PATH}/${uid}/${key}`]={customerId:uid,storyId:sid,storyTitle:String(currentStory.info?.name||sid),type:'chapter',purchaseType:'chapter',full:false,chapterId:x.id,chapterTitle:String(x.chapter.title||''),price:x.price,amount:x.price,createdAt:now,source:'bulk_chapter_purchase'};updates[`customers/${uid}/chapterVip/${sid}/${x.id}`]={vip:true,unlocked:true,purchased:true,purchasedAt:now}}
+   const txKey=push(ref(db,MEOW_TX_DATA_PATH)).key;updates[`${MEOW_TX_DATA_PATH}/${txKey}`]={customerId:uid,name:String(currentCustomer.name||uid),type:'purchase',amount,source:'bulk_chapter_purchase',storyId:sid,chapterIds:fresh.map(x=>x.id),note:`Mua ${fresh.length} chương lẻ`,createdAt:now};
+   await update(ref(db),updates);written=true;
+   currentCustomer._meowWallet=transaction.snapshot.val();if(typeof renderMeowBalance==='function')renderMeowBalance(currentCustomer._meowWallet);
+   if(!currentCustomer.chapterVip)currentCustomer.chapterVip={};if(!currentCustomer.chapterVip[sid])currentCustomer.chapterVip[sid]={};fresh.forEach(x=>{currentCustomer.chapterVip[sid][x.id]=true});
+   if(typeof meowPurchasedRecords!=='undefined')Object.values(updates).filter(x=>x&&x.purchaseType==='chapter').forEach(x=>meowPurchasedRecords.push(x));
+   if(typeof renderChapterList==='function')renderChapterList();
+   byId('meowBulkStatus').textContent=`🎉 Mua thành công ${fresh.length} chương, đã trừ ${money(amount)}.`;
+   eligible=available();selected.clear();draw();window.dispatchEvent(new CustomEvent('meow-purchases-updated'));
+  }catch(err){if(!written){try{await runTransaction(walletRef,w=>{if(!w)return;w.balance=(Number(w.balance)||0)+amount;w.totalOut=Math.max(0,(Number(w.totalOut)||0)-amount);return w})}catch(refundErr){console.error('Refund requires review',refundErr);byId('meowBulkStatus').textContent='Lỗi hoàn tiền, vui lòng liên hệ admin để kiểm tra giao dịch.';return}}throw err}
+ }catch(err){console.error('Bulk purchase failed',err);byId('meowBulkStatus').textContent='❌ '+(err.message||'Không thể hoàn tất giao dịch.')}finally{busy=false;totals()}
+};
+
 </script>
 
 
@@ -9993,7 +10202,7 @@ body.meowSiteDark .meowProfileLibraryTab.is-active{background:linear-gradient(13
 <script id="meow-checkin-daily-button-visibility">
 (function(){function run(){const btn=document.querySelector('#meowCheckinFloat,#meowCheckinButton,#meowDailyCheckinBtn,[data-meow-checkin-open]');if(!btn)return;try{const key='meowCheckinLastClaimDate';const last=localStorage.getItem(key);const today=new Date();const stamp=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');if(last===stamp)btn.style.display='none';else btn.style.display='';}catch(e){btn.style.display=''}}document.addEventListener('DOMContentLoaded',run);setTimeout(run,1000);})();
 </script>
-\n<!-- Meow fix: Vietnamese lunar calendar, check-in received image, stable deduplicated notifications -->
+<!-- Meow fix: Vietnamese lunar calendar, check-in received image, stable deduplicated notifications -->
 
 <style id="meow-story-inline-autocomplete-style">
 .meowStoryTopActionsSearch{position:relative;z-index:50;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -10124,7 +10333,7 @@ body.meowGenrePageActive #meowProfileOverlay.show{display:block!important;z-inde
   return {states,active,genreActive:document.body.classList.contains('meowGenrePageActive'),story:window.meowGetReaderRoute?.().story||'',chapter:window.meowGetReaderRoute?.().chapter||'',genre:el('meowGenrePageTitle')?.textContent||'',scroll:window.scrollY};
  }
  function signature(s){return JSON.stringify({v:Object.entries(s.states).filter(([k,v])=>v.visible).map(([k])=>k),a:s.active,g:s.genreActive,story:s.story,chapter:s.chapter,genre:s.genre});}
- function record(){queued=false;if(busy||!ready||window.meowNewRankHistoryBusy||document.body.classList.contains('meowNewRankActive')||history.state?.meowNewRankNav?.view==='list')return;const s=snap(),k=signature(s);if(!['homePage','storyPage','readerPage','meowGenrePage','loginPage'].some(id=>s.states[id]?.visible))return;if(k===last)return;last=k;try{const url=new URL(location.href);if(s.story){url.searchParams.set('story',s.story);if(s.states.readerPage?.visible&&s.chapter)url.searchParams.set('chapter',s.chapter);else url.searchParams.delete('chapter')}else{url.searchParams.delete('story');url.searchParams.delete('chapter')}history.pushState({...history.state,meowNavV2:s},'',url.href);}catch(e){console.warn('Meow history:',e)}}
+ function record(){queued=false;if(busy||!ready||window.meowNewRankHistoryBusy||document.body.classList.contains('meowNewRankActive')||history.state?.meowNewRankNav?.view==='list')return;const s=snap(),k=signature(s);if(!['homePage','storyPage','readerPage','meowGenrePage','loginPage'].some(id=>s.states[id]?.visible))return;if(k===last)return;last=k;try{const url=new URL(location.href);if(s.story){url.searchParams.set('story',s.story);if(s.states.readerPage?.visible&&s.chapter)url.searchParams.set('chapter',s.chapter);else url.searchParams.delete('chapter')}else{url.searchParams.delete('story');url.searchParams.delete('chapter')}history.pushState({...history.state,meowIntegratedWallet:false,meowNavV2:s},'',url.href);}catch(e){console.warn('Meow history:',e)}}
  function schedule(){if(!queued){queued=true;setTimeout(record,85)}}
  window.meowNavigateBack=()=>{if(history.length>1)history.back();else{const home=el('homePage');if(home){home.hidden=false;home.style.display='block'}}};
 
@@ -10132,7 +10341,8 @@ body.meowGenrePageActive #meowProfileOverlay.show{display:block!important;z-inde
   try{
    // Restore the actual story data, not only the visibility of its container.
    if(s.story && (s.states.storyPage?.visible||s.states.readerPage?.visible) && typeof window.meowOpenStoryProfile==='function'){
-     await window.meowOpenStoryProfile(s.story);
+     const load=window.meowOpenStoryProfile(s.story);
+     if(load && typeof load.catch==='function')load.catch(err=>console.warn('Meow story restore:',err));
    }
    if(s.states.readerPage?.visible && s.chapter && typeof window.meowOpenChapterFromHistory==='function'){
      await window.meowOpenChapterFromHistory(s.story,s.chapter);
@@ -10163,7 +10373,7 @@ body.meowGenrePageActive #meowProfileOverlay.show{display:block!important;z-inde
  window.meowCaptureNavState=()=>snap();
  window.meowRestoreNavState=restore;
  window.addEventListener('popstate',e=>{if(e.state?.meowNewRankNav || !document.getElementById('meowNewRankPage')?.hidden)return;if(e.state?.meowNavV2)restore(e.state.meowNavV2);else if(e.state?.meowNav){const old=e.state.meowNav;restore({...snap(),states:Object.fromEntries(ids.map(id=>[id,{visible:id===old.page}])),genreActive:old.page==='meowGenrePage',story:old.story,scroll:old.scroll})}});
- function init(){if(ready)return;ready=true;const s=snap();last=signature(s);try{history.replaceState({...history.state,meowNavV2:s},'')}catch(_){}
+ function init(){if(ready)return;ready=true;const s=snap();last=signature(s);try{history.replaceState({...history.state,meowIntegratedWallet:false,meowNavV2:s},'')}catch(_){}
   const observer=new MutationObserver(schedule);ids.forEach(id=>{const e=el(id);if(e)observer.observe(e,{attributes:true,attributeFilter:['style','class','hidden']})});
   observer.observe(document.body,{attributes:true,attributeFilter:['class']});
   document.addEventListener('click',()=>setTimeout(schedule,180),true);
@@ -10386,10 +10596,10 @@ $('miwLedgerFrom').addEventListener('change',scheduleMeowLedger);$('miwLedgerTo'
 $('miwPhotoClose').onclick=()=>{$('miwPhotoOverlay').hidden=true;$('miwPhoto').removeAttribute('src')};$('miwPhotoOverlay').onclick=e=>{if(e.target===$('miwPhotoOverlay'))$('miwPhotoClose').click()};
 function listen(id){clearSubs();cid=id;wallet={};tx={};requests={};vipGrants={};unsubs.push(onValue(ref(db,'meowVipPointGrants/'+cid),s=>{vipGrants=s.val()||{};draw()}));unsubs.push(onValue(ref(db,'meowWallet/'+cid),s=>{wallet=s.val()||{};draw()}));unsubs.push(onValue(ref(db,'meowWalletTransactions'),s=>{tx=s.val()||{};draw()}));unsubs.push(onValue(ref(db,'meowTopupRequests'),s=>{requests=s.val()||{};draw()}));unsubs.push(onValue(ref(db,'meowVoucherHistory'),s=>{voucherHistory=s.val()||{};draw()}));draw()}
 function openWallet(fromHistory=false){const walletRoot=$('meowIntegratedWallet');if(walletRoot&&walletRoot.parentElement!==document.body)document.body.appendChild(walletRoot);syncWalletHeader();const c=customer();if(!c?.id){window.meowShowAuth?.();if(typeof meowShowAuth==='function')meowShowAuth();else document.getElementById('meowProfileTrigger')?.click();return}const id=String(c.id);if(cid!==id)listen(id);if($('meowIntegratedWallet').hidden&&!fromHistory){history.pushState({...history.state,meowIntegratedWallet:true},'',location.href)}previousTitle=document.title;$('meowIntegratedWallet').hidden=false;document.body.style.overflow='hidden';document.title='Ví của '+String(c.name||c.displayName||id)+' | Mini Meow';draw()}
-function closeWallet(){ $('meowIntegratedWallet').hidden=true;document.body.style.overflow='';document.title=previousTitle||'Mini Meow';document.body.classList.remove('meow-route-wallet');const r=window.meowWalletReturnRoute?.();if(r&&r!=='wallet')window.meowSetExclusiveRoute?.(r); }
+function closeWallet(){ $('meowIntegratedWallet').hidden=true;document.body.style.overflow='';document.title=previousTitle||'Mini Meow';document.body.classList.remove('meow-route-wallet');if(!document.body.classList.contains('meowNewRankActive') && !history.state?.meowNavV2){const r=window.meowWalletReturnRoute?.();if(r&&r!=='wallet')window.meowSetExclusiveRoute?.(r);} }
 window.meowOpenIntegratedWallet=openWallet;window.meowCloseIntegratedWallet=closeWallet;
 
-window.addEventListener('popstate',e=>{if(e.state?.meowIntegratedWallet){if($('meowIntegratedWallet').hidden)openWallet(true)}else if(!$('meowIntegratedWallet').hidden)closeWallet()});
+window.addEventListener('popstate',e=>{if(e.state?.meowIntegratedWallet && !e.state?.meowNavV2 && !e.state?.meowNewRankNav){if($('meowIntegratedWallet').hidden)openWallet(true)}else if(!$('meowIntegratedWallet').hidden)closeWallet()});
 function syncWalletHeader(){
  const source=document.querySelector('.meowTopbar'),host=$('miwRealHeader');if(!source||!host)return;
  const clone=source.cloneNode(true);clone.querySelectorAll('[id]').forEach(n=>{n.dataset.miwOriginalId=n.id;n.removeAttribute('id')});
@@ -10546,8 +10756,43 @@ document.querySelectorAll('[data-miw-tab]').forEach(b=>b.onclick=()=>{
 });
 $('miwCopyBank').onclick=async()=>{try{await navigator.clipboard.writeText('8817159793');tell('miwTopupMsg','📋 Đã sao chép số tài khoản')}catch(e){tell('miwTopupMsg','Số tài khoản: 8817159793')}};
 $('miwPaid').onclick=()=>{if(!Number.isSafeInteger(Number($('miwAmount').value))||Number($('miwAmount').value)<=0)return tell('miwTopupMsg','Nhập số tiền nạp hợp lệ nha.');$('miwProofBox').hidden=false;tell('miwTopupMsg','🎀 Tải ảnh chuyển khoản để gửi Admin xác minh nha.')};
-$('miwProof').onchange=()=>{const f=$('miwProof').files?.[0];fileData='';$('miwPreview').hidden=true;if(!f)return;if(!f.type.startsWith('image/')||f.size>2*1024*1024)return tell('miwTopupMsg','Chọn ảnh dưới 2 MB nha.');fileName=f.name;fileType=f.type;fileSize=f.size;const reader=new FileReader();reader.onload=()=>{fileData=String(reader.result||'');$('miwPreview').src=fileData;$('miwPreview').hidden=false};reader.readAsDataURL(f)};
-$('miwSend').onclick=async function(){const amount=Number($('miwAmount').value);if(!cid||!Number.isSafeInteger(amount)||amount<=0)return tell('miwTopupMsg','Số tiền không hợp lệ.');if(!fileData.startsWith('data:image/'))return tell('miwTopupMsg','Bạn cần tải ảnh chuyển khoản lên.');this.disabled=true;try{await set(push(ref(db,'meowTopupRequests')),{customerId:cid,name:customer()?.name||cid,amount,note:$('miwNote').value.trim(),imageUrl:fileData,imageName:fileName,imageType:fileType,imageSize:fileSize,status:'pending',createdAt:Date.now()});$('miwAmount').value='';$('miwNote').value='';$('miwProof').value='';$('miwPreview').hidden=true;$('miwProofBox').hidden=true;fileData='';tell('miwTopupMsg','💗 Đã gửi yêu cầu! Chờ Admin duyệt. Điểm sẽ cộng khi giao dịch được duyệt.')}catch(e){tell('miwTopupMsg','❌ '+e.message)}finally{this.disabled=false}};
+// Nén biên lai ngay trên máy: giảm dữ liệu ghi Firebase, vẫn giữ chữ rõ.
+let miwProofJob=0,miwProofPending=false;
+async function miwPrepareProof(f){
+ const bitmap=await createImageBitmap(f,{imageOrientation:'from-image'});
+ try{
+  const ratio=Math.min(1,1400/Math.max(bitmap.width,bitmap.height));
+  const canvas=document.createElement('canvas');
+  canvas.width=Math.max(1,Math.round(bitmap.width*ratio));
+  canvas.height=Math.max(1,Math.round(bitmap.height*ratio));
+  const ctx=canvas.getContext('2d',{alpha:false});
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  let data=canvas.toDataURL('image/jpeg',.78);
+  if(data.length>650000)data=canvas.toDataURL('image/jpeg',.63);
+  return data;
+ }finally{bitmap.close?.()}
+}
+$('miwProof').onchange=async()=>{
+ const f=$('miwProof').files?.[0],job=++miwProofJob;
+ fileData='';miwProofPending=!!f;$('miwPreview').hidden=true;
+ if(!f){miwProofPending=false;return}
+ if(!f.type.startsWith('image/')||f.size>12*1024*1024){miwProofPending=false;return tell('miwTopupMsg','Chọn ảnh hợp lệ dưới 12 MB nha.')}
+ tell('miwTopupMsg','🌸 Đang tối ưu ảnh chuyển khoản…');
+ try{
+  let data;
+  if(f.size<180000 && /^image\/(jpeg|png|webp)$/.test(f.type)){
+   data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=reject;r.readAsDataURL(f)});
+  }else data=await miwPrepareProof(f);
+  if(job!==miwProofJob)return;
+  fileData=data;fileName=f.name.replace(/\.[^.]+$/, '')+'.jpg';fileType=data.match(/^data:(image\/[^;]+)/)?.[1]||'image/jpeg';
+  fileSize=Math.round((data.length-data.indexOf(',')-1)*.75);
+  $('miwPreview').src=data;$('miwPreview').hidden=false;
+  tell('miwTopupMsg','💗 Ảnh đã sẵn sàng, bấm Gửi yêu cầu nha.');
+ }catch(e){if(job===miwProofJob){console.error('Meow proof resize',e);tell('miwTopupMsg','Không xử lý được ảnh này, vui lòng chọn ảnh khác.')}}
+ finally{if(job===miwProofJob)miwProofPending=false}
+};
+$('miwSend').onclick=async function(){const amount=Number($('miwAmount').value);if(!cid||!Number.isSafeInteger(amount)||amount<=0)return tell('miwTopupMsg','Số tiền không hợp lệ.');if(miwProofPending)return tell('miwTopupMsg','Ảnh đang được tối ưu, chờ một chút nha.');if(!fileData.startsWith('data:image/'))return tell('miwTopupMsg','Bạn cần tải ảnh chuyển khoản lên.');this.disabled=true;tell('miwTopupMsg','🌸 Đang gửi ảnh chuyển khoản…');try{await set(push(ref(db,'meowTopupRequests')),{customerId:cid,name:customer()?.name||cid,amount,note:$('miwNote').value.trim(),imageUrl:fileData,imageName:fileName,imageType:fileType,imageSize:fileSize,status:'pending',createdAt:Date.now()});$('miwAmount').value='';$('miwNote').value='';$('miwProof').value='';$('miwPreview').hidden=true;$('miwProofBox').hidden=true;fileData='';tell('miwTopupMsg','💗 Đã gửi yêu cầu! Chờ Admin duyệt. Điểm sẽ cộng khi giao dịch được duyệt.')}catch(e){tell('miwTopupMsg','❌ '+e.message)}finally{this.disabled=false}};
 $('miwRedeem').onclick=async function(){
  const c=customer();
  if(!c?.id){tell('miwVoucherMsg','⚠️ Chưa xác định được ID khách đang đăng nhập. Vui lòng đăng nhập Mini Meow trước.');return}
@@ -11257,9 +11502,9 @@ function updateStoryStats(){
  const stats=window.meowFooterGetStoryStats?.();if(!stats)return;
  footer.querySelector('[data-meow-stat="stories"]').textContent=fmt(stats.stories);
  footer.querySelector('[data-meow-stat="reads"]').textContent=fmt(stats.reads);
- const wordsEl=footer.querySelector('[data-meow-stat="words"]');if(wordsEl){wordsEl.textContent=fmt(stats.words);wordsEl.title=stats.words===null?'Danh mục truyện chưa có tổng số chữ đầy đủ':'Tổng số chữ theo dữ liệu hiện có'}
+ const wordsEl=footer.querySelector('[data-meow-stat="words"]');if(wordsEl){wordsEl.textContent=fmt(stats.words);wordsEl.title=!stats.wordsComplete?'Tổng số chữ tạm tính từ chương đã có thống kê; còn chương thiếu dữ liệu':'Tổng số chữ các chương'}
  const reads=footer.querySelector('[data-meow-stat="reads"]');
- reads.title=stats.reads===null?'Chưa có tổng lượt đọc đầy đủ trong dữ liệu danh mục; không hiển thị số đoán.':'Tổng lượt đọc theo dữ liệu truyện hiện có';
+ reads.title=!stats.readsComplete?'Tổng lượt đọc tạm tính từ các chương đã có thống kê':'Tổng lượt đọc các chương';
 }
 async function getUsers(){
  const el=document.querySelector('#meowSiteFooter [data-meow-stat="users"]');if(!el)return;
@@ -11351,6 +11596,7 @@ let lastTarget=null,queued=false;
 function visible(el){if(!el)return false;const st=getComputedStyle(el);return st.display!=='none'&&st.visibility!=='hidden'&&el.getClientRects().length>0;}
 function target(){
  const reader=id('readerPage');if(visible(reader))return null; // Reader has no site footer or header.
+ const newRank=id('meowNewRankPage');if(newRank&&!newRank.hidden&&visible(newRank))return newRank.querySelector('.mnr-wrap')||newRank;
  const wallet=id('meowIntegratedWallet');if(wallet&&!wallet.hidden&&visible(wallet))return wallet.querySelector('.miw-wrap')||wallet;
  const profile=id('meowProfileOverlay');if(profile?.classList.contains('show')&&visible(profile))return profile.querySelector('.meowProfileShell')||profile;
  const genre=id('meowGenrePage');if(visible(genre))return genre.querySelector('.meowGenrePageInner')||genre;
@@ -11364,7 +11610,7 @@ function schedule(){if(queued)return;queued=true;requestAnimationFrame(sync)}
 function init(){schedule();
  // Track navigation state only; do not observe childList, so footer moves cannot cause render loops.
  const obs=new MutationObserver(schedule);
- ['homePage','storyPage','readerPage','meowGenrePage','meowProfileOverlay','meowIntegratedWallet'].forEach(key=>{const el=id(key);if(el)obs.observe(el,{attributes:true,attributeFilter:['class','style','hidden','aria-hidden']})});
+ ['homePage','storyPage','readerPage','meowGenrePage','meowProfileOverlay','meowIntegratedWallet','meowNewRankPage'].forEach(key=>{const el=id(key);if(el)obs.observe(el,{attributes:true,attributeFilter:['class','style','hidden','aria-hidden']})});
  obs.observe(document.body,{attributes:true,attributeFilter:['class']});
  document.addEventListener('click',schedule,true);
  window.addEventListener('popstate',schedule);
@@ -12519,17 +12765,17 @@ body.meowSiteDark .meow-related-pixel{background:#36283e;border-color:#8c6b9a}bo
 body.meowSiteDark #meowNewRankPage{background:linear-gradient(145deg,#2c2236,#37263b);color:#f5deef}body.meowSiteDark #meowNewRankPage .mnr-card,body.meowSiteDark #meowNewRankPage .mnr-rank{background:#3e3047;color:#f7e4f3}
 @media(max-width:480px){#meowNewRankPage{inset:60px 0 0;padding:12px 10px 85px}#meowNewRankPage .mnr-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#meowNewRankPage .mnr-rank{gap:8px;padding:9px}#meowNewRankPage .mnr-count{padding:6px;font-size:10px}}
 </style>
-<section id="meowNewRankPage" hidden aria-label="Truyện mới và xếp hạng"><div class="mnr-wrap"><div class="mnr-head"><button class="mnr-back" id="mnrBack" type="button">← Quay lại</button></div><h1 class="mnr-title" id="mnrTitle">✦ Truyện mới</h1><p class="mnr-sub" id="mnrSubtitle"></p><div id="mnrContent"></div><div class="mnr-pager" id="mnrPagination"></div></div></section>
+<section id="meowNewRankPage" hidden aria-label="Truyện mới và xếp hạng"><div class="mnr-wrap"><h1 class="mnr-title" id="mnrTitle">✦ Truyện mới</h1><p class="mnr-sub" id="mnrSubtitle"></p><div id="mnrContent"></div><div class="mnr-pager" id="mnrPagination"></div></div></section>
 <script id="meowNewRankRuntime">
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id),page=$('meowNewRankPage');if(!page)return;
 let mode='new',pageIndex=1,items=[],requestId=0,navSeq=0;const PAGE_SIZE=12;
 const NAV_KEY='meowNewRankNav';
-function navState(view,kind){const state={...(history.state||{})};delete state.meowNavV2;return {...state,[NAV_KEY]:{view,kind,seq:++navSeq}}}
-function preservePrevious(){try{const snapshot=window.meowCaptureNavState?.();if(snapshot)history.replaceState({...history.state,meowNavV2:snapshot},'',location.href)}catch(_){}}
+function navState(view,kind){const state={...(history.state||{})};delete state.meowNavV2;delete state.meowIntegratedWallet;return {...state,[NAV_KEY]:{view,kind,seq:++navSeq}}}
+function preservePrevious(){try{const snapshot=window.meowCaptureNavState?.();if(snapshot)history.replaceState({...history.state,meowIntegratedWallet:false,meowNavV2:snapshot},'',location.href)}catch(_){}}
 function reveal(){page.hidden=false;document.body.classList.add('meowNewRankActive');const home=$('homePage');if(home){home.hidden=true;home.style.display='none'}const story=$('storyPage');if(story)story.style.display='none';const reader=$('readerPage');if(reader)reader.style.display='none'}
-function conceal(){++requestId;page.hidden=true;page.style.display='none';document.body.classList.remove('meowNewRankActive');window.meowNewRankHistoryBusy=false}
+function conceal(){++requestId;page.hidden=true;page.style.display='none';document.body.classList.remove('meowNewRankActive');window.meowNewRankHistoryBusy=false;document.body.style.overflow=''}
 
 const toTime=value=>{if(value==null||value==='')return 0;let n=Number(value);if(Number.isFinite(n)&&n>0)return n<1e11?n*1000:n;const t=Date.parse(String(value));return Number.isFinite(t)?t:0};
 const created=x=>toTime(x.info?.createdAt??x.info?.created_at??x.info?.publishedAt??x.info?.publishDate??x.info?.date??x.info?.postedAt);
@@ -12635,7 +12881,7 @@ function meowRankGoHome(){
   window.meowNavigateExclusive?.('home');
   for(const id of ['storyPage','readerPage','meowGenrePage']){const el=$(id);if(el){el.hidden=true;el.style.display='none'}}
   const home=$('homePage');if(home){home.hidden=false;home.style.display='block'}
-  try{const state={...(history.state||{})};delete state.meowNewRankNav;const snap=window.meowCaptureNavState?.();if(snap)state.meowNavV2=snap;history.replaceState(state,'',location.pathname+location.search+location.hash)}catch(_){}
+  try{const state={...(history.state||{})};delete state.meowNewRankNav;delete state.meowIntegratedWallet;const snap=window.meowCaptureNavState?.();if(snap)state.meowNavV2=snap;history.replaceState(state,'',location.pathname+location.search+location.hash)}catch(_){}
   window.scrollTo(0,0);
 }
 // Capture before the older menu/logo handlers so they cannot reopen a stale route.
@@ -12657,7 +12903,7 @@ window.addEventListener('popstate',e=>{
  if(nav?.view==='story'){
    conceal();
    const snap=e.state?.meowNavV2;
-   if(snap){Promise.resolve(window.meowRestoreNavState?.(snap)).catch(console.error)}
+   if(snap){/* Universal navigation listener restores this entry once. */}
    return;
  }
  if(!page.hidden || document.body.classList.contains('meowNewRankActive')){
@@ -12698,6 +12944,630 @@ document.getElementById('backHomeBtn')?.addEventListener('click',event=>{
  }
 },true);
 window.meowShowNewRank=show;
+})();
+</script>
+
+<!-- MEOW: fix blank space before Ranking / New Stories -->
+<style id="meow-rank-placement-fix">
+#meowNewRankPage:not([hidden]){position:relative!important;inset:auto!important;display:block!important;margin:0!important;min-height:calc(100dvh - 75px)!important;padding:18px 12px 65px!important;overflow:visible!important;clear:both!important}
+#meowNewRankPage[hidden]{display:none!important}
+</style>
+<script id="meow-rank-placement-runtime">
+(function(){
+ const page=document.getElementById('meowNewRankPage');
+ const app=document.getElementById('meowReaderApp');
+ if(!page||!app)return;
+ // The ranking section used to live at the very end of the document, below
+ // hidden/retained sections; relocate it to the top-level page flow.
+ const topbar=app.querySelector('.meowTopbar');
+ if(topbar&&topbar.parentNode===app)topbar.after(page);
+ else app.insertBefore(page,app.firstChild);
+ const reset=()=>{if(!page.hidden&&document.body.classList.contains('meowNewRankActive')){
+   window.scrollTo({top:0,left:0,behavior:'instant'});
+ }};
+ document.getElementById('meowMenuNewest')?.addEventListener('click',()=>requestAnimationFrame(reset));
+ document.getElementById('meowMenuTopReads')?.addEventListener('click',()=>requestAnimationFrame(reset));
+ window.addEventListener('popstate',()=>requestAnimationFrame(reset));
+})();
+</script>
+
+<!-- MEOW: reconcile route layers after browser history navigation -->
+<style id="meow-unified-page-flow-fix">
+/* Ranking/new-story pages belong to document flow, not a floating full-screen sheet. */
+#meowNewRankPage:not([hidden]){position:relative!important;inset:auto!important;z-index:auto!important;overflow:visible!important;min-height:65vh!important;padding-top:18px!important}
+#meowNewRankPage[hidden],#meowIntegratedWallet[hidden]{display:none!important;pointer-events:none!important}
+body:not(.meowNewRankActive) #meowNewRankPage{display:none!important;pointer-events:none!important}
+body:not(.meow-route-wallet) #meowIntegratedWallet{pointer-events:none!important}
+body:not(.meowProfilePageOpen) #meowProfileOverlay{pointer-events:none!important}
+</style>
+<script id="meow-history-layer-reconcile">
+(function(){
+ const get=id=>document.getElementById(id);
+ let token=0;
+ function reconcile(state){
+   const rank=get('meowNewRankPage');
+   const rankList=state?.meowNewRankNav?.view==='list';
+   const wallet=!!state?.meowIntegratedWallet && !rankList;
+   const snapshot=state?.meowNavV2;
+   const profile=!!snapshot?.states?.meowProfileOverlay?.visible && !rankList && !wallet;
+   // An old wallet/profile overlay must never block a restored story, home or list.
+   if(!wallet){const w=get('meowIntegratedWallet');if(w){w.hidden=true;w.style.display='none'}}
+   if(!profile){const p=get('meowProfileOverlay');if(p){p.classList.remove('show','open');p.setAttribute('aria-hidden','true')}document.body.classList.remove('meowProfilePageOpen')}
+   if(rank && !rankList){rank.hidden=true;rank.style.display='none';document.body.classList.remove('meowNewRankActive')}
+   if(!wallet && !profile)document.body.style.overflow='';
+   if(rankList){
+     for(const id of ['homePage','storyPage','readerPage','meowGenrePage']){const e=get(id);if(e){e.hidden=true;e.style.display='none'}}
+     if(rank){rank.hidden=false;rank.style.display='block'}
+     document.body.classList.add('meowNewRankActive');
+   }
+   const routes=['home','story','reader','genre','wallet','profile'];
+   document.body.classList.remove(...routes.map(x=>'meow-route-'+x));
+   document.body.classList.add('meow-route-'+(wallet?'wallet':profile?'profile':rankList?'home':snapshot?.states?.readerPage?.visible?'reader':snapshot?.states?.storyPage?.visible?'story':snapshot?.states?.meowGenrePage?.visible?'genre':'home'));
+ }
+ window.addEventListener('popstate',event=>{
+   const id=++token;
+   // Existing navigation listeners restore data first; only reconcile layers afterwards.
+   setTimeout(()=>{if(id===token)reconcile(event.state)},650);
+ });
+})();
+</script>
+
+<style id="meow-rank-footer-2026-fix">
+/* Keep rank/new page below the real sticky header, not underneath it. */
+html body #meowNewRankPage:not([hidden]){position:fixed!important;top:var(--meow-real-header-height,76px)!important;bottom:0!important;left:0!important;right:0!important;inset:var(--meow-real-header-height,76px) 0 0!important;height:auto!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:contain!important;-webkit-overflow-scrolling:touch!important;scrollbar-gutter:stable;z-index:900!important;padding:16px 12px 36px!important;box-sizing:border-box!important}
+html body #meowNewRankPage .mnr-wrap{padding-top:5px!important}
+html body #meowNewRankPage .mnr-title{margin:0 0 8px!important;line-height:1.35!important}
+/* Full bleed compact pixel-anime footer */
+html body #meowSiteFooter,html body.meowSiteDark #meowSiteFooter{width:100vw!important;max-width:none!important;position:relative!important;left:50%!important;transform:translateX(-50%)!important;margin:32px 0 0!important;padding:18px 14px 13px!important;border:0!important;border-top:5px double #9875b9!important;border-radius:0!important;outline:0!important;background:linear-gradient(145deg,#f9cde8,#e7c8f2 48%,#cdb6e8)!important;box-shadow:inset 0 6px #fff6,0 -5px 22px #6c467b25!important;color:#584273!important;font-family:'Be Vietnam Pro',sans-serif!important}
+html body.meowSiteDark #meowSiteFooter{background:linear-gradient(145deg,#382b50,#584269 60%,#423253)!important;color:#f4dff9!important}
+#meowSiteFooter::before{display:none!important}
+#meowSiteFooter .meowPixelFooter{max-width:900px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px;align-items:stretch}
+#meowSiteFooter .mpf-hero{border:3px solid #9673ae;border-radius:10px;padding:11px;background:#fff9f5c7;box-shadow:4px 4px 0 #9576a06b;display:flex;align-items:center;gap:11px}
+#meowSiteFooter .mpf-logo{width:80px;height:80px;object-fit:contain;flex:none;border:2px solid #ab85c5;border-radius:9px;background:#fbe5f8}
+#meowSiteFooter .mpf-name{font:800 14px Comfortaa,sans-serif;color:#80548d;margin:0 0 7px}
+#meowSiteFooter .mpf-hero .meowFooterStats{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important;margin:0!important;padding:0!important;border:0!important;max-width:none!important}
+#meowSiteFooter .mpf-hero .meowFooterStats>span{font-size:9px!important;padding:5px 3px!important;line-height:1.5!important;border:1px dashed #b994d0!important;border-radius:5px!important;background:#fff9!important;color:#694c7d!important}
+#meowSiteFooter .mpf-side{display:grid;gap:8px}
+#meowSiteFooter .mpf-contact,#meowSiteFooter .mpf-note{border:3px solid #9673ae;border-radius:9px;background:#fff9f5cf;padding:9px 10px;box-shadow:3px 3px 0 #9576a06b;color:#674b7c}
+#meowSiteFooter .mpf-contact strong,#meowSiteFooter .mpf-note strong{display:block;font-size:11px;margin-bottom:5px;letter-spacing:.4px}
+#meowSiteFooter .mpf-contact-actions{display:flex;flex-wrap:wrap;gap:5px}
+#meowSiteFooter .mpf-contact-actions button{border:2px solid #9f7abb;border-radius:5px;padding:5px 8px;background:#ead3f6;color:#654679;font-size:10px;font-weight:800;box-shadow:2px 2px 0 #ac89b3;cursor:pointer}
+#meowSiteFooter .mpf-note p{margin:0;font-size:10px;line-height:1.65}
+#meowSiteFooter .meowFooterBottom{max-width:900px;margin:13px auto 0!important;padding-top:8px;border-top:2px dashed #9f7abb;text-align:center;font-size:10px!important;color:#654b7c!important}
+#meowSiteFooter>.meowFooterCuteHeading,#meowSiteFooter>.meowFooterCuteDesc,#meowSiteFooter>.meowFooterCuteLinks,#meowSiteFooter>#meow-contact,#meowSiteFooter>#meow-quick-nav{display:none!important}
+@media(max-width:560px){#meowSiteFooter .meowPixelFooter{grid-template-columns:1fr;gap:9px}#meowSiteFooter .mpf-logo{width:68px;height:68px}#meowSiteFooter .mpf-hero{padding:8px}#meowSiteFooter .mpf-contact,#meowSiteFooter .mpf-note{padding:8px}html body #meowSiteFooter{padding:15px 12px 11px!important}}
+</style>
+<script id="meow-rank-footer-2026-runtime">
+(function(){
+ function updateHeader(){var header=document.querySelector('.meowTopbar');if(!header)return;var rect=header.getBoundingClientRect();var bottom=Math.max(0,Math.round(rect.bottom));if(bottom>0&&bottom<260)document.documentElement.style.setProperty('--meow-real-header-height',bottom+'px')}
+ function buildFooter(){var footer=document.getElementById('meowSiteFooter');if(!footer||footer.querySelector('.meowPixelFooter'))return;
+ var stats=footer.querySelector('.meowFooterStats');if(!stats)return;
+ var layout=document.createElement('div');layout.className='meowPixelFooter';
+ var hero=document.createElement('div');hero.className='mpf-hero';
+ var logo=document.createElement('img');logo.className='mpf-logo';logo.alt='Logo Mini Meow';var source=document.querySelector('.meowTopbar .meowLogo img,.meowTopbar .meowUnifiedLogo img,.meowTopbar img');if(source&&source.src)logo.src=source.src;else logo.style.display='none';
+ var block=document.createElement('div');block.style.minWidth='0';var name=document.createElement('h3');name.className='mpf-name';name.textContent='Ổ Lười Nhỏ Của Meow';block.append(name,stats);hero.append(logo,block);
+ var side=document.createElement('div');side.className='mpf-side';var contact=document.createElement('div');contact.className='mpf-contact';contact.innerHTML='<strong>✦ LIÊN HỆ</strong><div class="mpf-contact-actions"><a href="https://www.facebook.com/profile.php?id=61583591557663" target="_blank" rel="noopener noreferrer">ⓕ Facebook</a><a href="mailto:oluoinhocuameow@gmail.com">✉ Mail</a><a href="https://www.facebook.com/profile.php?id=61582069564705" target="_blank" rel="noopener noreferrer">▣ Page</a></div>';
+ var note=document.createElement('div');note.className='mpf-note';note.innerHTML='<strong>▣ Giới thiệu Web</strong><p>Web chỉ đăng H, đa số là truyện nặng đô.<br>Truyện chỉ do một mình Meow edit, không hợp tác với bên thứ 3.</p>';
+ side.append(contact,note);layout.append(hero,side);footer.prepend(layout);
+ var bottom=footer.querySelector('.meowFooterBottom');if(bottom)bottom.textContent='© 2026 Ổ Lười Nhỏ Của Meow · Khu Vườn Sắc Nữ';
+
+ }
+ function sync(){updateHeader();buildFooter();}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
+ window.addEventListener('resize',updateHeader,{passive:true});
+ var n=0;var t=setInterval(function(){sync();if(++n>25)clearInterval(t)},350);
+})();
+</script>
+
+
+<style id="meow-footer-pixel-v2-layout">
+/* Footer: compact image-left, stacked contacts-right, note below like reference. */
+#meowSiteFooter .meowPixelFooter{max-width:970px!important;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)!important;grid-template-rows:auto auto!important;gap:9px!important}
+#meowSiteFooter .mpf-hero{grid-column:1!important;grid-row:1!important;min-height:138px!important;align-items:center!important}
+#meowSiteFooter .mpf-side{display:contents!important}
+#meowSiteFooter .mpf-contact{grid-column:2!important;grid-row:1!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:5px!important}
+#meowSiteFooter .mpf-note{grid-column:1/-1!important;grid-row:2!important;min-height:76px!important}
+#meowSiteFooter .mpf-contact-actions{display:grid!important;grid-template-columns:1fr!important;gap:6px!important}
+#meowSiteFooter .mpf-contact-actions a{display:block;text-align:center;text-decoration:none;border:2px solid #9f7abb;border-radius:4px;padding:7px 5px;background:#ead3f6;color:#654679;font-size:11px;font-weight:800;box-shadow:2px 2px 0 #ac89b3}
+#meowSiteFooter .mpf-contact-actions a:focus-visible{outline:3px solid #d66cb1;outline-offset:2px}
+#meowSiteFooter .mpf-hero .meowFooterStats::before{content:none!important;display:none!important}
+#meowSiteFooter .mpf-hero .meowFooterStats{border-top:0!important;padding-top:0!important}
+#meowSiteFooter .mpf-logo{width:clamp(74px,16vw,116px)!important;height:clamp(74px,16vw,116px)!important}
+#meowSiteFooter .mpf-name{font-size:clamp(11px,2.3vw,15px)!important}
+#meowSiteFooter .mpf-hero .meowFooterStats>span{font-size:clamp(8px,1.8vw,10px)!important;overflow-wrap:anywhere}
+html body #meowSiteFooter{margin-bottom:0!important;padding-bottom:max(18px,env(safe-area-inset-bottom))!important;min-height:0!important}
+/* On Home, allow footer to sit at the bottom on short pages. */
+html body #homePage:not([hidden]){min-height:calc(100dvh - var(--meow-real-header-height,76px))}
+html body #homePage:not([hidden]) #meowSiteFooter{margin-top:35px!important}
+/* Rank/New: same user background as the normal website, not an opaque overlay. */
+html body #meowNewRankPage:not([hidden]){background-color:transparent!important;background-image:var(--meow-rank-site-bg,none)!important;background-size:cover!important;background-position:center top!important;background-repeat:repeat!important}
+html body #meowNewRankPage:not([hidden]) .mnr-wrap{max-width:1000px!important;margin-inline:auto!important}
+@media(max-width:560px){
+ #meowSiteFooter .meowPixelFooter{grid-template-columns:minmax(0,1.3fr) minmax(0,.8fr)!important;gap:7px!important}
+ #meowSiteFooter .mpf-hero{padding:7px!important;gap:7px!important;min-height:145px!important}
+ #meowSiteFooter .mpf-logo{width:67px!important;height:67px!important}
+ #meowSiteFooter .mpf-hero .meowFooterStats{grid-template-columns:1fr 1fr!important;gap:4px!important}
+ #meowSiteFooter .mpf-hero .meowFooterStats>span{padding:3px!important;font-size:8px!important}
+ #meowSiteFooter .mpf-contact{padding:7px!important}
+ #meowSiteFooter .mpf-contact-actions a{font-size:10px;padding:8px 2px}
+ #meowSiteFooter .mpf-note{padding:9px!important}
+}
+</style>
+<script id="meow-rank-background-sync">
+(function(){
+ const rank=document.getElementById('meowNewRankPage');if(!rank)return;
+ function syncBackground(){
+   // Site theme/background may be updated per user; sample the active site layer.
+   const candidates=[document.getElementById('homePage'),document.getElementById('meowReaderApp'),document.body];
+   let bg='none';
+   for(const el of candidates){if(!el)continue;const cs=getComputedStyle(el);if(cs.backgroundImage&&cs.backgroundImage!=='none'){bg=cs.backgroundImage;break}}
+   rank.style.setProperty('--meow-rank-site-bg',bg);
+   const cs=getComputedStyle(document.body);
+   rank.style.backgroundColor=cs.backgroundColor;
+ }
+ syncBackground();
+ document.addEventListener('click',()=>{if(!rank.hidden)requestAnimationFrame(syncBackground)},true);
+ window.addEventListener('pageshow',syncBackground);
+ const observer=new MutationObserver(()=>{if(!rank.hidden)syncBackground()});
+ observer.observe(document.body,{attributes:true,attributeFilter:['class','style']});
+ observer.observe(document.documentElement,{attributes:true,attributeFilter:['class','style']});
+})();
+</script>
+
+
+<style id="meow-footer-fill-auth-responsive-v3">
+/* Extend footer surface to the bottom of the page, without exposing the page background below it. */
+html,body{min-height:100%;}
+html body #meowSiteFooter,
+html body.meowSiteDark #meowSiteFooter{
+  box-sizing:border-box!important;
+  padding-bottom:max(20px,env(safe-area-inset-bottom))!important;
+  margin-bottom:0!important;
+  background-clip:border-box!important;
+}
+/* The site footer is the final element on Home; fill any remaining viewport height. */
+html body #homePage:has(#meowSiteFooter){display:flex;flex-direction:column;min-height:calc(100dvh - var(--meow-real-header-height,76px))!important;}
+html body #homePage #meowSiteFooter{flex-shrink:0!important;margin-top:auto!important;}
+/* Do not leave a trailing decorative/empty strip after the footer. */
+html body #homePage{padding-bottom:0!important;margin-bottom:0!important;}
+html body #homePage #meowSiteFooter{margin-bottom:0!important;}
+/* Auth dialog adapts to small Android screens and large font settings. */
+html body #loginPage.meowAuthVisible:not([hidden]){
+  box-sizing:border-box!important;
+  padding:clamp(8px,2vh,20px)!important;
+  overflow-y:auto!important;
+  align-items:center!important;
+}
+html body #loginPage .meowLoginBox,
+html body.meowSiteDark #loginPage .meowLoginBox{
+  box-sizing:border-box!important;
+  width:min(360px,calc(100vw - 24px))!important;
+  max-width:100%!important;
+  max-height:calc(100dvh - 24px)!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  padding:clamp(12px,3vw,19px)!important;
+  margin:auto!important;
+}
+@media(max-height:650px){
+ html body #loginPage.meowAuthVisible:not([hidden]){align-items:flex-start!important;}
+ html body #loginPage .meowLoginBox{max-height:calc(100dvh - 16px)!important;}
+}
+@media(max-width:360px){
+ html body #loginPage .meowLoginBox{width:calc(100vw - 16px)!important;padding:10px!important;}
+ html body #loginPage .meowAuthTabs button{font-size:10px!important;}
+}
+</style>
+<script id="meow-footer-live-stats-v3">
+(function(){
+  'use strict';
+  function refresh(){
+    var footer=document.getElementById('meowSiteFooter');
+    if(!footer || typeof window.meowFooterGetStoryStats!=='function')return;
+    var stats=window.meowFooterGetStoryStats();
+    if(!stats)return;
+    for(var key of ['stories','reads','words']){
+      var el=footer.querySelector('[data-meow-stat="'+key+'"]');
+      if(!el)continue;
+      var value=stats[key];
+      el.textContent=value==null?'—':Number(value).toLocaleString('vi-VN');
+      if(key!=='stories')el.title=stats[key+'Complete']?'Tổng từ dữ liệu chương':'Số tạm tính từ chương đã có thống kê; chương thiếu dữ liệu chưa được cộng';
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();
+  window.addEventListener('pageshow',refresh);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)refresh()});
+  // Refresh periodically from data already in memory; never download entire chapter texts just for footer.
+  setInterval(function(){if(!document.hidden)refresh()},15000);
+})();
+</script>
+
+<!-- MEOW: unified site footer for all page routes (except Reader) -->
+<style id="meow-footer-all-pages-v4">
+#meowSiteFooter{width:100vw!important;max-width:none!important;position:relative!important;left:50%!important;transform:translateX(-50%)!important;margin-left:0!important;margin-right:0!important;margin-bottom:0!important;border-radius:0!important;padding-bottom:max(22px,env(safe-area-inset-bottom))!important;box-sizing:border-box!important;clear:both!important;}
+#meowNewRankPage:not([hidden]){padding-bottom:0!important;}
+#meowNewRankPage .mnr-wrap{max-width:100%!important;}
+#meowNewRankPage #meowSiteFooter{margin-top:30px!important;}
+#storyPage #meowSiteFooter,#meowGenrePage #meowSiteFooter,#meowProfileOverlay #meowSiteFooter,#meowIntegratedWallet #meowSiteFooter{margin-top:28px!important;}
+#readerPage #meowSiteFooter{display:none!important;}
+@media(max-width:600px){#meowSiteFooter{padding-left:12px!important;padding-right:12px!important;}}
+</style>
+
+<style id="meow-footer-fill-viewport-all-pages">
+/* Kéo NỀN footer đến tận đáy màn hình, không để nền truyện lộ dưới footer. */
+html body #meowSiteFooter{
+  box-sizing:border-box!important;
+  width:100vw!important;
+  max-width:none!important;
+  position:relative!important;
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  border-radius:0!important;
+  padding-bottom:calc(24px + var(--meow-footer-bottom-gap,0px) + env(safe-area-inset-bottom,0px))!important;
+  background:linear-gradient(135deg,#fff0f8,#f3eaff 70%,#fae7f3)!important;
+  background-clip:border-box!important;
+}
+html body.meowSiteDark #meowSiteFooter{
+  background:linear-gradient(135deg,#382b40,#30263c 60%,#3e2c4c)!important;
+}
+</style>
+<script id="meow-footer-fill-viewport-controller">
+(function(){
+ 'use strict';
+ var scheduled=false;
+ function update(){
+  scheduled=false;
+  var f=document.getElementById('meowSiteFooter');
+  if(!f||getComputedStyle(f).display==='none')return;
+  // Bỏ phần đệm cũ trước khi đo để không cộng dồn khi chuyển trang/resize.
+  f.style.setProperty('--meow-footer-bottom-gap','0px');
+  var bottom=f.getBoundingClientRect().bottom;
+  var viewport=document.documentElement.clientHeight;
+  var gap=Math.max(0,Math.ceil(viewport-bottom));
+  f.style.setProperty('--meow-footer-bottom-gap',gap+'px');
+ }
+ function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(update)}
+ function init(){schedule();window.addEventListener('resize',schedule,{passive:true});window.addEventListener('pageshow',schedule);
+  window.addEventListener('popstate',schedule);
+  document.addEventListener('click',function(){requestAnimationFrame(schedule)},true);
+  var obs=new MutationObserver(schedule);
+  ['homePage','storyPage','meowNewRankPage','meowIntegratedWallet','meowProfileOverlay','meowGenrePage','readerPage'].forEach(function(k){var el=document.getElementById(k);if(el)obs.observe(el,{attributes:true,attributeFilter:['style','class','hidden']})});
+  var footer=document.getElementById('meowSiteFooter');if(footer&&footer.parentElement)obs.observe(footer.parentElement,{childList:true});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+<style id="meow-footer-app-launcher-style">
+#meowSiteFooter .mpf-logo{cursor:pointer!important;touch-action:manipulation}
+#meowSiteFooter .mpf-logo:focus-visible{outline:3px solid #e875b2;outline-offset:3px}
+#meowSiteFooter.mal-apps-open>.meowPixelFooter,#meowSiteFooter.mal-apps-open>.meowFooterBottom{display:none!important}
+#meowSiteFooter #meowAppLauncher{display:block!important;position:relative!important;inset:auto!important;width:100%!important;max-width:970px!important;margin:0 auto!important;padding:6px 0 12px!important;background:none!important;backdrop-filter:none!important;box-shadow:none!important;z-index:auto!important}
+#meowSiteFooter #meowAppLauncher[hidden]{display:none!important}
+#meowSiteFooter .mal-window{width:100%;padding:13px 12px 18px;border:3px solid #9673ae;border-radius:12px;background:linear-gradient(155deg,#fff8fd,#f1e1ff 55%,#ffe4f3);box-shadow:4px 4px 0 #9b7bb06b;color:#6d4a82}
+#meowSiteFooter .mal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+#meowSiteFooter .mal-heading{font:800 16px Comfortaa,'Be Vietnam Pro',sans-serif;color:#955aab;margin:0}
+#meowSiteFooter .mal-back{border:2px solid #9f7abb;border-radius:8px;padding:9px 11px;background:#ead3f6;color:#654679;font:800 11px 'Be Vietnam Pro',sans-serif;box-shadow:2px 2px 0 #ac89b3;cursor:pointer}
+#meowSiteFooter .mal-sub{font-size:11px;margin:0 0 14px;color:#946b9b}
+#meowSiteFooter .mal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 6px}
+#meowSiteFooter .mal-app{min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;color:#67487b;font:700 10px 'Be Vietnam Pro',sans-serif;cursor:pointer;text-align:center}
+#meowSiteFooter .mal-icon{width:clamp(43px,11vw,62px);height:clamp(43px,11vw,62px);display:grid;place-items:center;border:2px solid #fff;border-radius:16px;background:linear-gradient(145deg,#fff,#f8d5ef 55%,#d9c5ff);box-shadow:3px 4px 0 #aa82bf75;font-size:24px}
+#meowSiteFooter .mal-label{overflow-wrap:anywhere;line-height:1.4}
+#meowSiteFooter .mal-app:active .mal-icon{transform:scale(.94)}
+@media(max-width:350px){#meowSiteFooter .mal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+<script id="meow-footer-app-launcher-script">
+(function(){
+ const apps=[
+  ['🏠','Trang chủ','#meowMenuHome'],['💗','Nạp tiền','[data-ms-action="topup"]'],['🔔','Thông báo','[data-ms-action="notifications"]'],['📚','Thể loại','[data-ms-toggle="genres"]'],
+  ['✨','Truyện mới','#meowMenuNewest'],['👑','Xếp hạng','#meowMenuTopReads'],['👤','Cá nhân','[data-ms-action="profile"]'],['💌','Tác giả','[data-ms-toggle="authors"]'],
+  ['🎀','Theo dõi','[data-ms-action="followed"]'],['🛍️','Đã mua','[data-ms-action="bought"]'],['🎟️','Voucher','[data-ms-action="voucher"]'],['🌸','Điểm tích','[data-ms-action="points"]'],
+  ['📜','Sao kê','[data-ms-action="ledger"]'],['🗓️','Lịch','[data-ms-action="calendar"]'],['🎮','Game','[data-ms-action="game"]'],['⚙️','Cài đặt','#meowWebSettingsOpen']
+ ];
+ let panel=null;
+ function close(){const f=document.getElementById('meowSiteFooter');if(f)f.classList.remove('mal-apps-open');if(panel)panel.hidden=true}
+ function create(f){panel=document.createElement('div');panel.id='meowAppLauncher';panel.hidden=true;panel.innerHTML='<section class="mal-window"><div class="mal-top"><h2 class="mal-heading">🐱 Tiện ích Meow</h2><button type="button" class="mal-back">↩ Màn hình chính chân trang</button></div><p class="mal-sub">Chọn tiện ích muốn mở nha ♡</p><div class="mal-grid"></div></section>';
+  const grid=panel.querySelector('.mal-grid');
+  apps.forEach(([emoji,label,selector])=>{const btn=document.createElement('button');btn.type='button';btn.className='mal-app';const ico=document.createElement('span');ico.className='mal-icon';ico.textContent=emoji;const name=document.createElement('span');name.className='mal-label';name.textContent=label;btn.append(ico,name);btn.addEventListener('click',()=>{close();const target=document.querySelector('#meowSideMenu '+selector)||document.querySelector(selector);if(target){target.click();if(selector.includes('ms-toggle'))document.getElementById('meowSideOpen')?.click()}});grid.append(btn)});
+  panel.querySelector('.mal-back').addEventListener('click',()=>{close();const logo=f.querySelector('.mpf-logo');if(logo)logo.focus({preventScroll:true})});
+  f.appendChild(panel);
+ }
+ function open(){const f=document.getElementById('meowSiteFooter');if(!f)return;if(!panel||panel.parentElement!==f){if(panel)panel.remove();create(f)}panel.hidden=false;f.classList.add('mal-apps-open');panel.querySelector('.mal-back').focus({preventScroll:true})}
+ document.addEventListener('click',e=>{const logo=e.target.closest('#meowSiteFooter .mpf-logo');if(!logo)return;e.preventDefault();e.stopPropagation();open()},true);
+ document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('#meowSiteFooter .mpf-logo')){e.preventDefault();open()}else if(e.key==='Escape'&&panel&&!panel.hidden)close()});
+ function accessible(){const logo=document.querySelector('#meowSiteFooter .mpf-logo');if(logo){logo.setAttribute('tabindex','0');logo.setAttribute('role','button');logo.setAttribute('aria-label','Mở tiện ích ngay trong chân trang');logo.title='Mở tiện ích'}}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',accessible);else accessible();
+ new MutationObserver(accessible).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<style id="meow-fold-register-style">
+/* Máy gập đăng ký: hai cánh, giữ nguyên form Firebase */
+html body #loginPage .meowLoginBox.meow-fold-active{width:min(96vw,850px)!important;max-width:850px!important;padding:18px!important;max-height:min(92dvh,900px)!important;overflow-y:auto!important;overflow-x:hidden!important}
+#meowRegisterForm .meow-fold-shell{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;gap:0;margin:14px 0 4px;border:3px solid #b982b8;border-radius:16px;overflow:hidden;background:#f7e9f7;box-shadow:5px 6px 0 #c9a1c7}
+#meowRegisterForm .meow-fold-wing{min-width:0;padding:14px 12px;background:linear-gradient(155deg,#fff9fe,#ffeef8)}
+#meowRegisterForm .meow-fold-wing.character{border-left:4px double #c68fc6;background:linear-gradient(155deg,#f4e8ff,#ffe9f7)}
+#meowRegisterForm .meow-fold-title{font-weight:900;color:#985d99;font-size:14px;text-align:center;margin:2px 0 12px}
+#meowRegisterForm .meow-fold-wing .meowInput{width:100%!important;min-width:0!important;box-sizing:border-box!important}
+#meowRegisterForm .meow-game-profile{margin:5px 0 9px!important;padding:8px!important}
+#meowRegisterForm .meow-game-preview{width:90px;height:90px}
+#meowRegisterForm .meow-game-caption{font-size:10px}
+#meowRegisterForm .meow-fold-wing #meowAvatarChoices{margin:8px 0!important;gap:4px!important}
+#meowRegisterForm .meow-fold-wing #meowRegisterAvatarFile{font-size:11px!important;max-width:100%!important}
+#meowRegisterForm .meow-fold-wing #meowRegisterSubmit{width:100%!important;min-height:45px!important}
+@media(max-width:540px){
+ html body #loginPage .meowLoginBox.meow-fold-active{width:calc(100vw - 16px)!important;padding:12px 8px!important;border-radius:14px!important}
+ #meowRegisterForm .meow-fold-wing{padding:9px 6px}
+ #meowRegisterForm .meow-fold-title{font-size:11px;margin-bottom:8px}
+ #meowRegisterForm .meow-fold-wing.character{border-left-width:3px}
+ #meowRegisterForm .meow-game-preview{width:70px;height:70px}
+ #meowRegisterForm .meow-game-heading{font-size:11px}
+ #meowRegisterForm .meow-game-caption{font-size:9px;line-height:1.3}
+ #meowRegisterForm .meow-fold-wing .meowInput{font-size:13px!important;padding:8px 6px!important}
+ #meowRegisterForm .meow-fold-wing .meowIdHint{font-size:10px!important}
+ #meowRegisterForm .meow-fold-wing label{font-size:11px!important}
+ #meowRegisterForm .meow-fold-wing #meowRegisterAvatarFile{font-size:9px!important;padding:5px!important}
+ #meowRegisterForm .meow-fold-wing #meowRegisterSubmit{font-size:12px!important;padding:8px 4px!important}
+}
+</style>
+<script id="meow-fold-register-script">
+(function(){
+ function setup(){
+  const form=document.getElementById('meowRegisterForm'),box=document.querySelector('#loginPage .meowLoginBox');
+  if(!form||!box||form.querySelector('.meow-fold-shell'))return;
+  const shell=document.createElement('div');shell.className='meow-fold-shell';
+  const left=document.createElement('div');left.className='meow-fold-wing details';
+  const right=document.createElement('div');right.className='meow-fold-wing character';
+  const heading=(txt)=>{const el=document.createElement('div');el.className='meow-fold-title';el.textContent=txt;return el};
+  left.append(heading('♡ THÔNG TIN ĐĂNG KÝ'));
+  right.append(heading('✦ CHỌN NHÂN VẬT ✦'));
+  const name=document.getElementById('meowRegisterName'),id=document.getElementById('meowRegisterID');
+  if(name)left.append(name);if(id)left.append(id);
+  const hint=form.querySelector('.meowIdHint');if(hint)left.append(hint);
+  const submit=document.getElementById('meowRegisterSubmit'),msg=document.getElementById('meowRegisterMsg');
+  if(submit)left.append(submit);if(msg)left.append(msg);
+  const choices=document.getElementById('meowAvatarChoices');
+  const preview=form.querySelector('.meow-game-profile');
+  if(preview)right.append(preview);
+  if(choices){const label=choices.previousElementSibling;if(label?.tagName==='LABEL')right.append(label);right.append(choices)}
+  const upload=document.getElementById('meowRegisterAvatarFile');
+  if(upload){const label=upload.previousElementSibling;if(label?.tagName==='LABEL')right.append(label);right.append(upload)}
+  form.prepend(shell);shell.append(left,right);
+  const update=()=>box.classList.toggle('meow-fold-active',form.style.display!=='none'&&getComputedStyle(form).display!=='none');
+  new MutationObserver(update).observe(form,{attributes:true,attributeFilter:['style','class']});
+  document.getElementById('meowAuthLoginTab')?.addEventListener('click',()=>requestAnimationFrame(update));
+  document.getElementById('meowAuthRegisterTab')?.addEventListener('click',()=>requestAnimationFrame(update));
+  update();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+})();
+</script>
+
+<style id="meow-auth-over-header-final">
+/* Auth overlay covers the global header, including on small mobile screens. */
+html body #loginPage.meowAuthVisible:not([hidden]){
+ position:fixed!important;inset:0!important;top:0!important;left:0!important;
+ width:100vw!important;height:100dvh!important;max-height:100dvh!important;
+ z-index:2147483500!important;display:flex!important;align-items:center!important;
+ justify-content:center!important;box-sizing:border-box!important;
+ padding:calc(12px + env(safe-area-inset-top,0px)) 10px calc(12px + env(safe-area-inset-bottom,0px))!important;
+ overflow-y:auto!important;overscroll-behavior:contain!important;
+ background:rgba(42,25,52,.62)!important;
+ backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;
+}
+html body #loginPage.meowAuthVisible .meowLoginBox{
+ max-height:calc(100dvh - 28px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+ overflow-y:auto!important;overscroll-behavior:contain!important;
+}
+</style>
+<script id="meow-auth-over-header-script">
+(function(){
+ const auth=document.getElementById('loginPage');
+ if(!auth)return;
+ // Keep fixed overlay out of transformed/stacked app ancestors.
+ if(auth.parentElement!==document.body)document.body.appendChild(auth);
+})();
+</script>
+
+<style id="meow-auth-cover-compact-v3">
+/* Auth lives above all global navigation, and fits the visual viewport. */
+html body #loginPage.meowAuthVisible:not([hidden]){
+ position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;
+ z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;
+ overflow:hidden!important;padding:8px!important;margin:0!important;isolation:isolate!important;
+ background:rgba(40,22,48,.72)!important;backdrop-filter:blur(9px)!important;
+ -webkit-backdrop-filter:blur(9px)!important;
+}
+html body #loginPage.meowAuthVisible .meowLoginBox{
+ flex:none!important;max-width:min(96vw,750px)!important;width:min(96vw,750px)!important;
+ max-height:none!important;height:auto!important;overflow:visible!important;
+ margin:0!important;transform-origin:center center!important;
+ transform:scale(var(--meow-auth-fit,1))!important;
+}
+html body #loginPage.meowAuthVisible .meowLoginBox.meow-fold-active{width:min(96vw,750px)!important}
+@media(max-width:600px){
+ html body #loginPage .meowLoginBox{padding:12px 11px!important}
+ html body #loginPage .meowLoginCat{margin-bottom:0!important}
+ html body #loginPage .meowLoginCat img{max-height:34px!important;max-width:34px!important}
+ html body #loginPage .meowLoginTitle{font-size:clamp(18px,5vw,25px)!important;margin:0!important}
+ html body #loginPage .meowLoginSub{margin:1px 0 8px!important;font-size:11px!important}
+ html body #loginPage .meowAuthTabs{margin:5px 0 8px!important}
+ html body #loginPage .meowAuthTabs button{padding:8px 5px!important;min-height:34px!important}
+ html body #loginPage .meowInput{min-height:36px!important;padding:7px 8px!important;font-size:14px!important}
+ html body #loginPage .meowLoginBtn{min-height:38px!important;padding:8px!important;margin-top:7px!important}
+ html body #loginPage #meowRegisterForm .meow-game-profile{padding:6px!important;margin:3px 0 6px!important}
+ html body #loginPage #meowRegisterForm .meow-game-preview{width:56px!important;height:56px!important}
+ html body #loginPage #meowRegisterForm .meow-game-caption{margin:3px 0 0!important;font-size:10px!important}
+ html body #loginPage #meowAvatarChoices{margin:5px 0!important;gap:3px!important}
+ html body #loginPage .meow-fold-shell{gap:0!important}
+}
+</style>
+<script id="meow-auth-cover-compact-v3-script">
+(function(){
+ const overlay=document.getElementById('loginPage');
+ if(!overlay)return;
+ // Reparent to body to escape any transformed app stacking context.
+ if(overlay.parentElement!==document.body)document.body.appendChild(overlay);
+ const box=overlay.querySelector('.meowLoginBox');if(!box)return;
+ let pending=false;
+ function fit(){
+  pending=false;
+  if(overlay.hidden||!overlay.classList.contains('meowAuthVisible'))return;
+  box.style.setProperty('--meow-auth-fit','1');
+  const availableHeight=(window.visualViewport?.height||window.innerHeight)-22;
+  const availableWidth=(window.visualViewport?.width||window.innerWidth)-16;
+  const fullHeight=Math.max(box.scrollHeight,box.getBoundingClientRect().height);
+  const fullWidth=box.scrollWidth;
+  const scale=Math.min(1,availableHeight/Math.max(1,fullHeight),availableWidth/Math.max(1,fullWidth));
+  box.style.setProperty('--meow-auth-fit',String(Math.max(.45,scale)));
+ }
+ function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>requestAnimationFrame(fit));}
+ const observer=new MutationObserver(schedule);
+ observer.observe(overlay,{attributes:true,attributeFilter:['class','hidden','style']});
+ observer.observe(box,{subtree:true,attributes:true,attributeFilter:['class','style','hidden'],childList:true});
+ window.addEventListener('resize',schedule,{passive:true});
+ window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+ document.getElementById('meowAuthRegisterTab')?.addEventListener('click',schedule);
+ document.getElementById('meowAuthLoginTab')?.addEventListener('click',schedule);
+ schedule();
+})();
+</script>
+
+<!-- MEOW AUTH PORTAL FIX: remove auth from app stacking context -->
+<style id="meow-auth-portal-header-fix">
+html body > #loginPage.meowAuthVisible:not([hidden]){
+ position:fixed!important;inset:0!important;z-index:2147483647!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ padding:10px!important;margin:0!important;
+ background:rgba(47,26,51,.58)!important;
+ backdrop-filter:blur(9px)!important;-webkit-backdrop-filter:blur(9px)!important;
+ isolation:isolate!important;overflow:hidden!important;
+}
+html body > #loginPage.meowAuthVisible:not([hidden]) .meowLoginBox{
+ margin:auto!important;max-height:calc(100dvh - 20px)!important;
+}
+html body > #loginPage.meowAuthVisible:not([hidden]) .meowLoginBox.meow-fold-active{
+ width:min(96vw,750px)!important;max-width:min(96vw,750px)!important;
+}
+</style>
+<script id="meow-auth-portal-script">
+(function(){
+ function portal(){
+   var auth=document.getElementById('loginPage');
+   if(!auth)return;
+   // The main app uses transforms/isolation that trap fixed children below the header.
+   // Place auth directly under body to give it a true viewport-wide stacking layer.
+   if(auth.parentElement!==document.body)document.body.appendChild(auth);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',portal,{once:true});
+ else portal();
+})();
+</script>
+
+<style id="meow-profile-loader-style">
+#meowProfileBusy{position:fixed;inset:0;z-index:2147482900;display:none;align-items:center;justify-content:center;background:rgba(255,242,250,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:auto}
+#meowProfileBusy.is-visible{display:flex}
+#meowProfileBusy .meow-loading-center{display:flex;flex-direction:column;align-items:center;gap:14px;color:#b65c92;font:800 16px 'Be Vietnam Pro',sans-serif}
+#meowProfileBusy .meow-loading-circle{width:112px;height:112px;border:4px solid #ffbddb;border-top-color:#ae83df;border-right-color:#f06aa5;border-radius:50%;display:grid;place-items:center;animation:meowLoadRotate 1.15s linear infinite}
+#meowProfileBusy .meow-loading-circle img{width:82px;height:82px;object-fit:contain;border-radius:50%;animation:meowLoadRotateReverse 1.15s linear infinite}
+@media(prefers-reduced-motion:reduce){#meowProfileBusy .meow-loading-circle,#meowProfileBusy .meow-loading-circle img{animation:none}}
+</style>
+<script id="meow-profile-loader-script">
+(function(){
+ let timer=0,visibleAt=0;
+ function node(){let el=document.getElementById('meowProfileBusy');if(el)return el;el=document.createElement('div');el.id='meowProfileBusy';el.setAttribute('role','status');el.setAttribute('aria-live','polite');el.innerHTML='<div class="meow-loading-center"><div class="meow-loading-circle"><img alt="" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiU7RJCaDnotJOXcR9w50HZR39YwP2FNlgTUFLOy0CEZ3hKeQUQhQbGaD2uWYCAO6S5Qj4UeGPPEeBoTHcECz9Zs6I6VHk6kvRW__zo4SkMCw6tBk35Rf7XoWU1E8E3Ft-JkMwOhGCd5XcCgzCniCyO1I3scO_DGWbVzKXLdcob2pAd6uKfRbcGR-5XpRc/s381/t%E1%BA%A3i%20xu%E1%BB%91ng%20%284%29.png"></div><span>Đang tải<span class="meow-loading-dots"></span></span></div>';document.body.appendChild(el);return el}
+ window.meowProfileLoadingShow=function(){clearTimeout(timer);const el=node();el.classList.add('is-visible');visibleAt=Date.now();timer=setTimeout(()=>el.classList.remove('is-visible'),8000)};
+ window.meowProfileLoadingHide=function(){clearTimeout(timer);const el=document.getElementById('meowProfileBusy');if(el)el.classList.remove('is-visible')};
+})();
+</script>
+
+<style id="meow-oct31-final-fixes">
+/* Auth is a real viewport portal, above header and any transformed app container. */
+html body>#loginPage.meowAuthVisible:not([hidden]){position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;padding:clamp(6px,1.4vh,14px)!important;transform:none!important;isolation:isolate!important}
+body.meow-auth-on .meowTopbar,body.meow-auth-on #meowGlobalHeader,body.meow-auth-on header.meowTopbar{visibility:hidden!important;pointer-events:none!important}
+html body>#loginPage.meowAuthVisible .meowLoginBox{max-height:calc(100dvh - 18px)!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+html body>#loginPage.meowAuthVisible .meowLoginBox.meow-fold-active{width:min(94vw,760px)!important;max-width:760px!important}
+/* Keep the game avatar carousel in the preview frame */
+#meowRegisterForm .meow-game-profile{position:relative!important}
+#meowRegisterForm .meow-avatar-carousel{display:flex;align-items:center;justify-content:center;gap:8px}
+#meowRegisterForm .meow-avatar-arrow{width:32px;height:38px;flex:none;border:1px solid #dfa6cf;border-radius:11px;background:#ffe5f3;color:#a14b88;font-size:22px;font-weight:800;cursor:pointer}
+#meowRegisterForm .meow-avatar-arrow:active{transform:scale(.94)}
+/* Pixel footer stays responsive on phones and desktops */
+#meowSiteFooter .meowPixelFooter{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+#meowSiteFooter .mpf-top{min-width:0!important}
+#meowSiteFooter .mpf-hero,#meowSiteFooter .mpf-contact{min-width:0!important}
+@media(max-width:560px){#meowSiteFooter .mpf-top{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,.7fr)!important;gap:7px!important}#meowSiteFooter .mpf-hero .meowFooterStats{min-width:0!important}#meowSiteFooter .mpf-hero .meowFooterStats>span{overflow-wrap:anywhere!important}}
+@media(max-width:390px){#meowSiteFooter .mpf-top{grid-template-columns:minmax(0,1fr)!important}#meowSiteFooter .mpf-contact{display:flex!important;flex-wrap:wrap!important;gap:5px!important}}
+</style>
+<script id="meow-oct31-final-script">
+(function(){
+ 'use strict';
+ function init(){
+  const auth=document.getElementById('loginPage');
+  if(auth){
+   const sync=()=>{const open=auth.classList.contains('meowAuthVisible')&&!auth.hidden&&getComputedStyle(auth).display!=='none';if(open&&auth.parentElement!==document.body)document.body.appendChild(auth);document.body.classList.toggle('meow-auth-on',open)};
+   new MutationObserver(sync).observe(auth,{attributes:true,attributeFilter:['class','style','hidden']});sync();
+  }
+  const choices=document.getElementById('meowAvatarChoices');const panel=document.querySelector('#meowRegisterForm .meow-game-profile');
+  if(choices&&panel&&!panel.querySelector('.meow-avatar-carousel')){
+   const preview=panel.querySelector('.meow-game-preview');
+   if(preview){const row=document.createElement('div');row.className='meow-avatar-carousel';const prev=document.createElement('button');const next=document.createElement('button');prev.type=next.type='button';prev.className=next.className='meow-avatar-arrow';prev.textContent='‹';next.textContent='›';prev.setAttribute('aria-label','Avatar trước');next.setAttribute('aria-label','Avatar tiếp');preview.replaceWith(row);row.append(prev,preview,next);
+    function step(dir){const buttons=[...choices.querySelectorAll('button')];if(!buttons.length)return;const active=buttons.findIndex(b=>b.classList.contains('selected'));const idx=((active<0?0:active)+dir+buttons.length)%buttons.length;buttons[idx].click();const img=buttons[idx].querySelector('img');if(img?.src)preview.src=img.src;}
+    prev.addEventListener('click',()=>step(-1));next.addEventListener('click',()=>step(1));
+   }
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+<style id="meow-avatar-footer-corrections">
+#meowRegisterForm .meow-game-profile{position:relative!important}
+#meowRegisterForm .meow-avatar-carousel{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:100%!important}
+#meowRegisterForm .meow-avatar-arrow,#meowRegisterForm .meow-avatar-nav{display:grid!important;place-items:center!important;flex:0 0 31px!important;width:31px!important;height:35px!important;border:2px solid #d78fbd!important;border-radius:10px!important;background:#ffe3f3!important;color:#984a80!important;font-size:24px!important;font-weight:900!important;line-height:1!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:4!important;cursor:pointer!important}
+#meowRegisterForm .meow-game-preview{flex:0 0 auto!important}
+#meowSiteFooter .mpf-note p{white-space:normal!important;line-height:1.7!important}
+</style>
+<script id="meow-avatar-footer-corrections-js">
+(function(){
+ function ready(){
+  const form=document.getElementById('meowRegisterForm');const choices=document.getElementById('meowAvatarChoices');
+  const preview=form?.querySelector('.meow-game-preview');if(!preview||!choices)return;
+  let row=preview.closest('.meow-avatar-carousel');
+  if(!row){row=document.createElement('div');row.className='meow-avatar-carousel';preview.parentNode.insertBefore(row,preview);row.appendChild(preview)}
+  function make(dir,label){const b=document.createElement('button');b.type='button';b.className='meow-avatar-nav';b.textContent=dir<0?'‹':'›';b.setAttribute('aria-label',label);b.addEventListener('click',function(e){e.preventDefault();const btns=Array.from(choices.querySelectorAll('button'));if(!btns.length)return;let index=btns.findIndex(x=>x.classList.contains('selected'));index=(index+dir+btns.length)%btns.length;btns[index].click();const img=btns[index].querySelector('img');if(img?.src)preview.src=img.src;});return b}
+  row.querySelectorAll('.meow-avatar-arrow,.meow-avatar-nav').forEach(x=>x.remove());
+  row.insertBefore(make(-1,'Ảnh đại diện trước'),preview);row.appendChild(make(1,'Ảnh đại diện tiếp'));
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready);else ready();
+})();
+</script>
+
+<script id="meow-footer-stats-cache-sync">
+(function(){
+ const fmt=n=>new Intl.NumberFormat('vi-VN').format(Math.round(n));
+ function sync(){
+  const getter=window.meowFooterGetStoryStats;const bridge=window.meowMenuBridge;
+  if(!getter||!bridge)return;
+  const stats=getter();let reads=stats.reads,words=stats.words;
+  // Rank totals are read from chapter views and stored in the ranking cache.
+  const stories=bridge.stories();
+  const cache=window.meowRankingTotals;
+  if(cache&&typeof cache.get==='function'){
+   const sum=stories.reduce((a,x)=>a+(Number(cache.get(String(x.id)))||0),0);
+   if(sum>0&&(!Number.isFinite(reads)||sum>reads))reads=sum;
+  }
+  const r=document.querySelector('#meowSiteFooter [data-meow-stat="reads"]');
+  const w=document.querySelector('#meowSiteFooter [data-meow-stat="words"]');
+  if(r&&Number.isFinite(reads))r.textContent=fmt(reads);
+  if(w&&Number.isFinite(words))w.textContent=fmt(words);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
+ document.addEventListener('meow:ranking-updated',sync);
+ setInterval(sync,12000);
 })();
 </script>
 </body>
@@ -13937,3 +14807,62 @@ html body.meowSiteDark #loginPage .meowLoginBox{
 .meowStoryPagination span{padding:0 3px}
 #readerPage .meowReaderTop,#readerPage .meowReaderBottom{transition:transform .16s ease-out,opacity .16s ease-out!important}
 </style>
+
+
+<style id="meow-auth-game-loading-v1">
+/* Trang thai tai du lieu: logo tron, nam chinh giua */
+#meowStartupLoading{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:rgba(255,242,250,.94);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);transition:opacity .3s ease,visibility .3s ease}
+#meowStartupLoading.meow-loader-done{opacity:0;visibility:hidden;pointer-events:none}
+.meow-loading-center{display:flex;align-items:center;flex-direction:column;gap:14px;color:#b65c92;font:800 16px 'Be Vietnam Pro',sans-serif}
+.meow-loading-circle{width:112px;height:112px;border:4px solid #ffbddb;border-top-color:#ae83df;border-right-color:#f06aa5;border-radius:50%;display:grid;place-items:center;animation:meowLoadRotate 1.15s linear infinite;box-shadow:0 9px 32px #d886b044}
+.meow-loading-circle img{width:82px;height:82px;border-radius:50%;object-fit:contain;animation:meowLoadRotateReverse 1.15s linear infinite}
+.meow-loading-dots::after{content:'...';display:inline-block;width:1.6em;overflow:hidden;vertical-align:bottom;animation:meowDots 1.25s steps(4,end) infinite}
+@keyframes meowLoadRotate{to{transform:rotate(360deg)}}@keyframes meowLoadRotateReverse{to{transform:rotate(-360deg)}}@keyframes meowDots{0%{width:0}100%{width:1.6em}}
+@media(prefers-reduced-motion:reduce){.meow-loading-circle,.meow-loading-circle img,.meow-loading-dots::after{animation:none}}
+/* Tang co chu trong khung auth, nhung chu khach nhap van binh thuong */
+html body #loginPage .meowLoginBox,html body.meowSiteDark #loginPage .meowLoginBox{width:min(440px,calc(100vw - 24px))!important;max-width:440px!important;padding:22px 20px!important;max-height:calc(100dvh - 28px)!important;overflow-y:auto!important;overscroll-behavior:contain}
+html body #loginPage .meowLoginTitle{font-size:clamp(23px,5vw,29px)!important}
+html body #loginPage .meowPrincessSubtitle{font-size:13px!important}
+html body #loginPage .meowAuthTabs button{font-size:15px!important;min-height:43px!important}
+html body #loginPage .meowPrincessFieldLabel,html body #loginPage #meowRegisterForm label{font-size:14px!important;line-height:1.5!important;margin:10px 0 5px!important}
+html body #loginPage .meowLoginBtn{font-size:16px!important;min-height:47px!important}
+html body #loginPage .meowPrincessHelp,html body #loginPage #meowGuestHint{font-size:12px!important;line-height:1.55!important}
+html body #loginPage .meowIdHint{font-size:11px!important;line-height:1.5!important}
+html body #loginPage .meowInput,html body.meowSiteDark #loginPage .meowInput{font-family:'Be Vietnam Pro',Arial,sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:normal!important;min-height:44px!important;padding:10px 12px!important}
+html body #loginPage .meowInput::placeholder{font-size:14px!important;font-weight:400!important}
+/* Dang ky theo phong cach chon nhan vat game */
+#meowRegisterForm .meow-game-profile{margin:8px 0 12px;padding:12px;border:2px solid #d5a2df;border-radius:17px;background:linear-gradient(145deg,#fff7fc,#f5eaff);text-align:center;box-shadow:3px 4px 0 #e4bfdf}
+#meowRegisterForm .meow-game-heading{font-size:15px;font-weight:900;color:#a65e9b;margin:0 0 8px}
+#meowRegisterForm .meow-game-preview{width:80px;height:80px;margin:auto;border:3px solid #e68fc1;border-radius:50%;background:#fff;object-fit:cover;box-shadow:0 0 0 5px #ffe2f2}
+#meowRegisterForm .meow-game-caption{font-size:12px;color:#9b668a;margin:9px 0 0}
+html body #loginPage #meowAvatarChoices{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important;margin:10px 0 13px!important}
+html body #loginPage #meowAvatarChoices button{flex:unset!important;width:100%!important;min-width:0!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:1!important;border-radius:13px!important;padding:3px!important;transition:transform .16s ease,box-shadow .16s ease!important}
+html body #loginPage #meowAvatarChoices button.selected{transform:translateY(-3px)!important;box-shadow:0 0 0 3px #eeb5d8,0 6px 12px #c878aa55!important}
+html body #loginPage #meowAvatarChoices button img{border-radius:9px!important}
+@media(max-width:390px){html body #loginPage .meowLoginBox{padding:16px 13px!important}html body #loginPage .meowAuthTabs button{font-size:13px!important}html body #loginPage .meowLoginBtn{font-size:14px!important}}
+</style>
+
+<script id="meow-auth-game-loading-script">
+(function(){
+  const logo='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiU7RJCaDnotJOXcR9w50HZR39YwP2FNlgTUFLOy0CEZ3hKeQUQhQbGaD2uWYCAO6S5Qj4UeGPPEeBoTHcECz9Zs6I6VHk6kvRW__zo4SkMCw6tBk35Rf7XoWU1E8E3Ft-JkMwOhGCd5XcCgzCniCyO1I3scO_DGWbVzKXLdcob2pAd6uKfRbcGR-5XpRc/s381/t%E1%BA%A3i%20xu%E1%BB%91ng%20%284%29.png';
+  function init(){
+    const choices=document.getElementById('meowAvatarChoices');
+    const register=document.getElementById('meowRegisterForm');
+    if(choices&&register&&!register.querySelector('.meow-game-profile')){
+      const panel=document.createElement('div');panel.className='meow-game-profile';
+      const title=document.createElement('div');title.className='meow-game-heading';title.textContent='✦ TẠO NHÂN VẬT CỦA BẠN ✦';
+      const preview=document.createElement('img');preview.className='meow-game-preview';preview.alt='Nhân vật được chọn';
+      const caption=document.createElement('p');caption.className='meow-game-caption';caption.textContent='Chọn một nhân vật đại diện để bắt đầu hành trình đọc truyện ♡';
+      panel.append(title,preview,caption);choices.parentNode.insertBefore(panel,choices);
+      const sync=()=>{const selected=choices.querySelector('button.selected')||choices.querySelector('button');const image=selected?.querySelector('img');if(image?.src)preview.src=image.src};
+      choices.addEventListener('click',()=>requestAnimationFrame(sync));sync();
+      const file=document.getElementById('meowRegisterAvatarFile');file?.addEventListener('change',()=>{const f=file.files?.[0];if(!f||!f.type.startsWith('image/'))return;const reader=new FileReader();reader.onload=()=>{preview.src=reader.result};reader.readAsDataURL(f)});
+    }
+    const loader=document.getElementById('meowStartupLoading');
+    if(loader){const hide=()=>{loader.classList.add('meow-loader-done');setTimeout(()=>loader.remove(),350)};if(document.readyState==='complete')setTimeout(hide,350);else window.addEventListener('load',hide,{once:true});setTimeout(hide,3500)}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+
